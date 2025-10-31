@@ -7,10 +7,6 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    env:
-      SPRING_DATASOURCE_URL: ${{ secrets.SPRING_DATASOURCE_URL }}
-      SPRING_DATASOURCE_USERNAME: ${{ secrets.SPRING_DATASOURCE_USERNAME }}
-      SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
 
     steps:
       - name: Checkout code
@@ -22,19 +18,10 @@ jobs:
           distribution: 'temurin'
           java-version: '21'
 
-      - name: Cache Maven dependencies
-        uses: actions/cache@v4
-        with:
-          path: ~/.m2
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
-
-      - name: Build JAR file
+      - name: Build project
         run: mvn clean package -DskipTests
 
-      - name:
-          Deploy (예시: 서버로 JAR 전송)
+      - name: Deploy (예시: 서버로 JAR 전송)
         run: |
           echo "배포 시작..."
           # scp target/routy-back.jar ubuntu@your-server:/app/routy-back/
