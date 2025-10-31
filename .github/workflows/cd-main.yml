@@ -2,7 +2,8 @@ name: CD - Main Branch
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
 
 jobs:
   deploy:
@@ -21,7 +22,8 @@ jobs:
       - name: Build project
         run: mvn clean package -DskipTests
 
-      - name: Deploy (예시: 서버로 JAR 전송)
+      - name: Deploy to Server
+        shell: bash
         run: |
           echo "배포 시작..."
           # scp target/routy-back.jar ubuntu@your-server:/app/routy-back/
