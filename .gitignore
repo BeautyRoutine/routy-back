@@ -1,33 +1,71 @@
-HELP.md
+# Java / Spring Boot / Maven 빌드 결과물
 target/
-.mvn/wrapper/maven-wrapper.jar
+build/
+out/
+*.class
+*.jar
+*.war
+*.ear
 !**/src/main/**/target/
 !**/src/test/**/target/
 
-### STS ###
-.apt_generated
+# Maven Wrapper
+.mvn/
+.mvn/wrapper/maven-wrapper.jar
+/mvnw
+/mvnw.cmd
+
+
+# IDE / 개발 환경별 설정 파일
+
+# STS (Spring Tool Suite)
+.apt_generated/
 .classpath
 .factorypath
 .project
-.settings
+.settings/
 .springBeans
 .sts4-cache
 
-### IntelliJ IDEA ###
-.idea
+# IntelliJ IDEA
+.idea/
 *.iws
 *.iml
 *.ipr
 
-### NetBeans ###
+# NetBeans
 /nbproject/private/
 /nbbuild/
 /dist/
 /nbdist/
 /.nb-gradle/
-build/
-!**/src/main/**/build/
-!**/src/test/**/build/
 
-### VS Code ###
+# VSCode
 .vscode/
+
+# OS 캐시 및 로그
+.DS_Store
+*.log
+
+# 민감한 정보 / 보안 관련
+
+# 환경변수 파일 (.env)
+.env
+.env.*
+
+# Oracle Wallet (DB 인증 관련)
+wallet/
+Wallet_*/
+**/Wallet_*/
+
+# 개인 키, 인증서, 비밀키 파일
+*.pem
+*.key
+*.p12
+*.sso
+
+
+# 빌드 / 의존성 캐시
+/.gradle/
+/.gradle-cache/
+/build-cache/
