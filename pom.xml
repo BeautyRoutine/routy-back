@@ -31,52 +31,61 @@
     <java.version>21</java.version>
   </properties>
   <dependencies>
-    <!-- ✅ Spring Web (REST API 서버용) -->
+    <!-- Spring Web (REST API 서버용) -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-web</artifactId>
     </dependency>
 
-    <!-- ✅ JPA (JDBC 포함) -->
+    <!-- JPA 제거 -->
+    <!--
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-data-jpa</artifactId>
     </dependency>
+    -->
 
-    <!-- ✅ Validation -->
+    <!-- MyBatis 추가 -->
+    <dependency>
+      <groupId>org.mybatis.spring.boot</groupId>
+      <artifactId>mybatis-spring-boot-starter</artifactId>
+      <version>3.0.3</version>
+    </dependency>
+
+    <!-- Validation -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-validation</artifactId>
     </dependency>
 
-    <!-- ✅ Oracle JDBC 드라이버 -->
+    <!-- Oracle JDBC 드라이버 -->
     <dependency>
       <groupId>com.oracle.database.jdbc</groupId>
       <artifactId>ojdbc11</artifactId>
       <scope>runtime</scope>
     </dependency>
 
-    <!-- ✅ Lombok (코드 간소화용) -->
+    <!-- Lombok -->
     <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
       <scope>provided</scope>
     </dependency>
 
-    <!-- ✅ DevTools (자동 재시작용, 개발용만) -->
+    <!-- DevTools -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-devtools</artifactId>
       <scope>runtime</scope>
     </dependency>
 
-    <!-- ✅ Test (단위 테스트용) -->
+    <!-- Test -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
       <scope>test</scope>
     </dependency>
-    
+
   </dependencies>
   <build>
     <plugins>
