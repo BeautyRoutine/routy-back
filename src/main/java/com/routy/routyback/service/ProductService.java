@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import com.routy.routyback.domain.ProductVO;
 
 @Service
-public class AdminProductService implements IAdminProductService {
+public class ProductService implements IProductService {
 	
 	@Override
 	public ArrayList<ProductVO> getAll() {
