@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+  <!-- 작업중입니다... -->
+
+<mapper namespace="com.routy.routyback.mapper.ProductMapper">
+
+	<!-- 전체 상품 조회 -->
+	<select id="selectAll"
+		resultType="com.routy.routyback.domain.ProductVO">
+		SELECT * FROM product 
+	</select>
+
+	<!-- 상품 단건 조회 -->
+	<select id="selectById"
+		resultType="com.routy.routyback.domain.ProductVO" parameterType="int">
+		SELECT * FROM 
+	</select>
+
+	<!-- 상품 등록 -->
+	<insert id="insert"
+		parameterType="com.routy.routyback.domain.ProductVO">
+		INSERT INTO product (
+		
+		) VALUES (
+		
+		)
+	</insert>
+
+	<!-- 상품 수정 -->
+	<update id="update"
+		parameterType="com.routy.routyback.domain.ProductVO">
+		UPDATE product
+		
+	</update>
+
+	<!-- 상품 삭제 -->
+	<delete id="delete" parameterType="int">
+		DELETE FROM product 
+	</delete>
+
+	<!-- 재고 업데이트 -->
+	<update id="updateStock">
+		UPDATE product
+		
+	</update>
+
+	<!-- 상태 업데이트 -->
+	<update id="updateStatus">
+		UPDATE product
+		SET 
+		WHERE
+	</update>
+
+</mapper>
+
+	
