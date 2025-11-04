@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import com.routy.routyback.domain.ProductVO;
 
-public interface IProductService {
+public interface IAdminProductService {
 	
 	// 전체 조회
 	ArrayList<ProductVO> getAll();
