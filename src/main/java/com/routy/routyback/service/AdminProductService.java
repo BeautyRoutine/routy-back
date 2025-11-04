@@ -2,73 +2,76 @@ package com.routy.routyback.service;
 
 import java.util.ArrayList;
 
+import org.springframework.stereotype.Service;
+
 import com.routy.routyback.domain.ProductVO;
 
-public class ProductService implements IProductService {
-
+@Service
+public class AdminProductService implements IAdminProductService {
+	
 	@Override
 	public ArrayList<ProductVO> getAll() {
-		// TODO Auto-generated method stub
+		// 전체 조회
 		return null;
 	}
 
 	@Override
 	public ProductVO getById(int prdNo) {
-		// TODO Auto-generated method stub
+		// 특정 상품 조회
 		return null;
 	}
 
 	@Override
 	public void insertProduct() {
-		// TODO Auto-generated method stub
+		// 상품 추가
 		
 	}
 
 	@Override
 	public void updateProduct() {
-		// TODO Auto-generated method stub
+		// 상품 수정
 		
 	}
 
 	@Override
 	public void deleteProduct() {
-		// TODO Auto-generated method stub
+		// 상품 삭제
 		
 	}
 
 	@Override
 	public void updateStock() {
-		// TODO Auto-generated method stub
+		// 상품 수량 수정
 		
 	}
 
 	@Override
 	public void updateStatus() {
-		// TODO Auto-generated method stub
+		// 상품 상태 수정
 		
 	}
 
 	@Override
 	public void ranking() {
-		// TODO Auto-generated method stub
+		// 상품 랭킹 수정
 		
 	}
 
 	@Override
 	public void insertIngredient() {
-		// TODO Auto-generated method stub
+		// 상품 성분 추가
 		
 	}
 
 	@Override
 	public void updateIngredient() {
-		// TODO Auto-generated method stub
+		// 상품 성분 수정
 		
 	}
 
 	@Override
 	public void deleteIngredient() {
-		// TODO Auto-generated method stub
+		// 상품 성분 삭제
 		
 	}
 
