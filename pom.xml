@@ -11,7 +11,7 @@
   <groupId>com.routy</groupId>
   <artifactId>routy-back</artifactId>
   <version>0.0.1-SNAPSHOT</version>
-  <packaging>war</packaging>
+  <packaging>jar</packaging>
   <name>routy-back</name>
   <description>routy-back</description>
   <url/>
