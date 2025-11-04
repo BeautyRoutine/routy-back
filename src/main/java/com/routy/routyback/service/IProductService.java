@@ -5,34 +5,22 @@ import java.util.ArrayList;
 import com.routy.routyback.domain.ProductVO;
 
 public interface IProductService {
-	
-	// 전체 조회
-	ArrayList<ProductVO> getAll();
-	
-	// 특정 상품 조회	
-	ProductVO getById(int prdNo);
-	/* 상품 crud 기능 */
-	
-	// 상품 추가
-	public void insertProduct();
-	// 상품 수정 
-	public void updateProduct();
-	// 상품 삭제	
-	public void deleteProduct();
-	// 상품 재고 수정 : 
-	public void updateStock();
-	// 상품 상태 수정
-	public void updateStatus();
-	// 상품 페이징 처리 : 
-	
-	// 상품 랭킹 수정
-	public void ranking();
-	// 성분 crud 기능
-	// 상품 추가
-	public void insertIngredient();
-	// 성분 수정 
-	public void updateIngredient();
-	// 성분 삭제	
-	public void deleteIngredient();
-	// 상품 통계 조회
+	// ✅ 사용자/관리자 공통 기능
+	ArrayList<ProductVO> getAll(); // 전체 조회
+
+	ProductVO getById(int prdNo); // 특정 상품 조회
+
+	void updateStock(int prdNo, int amount); // 재고 변경
+
+	void updateStatus(int prdNo, String status); // 상태 변경 (ex. 판매중/품절)
+
+	// ✅ 관리자 전용 기능
+	void insertProduct(ProductVO vo);
+
+	void updateProduct(ProductVO vo);
+
+	void deleteProduct(int prdNo);
+
+	// ✅ 상품 랭킹
+	void updateRanking(); // 또는 void updateRanking(List<ProductVO> topN);
 }

@@ -8,72 +8,53 @@ import com.routy.routyback.domain.ProductVO;
 
 @Service
 public class ProductService implements IProductService {
-	
+
 	@Override
 	public ArrayList<ProductVO> getAll() {
-		// 전체 조회
+		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public ProductVO getById(int prdNo) {
-		// 특정 상품 조회
+		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public void insertProduct() {
-		// 상품 추가
-		
+	public void updateStock(int prdNo, int amount) {
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override
-	public void updateProduct() {
-		// 상품 수정
-		
+	public void updateStatus(int prdNo, String status) {
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override
-	public void deleteProduct() {
-		// 상품 삭제
-		
+	public void insertProduct(ProductVO vo) {
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override
-	public void updateStock() {
-		// 상품 수량 수정
-		
+	public void updateProduct(ProductVO vo) {
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override
-	public void updateStatus() {
-		// 상품 상태 수정
-		
+	public void deleteProduct(int prdNo) {
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override
-	public void ranking() {
-		// 상품 랭킹 수정
-		
+	public void updateRanking() {
+		// TODO Auto-generated method stub
+
 	}
 
-	@Override
-	public void insertIngredient() {
-		// 상품 성분 추가
-		
-	}
-
-	@Override
-	public void updateIngredient() {
-		// 상품 성분 수정
-		
-	}
-
-	@Override
-	public void deleteIngredient() {
-		// 상품 성분 삭제
-		
-	}
-
-	
 }
