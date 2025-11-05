@@ -1,8 +1,8 @@
-package com.routy.routyback.domain;
+package com.routy.routyback.dto;
 
 import java.util.Date;
 
-public class IngredientVO {
+public class IngredientDTO {
 	private int ingNo;
 	private String ingName;
 	private String ingEnName;
