@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+  <mapper namespace="com.routy.routyback.mapper.ProductMapper">
+  
+  <resultMap id="prdResult" type="com.routy.routyback.dto.ProductUserDTO">
+		<result property="prdNo" column="prdNo"/>
+		<result property="prdName" column="prdName"/>
+		<result property="prdPrice" column="prdPrice"/>
+		<result property="prdVolume" column="prdVolume"/>
+		<result property="prdCompany" column="prdCompany"/>
+		<result property="prdMainCate" column="prdMainCate"/>
+		<result property="prdSubCate" column="prdSubCate"/>	
+		<result property="prdImg" column="prdImg"/>	
+		<result property="prdDesc" column="prdDesc"/>	
+	</resultMap>
+	
+	<select id="productDetailView" resultMap="prdResult">
+		SELECT
+			prdNo, prdName,prdPrice,prdVolume,prdCompany,prdMainCate,prdSubCate,prdImg,prdDesc
+		FROM 
+			PRODUCT
+		WHERE prdNo=#{prdNo}
+	</select>
+	
+	</mapper>
