@@ -4,19 +4,19 @@ import java.util.ArrayList;
 
 import org.springframework.stereotype.Service;
 
-import com.routy.routyback.domain.ProductVO;
+import com.routy.routyback.dto.ProductDTO;
 
 @Service
 public class ProductService implements IProductService {
 
 	@Override
-	public ArrayList<ProductVO> getAll() {
+	public ArrayList<ProductDTO> getAll() {
 		// TODO 상품 조회
 		return null;
 	}
 
 	@Override
-	public ProductVO getById(int prdNo) {
+	public ProductDTO getById(int prdNo) {
 		// TODO id로 상품 검색
 		return null;
 	}
@@ -34,13 +34,13 @@ public class ProductService implements IProductService {
 	}
 
 	@Override
-	public void insertProduct(ProductVO vo) {
+	public void insertProduct(ProductDTO vo) {
 		// TODO 상품 추가 로직
 
 	}
 
 	@Override
-	public void updateProduct(ProductVO vo) {
+	public void updateProduct(ProductDTO vo) {
 		// TODO 상품 업데이트 로직
 	}
 

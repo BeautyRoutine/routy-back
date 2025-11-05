@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.routy.routyback.domain.ProductVO;
+import com.routy.routyback.dto.ProductDTO;
 import com.routy.routyback.service.IProductService;
 
 @RestController
@@ -24,13 +24,13 @@ public class AdminProductController {
 	private IProductService productService;
 
 	@PostMapping
-	public ResponseEntity<?> create(@RequestBody ProductVO product) {
+	public ResponseEntity<?> create(@RequestBody ProductDTO product) {
 		productService.insertProduct(product);
 		return ResponseEntity.ok("등록 완료");
 	}
 
 	@PutMapping("/{prdNo}")
-	public ResponseEntity<?> update(@PathVariable int prdNo, @RequestBody ProductVO product) {
+	public ResponseEntity<?> update(@PathVariable int prdNo, @RequestBody ProductDTO product) {
 		product.setPrdNo(prdNo);
 		productService.updateProduct(product);
 		return ResponseEntity.ok("수정 완료");
@@ -43,12 +43,12 @@ public class AdminProductController {
 	}
 
 	@GetMapping
-	public ArrayList<ProductVO> getAll() {
+	public ArrayList<ProductDTO> getAll() {
 		return productService.getAll();
 	}
 
 	@GetMapping("/{prdNo}")
-	public ProductVO getOne(@PathVariable int prdNo) {
+	public ProductDTO getOne(@PathVariable int prdNo) {
 		return productService.getById(prdNo);
 	}
 }

@@ -1,8 +1,8 @@
-package com.routy.routyback.domain;
+package com.routy.routyback.dto;
 
 import java.util.Date;
 
-public class ProductVO {
+public class ProductDTO {
 	private int prdNo;
 	private String prdName;
 	private int prdPrice;

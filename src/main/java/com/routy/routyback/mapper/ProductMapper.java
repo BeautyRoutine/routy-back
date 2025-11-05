@@ -5,17 +5,17 @@ import java.util.ArrayList;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
-import com.routy.routyback.domain.ProductVO;
+import com.routy.routyback.dto.ProductDTO;
 
 @Mapper
 public interface ProductMapper {
-	ArrayList<ProductVO> getAll();
+	ArrayList<ProductDTO> getAll();
 
-	ProductVO selectById(int prdNo);
+	ProductDTO selectById(int prdNo);
 
-	void insertProduct(ProductVO product);
+	void insertProduct(ProductDTO product);
 
-	void updateProduct(ProductVO product);
+	void updateProduct(ProductDTO product);
 
 	void deleteProduct(int prdNo);
 

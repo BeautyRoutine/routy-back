@@ -1,11 +1,11 @@
 package com.routy.routyback.service;
 
-import com.routy.routyback.domain.IngredientVO;
+import com.routy.routyback.dto.IngredientDTO;
 
 public interface IIngredientService {
-	void insertIngredient(IngredientVO vo);
+	void insertIngredient(IngredientDTO vo);
 
-	void updateIngredient(IngredientVO vo);
+	void updateIngredient(IngredientDTO vo);
 
 	void deleteIngredient(int id);
 }
