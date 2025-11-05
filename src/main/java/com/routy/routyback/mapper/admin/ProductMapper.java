@@ -1,4 +1,4 @@
-package com.routy.routyback.mapper;
+package com.routy.routyback.mapper.admin;
 
 import java.util.ArrayList;
 
