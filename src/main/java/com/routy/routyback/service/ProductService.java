@@ -11,19 +11,19 @@ public class ProductService implements IProductService {
 
 	@Override
 	public ArrayList<ProductVO> getAll() {
-		// TODO Auto-generated method stub
+		// TODO 상품 조회
 		return null;
 	}
 
 	@Override
 	public ProductVO getById(int prdNo) {
-		// TODO Auto-generated method stub
+		// TODO id로 상품 검색
 		return null;
 	}
 
 	@Override
 	public void updateStock(int prdNo, int amount) {
-		// TODO Auto-generated method stub
+		// TODO 상품 수량 로직
 
 	}
 
@@ -35,25 +35,24 @@ public class ProductService implements IProductService {
 
 	@Override
 	public void insertProduct(ProductVO vo) {
-		// TODO Auto-generated method stub
+		// TODO 상품 추가 로직
 
 	}
 
 	@Override
 	public void updateProduct(ProductVO vo) {
-		// TODO Auto-generated method stub
-
+		// TODO 상품 업데이트 로직
 	}
 
 	@Override
 	public void deleteProduct(int prdNo) {
-		// TODO Auto-generated method stub
+		// TODO 상품 삭제 로직
 
 	}
 
 	@Override
 	public void updateRanking() {
-		// TODO Auto-generated method stub
+		// TODO 랭킹 업데이트에 대한 로직
 
 	}
 
