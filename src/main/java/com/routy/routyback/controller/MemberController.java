@@ -20,7 +20,7 @@ public class MemberController {
     private final MemberService memberService;
 
     // 서버 연결 확인용
-    // 실행 후 http://localhost:8080/member/health 접속해서 문자열 뜨면 정상입니다.
+    // 실행 후 http://localhost:8080/member/health 접속해서 문자열 뜨면 정상
     @GetMapping("/health")
     public String healthCheck() {
         return "Routy Member API is running";
