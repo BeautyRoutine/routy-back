@@ -1,9 +1,10 @@
-package com.routy.routyback.controller;
+package com.routy.routyback.controller.user;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import com.routy.routyback.service.MemberService;
+
+import com.routy.routyback.service.user.MemberService; 
 import com.routy.routyback.dto.MemberDTO;
 import com.routy.routyback.dto.MemberSearchRequest;
 
@@ -20,7 +21,7 @@ public class MemberController {
     private final MemberService memberService;
 
     // 서버 연결 확인용
-    // 실행 후 http://localhost:8080/member/health 접속해서 문자열 뜨면 정상
+    // 실행 후 http://localhost:8080/member/health 접속해서 문자열 뜨면 정상입니다. 
     @GetMapping("/health")
     public String healthCheck() {
         return "Routy Member API is running";

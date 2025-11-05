@@ -1,9 +1,10 @@
-package com.routy.routyback.service;
+package com.routy.routyback.service.user;
 
 import com.routy.routyback.dto.MemberDTO;
 import com.routy.routyback.dto.MemberSearchRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+// 나머지 import/내용 그대로
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
