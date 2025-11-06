@@ -12,7 +12,7 @@ import com.routy.routyback.service.user.IProductUserService;
 
 @RestController //restapi
 @RequestMapping("/api/products") //기본 주소
-@CrossOrigin("*") //react 연결 가능하게
+@CrossOrigin("*") //react 연결 가능하게, 실제 리액트 주소 나오면 WebConfig 쪽으로 연결해야할듯.
 public class ProductUserController {
 	//DI 주입
 	@Autowired
