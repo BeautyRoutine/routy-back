@@ -40,13 +40,13 @@ public class AdminProductController {
 	@GetMapping("/{prdNo}")
 	public ResponseEntity<ProductDTO> getOne(@PathVariable int prdNo) {
 		ProductDTO product = productService.getById(prdNo);
-		
+
 		if (product == null) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 		}
 		return ResponseEntity.ok(product);
 	}
-	
+
 	@PutMapping("/{prdNo}")
 	public ResponseEntity<?> update(@PathVariable int prdNo, @RequestBody ProductDTO product) {
 		product.setPrdNo(prdNo);
@@ -59,11 +59,9 @@ public class AdminProductController {
 		productService.deleteProduct(prdNo);
 		return ResponseEntity.ok("상품 삭제 완료");
 	}
-	
+
 	@PutMapping("/{prdNo}/stock")
-	public ResponseEntity<?> updateStock(
-			@PathVariable int prdNo, 
-			@RequestParam("amount") int amount) {
+	public ResponseEntity<?> updateStock(@PathVariable int prdNo, @RequestParam("amount") int amount) {
 		try {
 			productService.updateStock(prdNo, amount);
 			return ResponseEntity.ok("재고 업데이트 완료");
@@ -73,10 +71,8 @@ public class AdminProductController {
 	}
 
 	@PutMapping("/{prdNo}/status")
-	public ResponseEntity<?> updateStatus(
-			@PathVariable int prdNo, 
-			@RequestParam("status") String status) {
-		
+	public ResponseEntity<?> updateStatus(@PathVariable int prdNo, @RequestParam("status") String status) {
+
 		productService.updateStatus(prdNo, status);
 		return ResponseEntity.ok("상태 업데이트 완료");
 	}
