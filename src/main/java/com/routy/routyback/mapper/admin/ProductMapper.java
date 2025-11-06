@@ -13,15 +13,14 @@ public interface ProductMapper {
 
 	ProductDTO selectById(int prdNo);
 
-	void insertProduct(ProductDTO product);
+	void productInsert(ProductDTO product);
 
-	void updateProduct(ProductDTO product);
+	void productUpdate(ProductDTO product);
 
-	void deleteProduct(int prdNo);
+	void productDelete(int prdNo);
 
-	void updateStock(@Param("prdNo") int prdNo, @Param("amount") int amount);
+	void productUpdateStock(@Param("prdNo") int prdNo, @Param("prdStock") int prdStock);
 
-	void updateStatus(@Param("prdNo") int prdNo, @Param("status") String status);
+	void productUpdateStatus(@Param("prdNo") int prdNo, @Param("status") String status);
 
-	void updateRanking();
 }
