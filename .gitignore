@@ -69,3 +69,4 @@ Wallet_*/
 /.gradle/
 /.gradle-cache/
 /build-cache/.env
+*.code-workspace
