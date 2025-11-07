@@ -1,9 +1,8 @@
-package com.routy.routyback.service;
+package com.routy.routyback.service.admin;
 
 import org.springframework.stereotype.Service;
 
 import com.routy.routyback.dto.IngredientDTO;
-import com.routy.routyback.service.admin.IIngredientService;
 
 @Service
 public class IngredientService implements IIngredientService {

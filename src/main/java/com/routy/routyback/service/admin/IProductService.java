@@ -1,4 +1,4 @@
-package com.routy.routyback.service;
+package com.routy.routyback.service.admin;
 
 import java.util.ArrayList;
 
