@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.routy.routyback.dto.ProductDTO;
-import com.routy.routyback.service.IProductService;
+import com.routy.routyback.service.admin.IProductService;
 
 @RestController
 @RequestMapping("/api/admin/products")
