@@ -31,8 +31,36 @@ public class OrderAdmService implements IOrderAdmService {
 
 
 	@Override
-	public List<Map<String, Object>> listAllOrders() {
-		List<Map<String, Object>> resultList = dao.listAllOrders();
+	public List<Map<String, Object>> listAllOrders(Map<String, Object> params) {
+		// param 재가공
+		int page = 1;
+		if(params.containsKey("page")) {
+			try {
+				page = Integer.parseInt((String)params.get("page"));
+			} catch (Exception e) {
+				// int로 변환 실패시 1 유지
+			}
+		}
+		int pageGap = 10;
+		if(params.containsKey("page_gap")) {
+			try {
+				pageGap = Integer.parseInt((String)params.get("page_gap"));
+			} catch (Exception e) {
+				// int로 변환 실패시 1 유지
+			}
+		}
+		if(params.containsKey("mem_name")) {
+			params.put("mem_name", "%"+params.get("mem_name")+"%");
+		}
+		
+		// 페이징
+		int offset = (page - 1) * pageGap;
+		params.put("offset", String.valueOf(offset));
+		params.put("limit", String.valueOf(pageGap));
+		
+		List<Map<String, Object>> resultList = dao.listAllOrders(params);
+
+
 
         for (Map<String, Object> row : resultList) {
             for (String field : DATE_FIELDS) {

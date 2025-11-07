@@ -6,5 +6,23 @@
 <mapper namespace="com.routy.routyback.mapper.admin.IOrdersAdmDAO">
 	<select id="listAllOrders" resultType="Map">
 	SELECT * FROM ORDERS o LEFT JOIN USERS u ON u.userNo=o.userNo
+	WHERE 1=1
+		<if test="mem_name != null and mem_name != ''">
+		AND u.userName LIKE #{mem_name}
+		</if>
+		<if test="od_start_day != null and od_start_day != ''">
+		AND o.odRegdate >= #{od_start_day}
+		</if>
+		<if test="od_end_day  != null and od_end_day  != ''">
+		AND o.odRegdate &lt;= #{od_end_day }
+		</if>
+
+	<choose>
+		<otherwise>
+		ORDER BY o.odNo DESC
+		</otherwise>
+	</choose>
+	
+	OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
 	</select>
 </mapper>
