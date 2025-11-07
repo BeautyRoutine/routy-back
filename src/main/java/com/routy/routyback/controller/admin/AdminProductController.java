@@ -19,7 +19,7 @@ import com.routy.routyback.dto.ProductDTO;
 import com.routy.routyback.service.IProductService;
 
 @RestController
-@RequestMapping("/admin/products")
+@RequestMapping("/api/admin/products")
 public class AdminProductController {
 
 	@Autowired
