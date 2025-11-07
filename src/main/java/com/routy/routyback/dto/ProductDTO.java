@@ -1,114 +1,124 @@
 package com.routy.routyback.dto;
 
 import java.util.Date;
+import org.springframework.format.annotation.DateTimeFormat;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 public class ProductDTO {
-	private int prdNo;
-	private String prdName;
-	private int prdPrice;
-	private int prdVolume;
-	private String prdCompany;
-	private int prdStock;
-	private int prdMainCate;
-	private int prdSubCate;
-	private String prdImg;
-	private String prdDesc;
-	private Date prdUpdate;
-	private Date prdRegdate;
 
-	public int getPrdNo() {
-		return prdNo;
-	}
+    private int prdNo;
+    private String prdName;
+    private int prdPrice;
+    private int prdVolume;
+    private String prdCompany;
+    private int prdStock;
+    private int prdMainCate;
+    private int prdSubCate;
+    private String prdImg;
+    private String prdDesc;
 
-	public void setPrdNo(int prdNo) {
-		this.prdNo = prdNo;
-	}
+    // 날짜 포맷 설정 (Form 입력 + JSON 변환용)
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
+    private Date prdUpdate;
 
-	public String getPrdName() {
-		return prdName;
-	}
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
+    private Date prdRegdate;
 
-	public void setPrdName(String prdName) {
-		this.prdName = prdName;
-	}
+    public int getPrdNo() {
+        return prdNo;
+    }
 
-	public int getPrdPrice() {
-		return prdPrice;
-	}
+    public void setPrdNo(int prdNo) {
+        this.prdNo = prdNo;
+    }
 
-	public void setPrdPrice(int prdPrice) {
-		this.prdPrice = prdPrice;
-	}
+    public String getPrdName() {
+        return prdName;
+    }
 
-	public int getPrdVolume() {
-		return prdVolume;
-	}
+    public void setPrdName(String prdName) {
+        this.prdName = prdName;
+    }
 
-	public void setPrdVolume(int prdVolume) {
-		this.prdVolume = prdVolume;
-	}
+    public int getPrdPrice() {
+        return prdPrice;
+    }
 
-	public String getPrdCompany() {
-		return prdCompany;
-	}
+    public void setPrdPrice(int prdPrice) {
+        this.prdPrice = prdPrice;
+    }
 
-	public void setPrdCompany(String prdCompany) {
-		this.prdCompany = prdCompany;
-	}
+    public int getPrdVolume() {
+        return prdVolume;
+    }
 
-	public int getPrdStock() {
-		return prdStock;
-	}
+    public void setPrdVolume(int prdVolume) {
+        this.prdVolume = prdVolume;
+    }
 
-	public void setPrdStock(int prdStock) {
-		this.prdStock = prdStock;
-	}
+    public String getPrdCompany() {
+        return prdCompany;
+    }
 
-	public int getPrdMainCate() {
-		return prdMainCate;
-	}
+    public void setPrdCompany(String prdCompany) {
+        this.prdCompany = prdCompany;
+    }
 
-	public void setPrdMainCate(int prdMainCate) {
-		this.prdMainCate = prdMainCate;
-	}
+    public int getPrdStock() {
+        return prdStock;
+    }
 
-	public int getPrdSubCate() {
-		return prdSubCate;
-	}
+    public void setPrdStock(int prdStock) {
+        this.prdStock = prdStock;
+    }
 
-	public void setPrdSubCate(int prdSubCate) {
-		this.prdSubCate = prdSubCate;
-	}
+    public int getPrdMainCate() {
+        return prdMainCate;
+    }
 
-	public String getPrdImg() {
-		return prdImg;
-	}
+    public void setPrdMainCate(int prdMainCate) {
+        this.prdMainCate = prdMainCate;
+    }
 
-	public void setPrdImg(String prdImg) {
-		this.prdImg = prdImg;
-	}
+    public int getPrdSubCate() {
+        return prdSubCate;
+    }
 
-	public String getPrdDesc() {
-		return prdDesc;
-	}
+    public void setPrdSubCate(int prdSubCate) {
+        this.prdSubCate = prdSubCate;
+    }
 
-	public void setPrdDesc(String prdDesc) {
-		this.prdDesc = prdDesc;
-	}
+    public String getPrdImg() {
+        return prdImg;
+    }
 
-	public Date getPrdUpdate() {
-		return prdUpdate;
-	}
+    public void setPrdImg(String prdImg) {
+        this.prdImg = prdImg;
+    }
 
-	public void setPrdUpdate(Date prdUpdate) {
-		this.prdUpdate = prdUpdate;
-	}
+    public String getPrdDesc() {
+        return prdDesc;
+    }
 
-	public Date getPrdRegdate() {
-		return prdRegdate;
-	}
+    public void setPrdDesc(String prdDesc) {
+        this.prdDesc = prdDesc;
+    }
 
-	public void setPrdRegdate(Date prdRegdate) {
-		this.prdRegdate = prdRegdate;
-	}
+    public Date getPrdUpdate() {
+        return prdUpdate;
+    }
+
+    public void setPrdUpdate(Date prdUpdate) {
+        this.prdUpdate = prdUpdate;
+    }
+
+    public Date getPrdRegdate() {
+        return prdRegdate;
+    }
+
+    public void setPrdRegdate(Date prdRegdate) {
+        this.prdRegdate = prdRegdate;
+    }
 }
