@@ -2,6 +2,11 @@ package com.routy.routyback.dto;
 
 import java.util.Date;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.jsonFormatVisitors.JsonFormatTypes;
+
 public class IngredientDTO {
 	private int ingNo; // 성분 번호 (PK)
 	private String ingName; // 성분 한글 이름
@@ -64,6 +69,8 @@ public class IngredientDTO {
 	public Date getIngRegDate() {
 		return ingRegDate;
 	}
+	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
 	public void setIngRegDate(Date ingRegDate) {
 		this.ingRegDate = ingRegDate;
 	}
