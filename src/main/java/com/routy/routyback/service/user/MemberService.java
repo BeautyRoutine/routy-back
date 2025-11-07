@@ -2,9 +2,10 @@ package com.routy.routyback.service.user;
 
 import com.routy.routyback.dto.MemberDTO;
 import com.routy.routyback.dto.MemberSearchRequest;
+import com.routy.routyback.mapper.user.MemberMapper;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-// 나머지 import/내용 그대로
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -13,60 +14,79 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 회원 관련 서비스 로직입니다.
- * DB 연동 전, 기본 구조만 두겠습니다. 
+ * 회원 관련 서비스 로직 (USERS 테이블 스키마 기준) -오류뜨면 알려주세요 ! 
  */
 @Service
+@RequiredArgsConstructor
 public class MemberService {
 
-    // 회원가입
+    private final MemberMapper memberMapper;
+
+    /** 회원가입 */
     public ResponseEntity<?> signUp(MemberDTO memberDTO) {
-        // TODO: 비밀번호 암호화, 중복체크, DB insert
+        // TODO: 이메일 중복, 비밀번호 해시
+        memberMapper.insertMember(memberDTO);
+
         Map<String, Object> data = new HashMap<>();
-        data.put("email", memberDTO.getEmail());
-        data.put("nickname", memberDTO.getNickname());
+        data.put("email", memberDTO.getUserEmail());  // ← 여기!
+        data.put("nickname", memberDTO.getUserNick()); // ← 여기!
         return success(data);
     }
 
-    // 로그인
+    /** 로그인 */
     public ResponseEntity<?> login(MemberDTO memberDTO) {
-        // TODO: 자격 검증 후 JWT 발급
+        // TODO: 비밀번호 검증(BCrypt)
+        MemberDTO found = memberMapper.findByEmail(memberDTO.getUserEmail()); // ← 여기!
+        if (found == null) {
+            return error(401, "UNAUTHORIZED");
+        }
         Map<String, Object> data = new HashMap<>();
         data.put("token", "temporary-jwt-token");
-        data.put("email", memberDTO.getEmail());
+        data.put("email", found.getUserEmail());   // ← 여기!
+        data.put("nickname", found.getUserNick()); // ← 여기!
         return success(data);
     }
 
-    // 로그아웃
+    /** 로그아웃 */
     public ResponseEntity<?> logout(String token) {
-        // TODO: 토큰 무효화/블랙리스트 처리
         Map<String, Object> data = new HashMap<>();
         data.put("logout", true);
         data.put("token", token);
         return success(data);
     }
 
-    // 회원 전체 목록 조회 (관리자용)
+    /** 회원 전체 목록(관리자) */
     public ResponseEntity<?> getAllMembers(MemberSearchRequest request) {
-        // TODO: DB 조회 + 페이지네이션
-        Map<String, Object> page = new HashMap<>();
-        page.put("page", request.getPage());
-        page.put("limit", request.getLimit());
-        page.put("list", List.of()); // 임시 빈 리스트
-        return success(page);
-    }
+        int page = Math.max(request.getPage(), 1);
+        int limit = Math.max(request.getLimit(), 1);
+        int offset = (page - 1) * limit;
 
-    // 특정 회원 상세 조회
-    public ResponseEntity<?> getMemberInfo(String memId) {
-        // TODO: DB 단건 조회
+        List<MemberDTO> list = memberMapper.findAll(offset, limit, request.getType(), request.getKeyword());
+        int totalCount = memberMapper.countAll(request.getType(), request.getKeyword());
+        int totalPages = (int) Math.ceil((double) totalCount / limit);
+
+        Map<String, Object> pagination = new HashMap<>();
+        pagination.put("page", page);
+        pagination.put("limit", limit);
+        pagination.put("totalCount", totalCount);
+        pagination.put("totalPages", totalPages);
+
         Map<String, Object> data = new HashMap<>();
-        data.put("memId", memId);
-        data.put("email", "sample@routy.com");
-        data.put("nickname", "샘플");
+        data.put("list", list);
+        data.put("pagination", pagination);
+
         return success(data);
     }
 
-    // 공통 성공 응답 포맷
+    /** 특정 회원 상세 */
+    public ResponseEntity<?> getMemberInfo(String memId) {
+        Long id = Long.parseLong(memId);
+        MemberDTO member = memberMapper.findById(id);
+        if (member == null) return error(404, "NOT_FOUND");
+        return success(member);
+    }
+
+    // 공통 응답입니다 ! 
     private ResponseEntity<Map<String, Object>> success(Object body) {
         Map<String, Object> res = new HashMap<>();
         res.put("resultCode", 200);
@@ -74,5 +94,13 @@ public class MemberService {
         res.put("resultTime", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
         res.put("data", body);
         return ResponseEntity.ok(res);
+    }
+
+    private ResponseEntity<Map<String, Object>> error(int code, String msg) {
+        Map<String, Object> res = new HashMap<>();
+        res.put("resultCode", code);
+        res.put("resultMsg", msg);
+        res.put("resultTime", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+        return ResponseEntity.status(code).body(res);
     }
 }

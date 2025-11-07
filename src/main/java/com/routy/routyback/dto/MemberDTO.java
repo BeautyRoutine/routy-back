@@ -1,27 +1,47 @@
 package com.routy.routyback.dto;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
-/**
- * 회원 요청/응답에 쓰는 기본 DTO입니다.
- * 우선 필요한 필드만 두겠습니다. 이후 확장 예정입니다 !
- */
-@Getter
-@Setter
-@ToString
+@Getter @Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class MemberDTO {
 
-    @NotBlank
-    @Email
-    private String email;      // 이메일
+    // PK
+    private Long userNo;
 
-    @NotBlank
-    private String password;   // 비밀번호 (요청에서만 사용)
+    // 계정 기본
+    private String userId;
+    private String userEmail;
+    private String userNick;
+    private String userPw;
+    private String userName;
+    private String userHp;
 
-    private String nickname;   // 닉네임
-    private String skinType;   // 피부 타입(dry, oily 등)
+    // 인증/식별
+    private Integer userAuth;   //오류나면 말해주세여 !
+    private String userCi;
+
+    // 주소
+    private Integer userZip;
+    private String userJibunAddr;
+    private String userRoadAddr;
+    private String userDetailAddr;
+
+    // 부가 정보
+    private Long userBcode;     // 공동현관번호 등 숫자형이면 Long/Integer
+    private Integer userSkin;   // 1:지성/2:건성 등 주석에 정의
+    private String userColor;   // 선호 색상 등등 ~ 
+    private Integer userLevel;  // 등급
+    private Integer userStatus; // 1:정상/2:휴면 등등 ~ 
+
+    // 생년월일은 DATE → 필요 시 LocalDate
+    private LocalDate userBirth;
+
+    // 시스템 공통
+    private LocalDateTime userUpdate;
+    private LocalDateTime userRegdate;
 }
