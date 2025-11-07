@@ -32,6 +32,27 @@
     <java.version>21</java.version>
   </properties>
   <dependencies>
+  
+  	<!-- Oracle PKI -->
+    <dependency>
+        <groupId>com.oracle.database.security</groupId>
+        <artifactId>oraclepki</artifactId>
+        <version>21.9.0.0</version>
+    </dependency>
+
+    <!-- Oracle Security Developer Tools - Core -->
+    <dependency>
+        <groupId>com.oracle.database.security</groupId>
+        <artifactId>osdt_core</artifactId>
+        <version>21.9.0.0</version>
+    </dependency>
+
+    <!-- Oracle Security Developer Tools - Certificate -->
+    <dependency>
+        <groupId>com.oracle.database.security</groupId>
+        <artifactId>osdt_cert</artifactId>
+        <version>21.9.0.0</version>
+    </dependency>
 
     <!-- logback-core 버전 강제 재정의 -->
     <dependency>
