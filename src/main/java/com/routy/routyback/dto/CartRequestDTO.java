@@ -3,6 +3,8 @@ package com.routy.routyback.dto;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 public class CartRequestDTO {
 
     @Getter
@@ -25,5 +27,9 @@ public class CartRequestDTO {
         private Boolean selected;
     }
 
-
+    @Getter
+    @Setter
+    public static class DeleteItems {
+        private List<Long> cartItemIds;
+    }
 }

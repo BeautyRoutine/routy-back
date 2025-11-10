@@ -9,7 +9,7 @@ import java.util.List;
 @Mapper
 public interface CartMapper {
     // 4.1 장바구니 목록 조회
-    List<CartResponseDTO.CartItemDTO> findItemByUserNo(Long userNo);
+    List<CartResponseDTO.CartItemDTO> findItemsByUserNo(Long userNo);
 
     // 4.2 상품 추가
     Long findCartItemIdByUserAndProduct(@Param("userNo") Long userNo,
@@ -38,10 +38,8 @@ public interface CartMapper {
     int updateAllSelected(@Param("userNo") Long userNo,
                           @Param("selected") boolean selected);
 
-    // 4.5 개별 상품 삭제
-    int deleteItem(@Param("userNo") Long userNo,
-                   @Param("cartItemId") Long cartItemId);
+    // 4.5 상품 삭제
+    int deleteItems(@Param("userNo") Long userNo,
+                    @Param("cartItemId") List<Long> cartItemIds);
 
-    // 4.6 선택된 상품 일괄 삭제 'cartSelect = 1' 조건
-    int deleteSelectedItems(Long userNo);
 }

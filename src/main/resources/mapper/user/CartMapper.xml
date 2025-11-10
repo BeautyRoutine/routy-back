@@ -14,7 +14,7 @@
         <result property="selected"        column="CARTSELECT"/>
     </resultMap>
 
-    <select id="findItemByUserNo" parameterType="long" resultMap="CartItemDTOMap">
+    <select id="findItemsByUserNo" parameterType="long" resultMap="CartItemDTOMap">
         SELECT
             c.cartNo,
             c.prdNo,
@@ -84,12 +84,11 @@
 
     <delete id="deleteItem">
         DELETE FROM CART
-        WHERE USERNO = #{userNo} AND CARTNO = #{cartItemId}
-    </delete>
-
-    <delete id="deleteSelectedItems">
-        DELETE FROM CART
-        WHERE USERNO = #{userNo} AND CARTSELECT = 1
+        WHERE USERNO = #{userNo}
+          AND CARTNO IN
+        <foreach collection="cartItemIds" item="cartItemId" open="(" separator="," close=")">
+            #{cartItemId}
+        </foreach>
     </delete>
         
 </mapper>

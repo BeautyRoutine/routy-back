@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
@@ -66,28 +68,16 @@ public class CartController {
         return ResponseEntity.ok(ApiResponse.success(cartData));
     }
 
-    @DeleteMapping("/cart/items/{cartItemId}")
-    public ResponseEntity<ApiResponse<CartResponseDTO>> deleteCartItem(
-            @PathVariable Long cartItemId
+    @DeleteMapping("/cart/items")
+    public ResponseEntity<ApiResponse<CartResponseDTO>> deleteCartItems(
+            @RequestBody CartRequestDTO.DeleteItems requestDTO
     ){
         Long userNo = getCurrentUserNo();
-        CartResponseDTO cartData = cartService.deleteItem(userNo, cartItemId);
+        List<Long> cartItemIds = requestDTO.getCartItemIds();
+
+        CartResponseDTO cartData = cartService.deleteItems(userNo, cartItemIds);
+
         return ResponseEntity.ok(ApiResponse.success(cartData));
     }
 
-    @DeleteMapping("/cart/items")
-    public ResponseEntity<ApiResponse<CartResponseDTO>> deleteSelectedCartItems(
-            @RequestParam(name = "selected") boolean selected
-    ){
-        if(selected){
-            Long userNo = getCurrentUserNo();
-            CartResponseDTO cartData = cartService.deleteSelectedItem(userNo);
-            return ResponseEntity.ok(ApiResponse.success(cartData));
-        }
-
-        return ResponseEntity
-                .badRequest()
-                .body(ApiResponse.error(400, "BAD_REQUEST"));
-
-    }
 }

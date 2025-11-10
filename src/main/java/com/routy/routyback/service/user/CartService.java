@@ -17,7 +17,7 @@ public class CartService {
     @Transactional(readOnly = true)
     public CartResponseDTO getCartView(Long userNo) {
 
-        List<CartResponseDTO.CartItemDTO> items = cartMapper.findItemByUserNo(userNo);
+        List<CartResponseDTO.CartItemDTO> items = cartMapper.findItemsByUserNo(userNo);
 
         long totalProductAmount = 0;
         for(CartResponseDTO.CartItemDTO item : items){
@@ -58,7 +58,7 @@ public class CartService {
     public CartResponseDTO updateItem(Long userNo, long cartItemId, Integer quantity, Boolean selected){
         if(quantity != null){
             if(quantity <= 0){
-                cartMapper.deleteItem(userNo, cartItemId);
+                cartMapper.deleteItems(userNo, List.of(cartItemId));
             } else{
                 cartMapper.updateQuantity(userNo, cartItemId, quantity);
             }
@@ -74,24 +74,23 @@ public class CartService {
     @Transactional
     public CartResponseDTO updateAllItem(Long userNo, Boolean selected) {
 
+        if(selected == null){
+            throw new IllegalArgumentException("Selected 'true' or 'false' value is required.");
+        }
         cartMapper.updateAllSelected(userNo, selected);
 
         return getCartView(userNo);
     }
 
     @Transactional
-    public CartResponseDTO deleteItem(Long userNo, Long cartItemId){
+    public CartResponseDTO deleteItems(Long userNo, List<Long> cartItemIds){
 
-        cartMapper.deleteItem(userNo, cartItemId);
-
-        return getCartView(userNo);
-    }
-
-    @Transactional
-    public CartResponseDTO deleteSelectedItem(Long userNo){
-
-        cartMapper.deleteSelectedItems(userNo);
+        if(cartItemIds == null || cartItemIds.isEmpty()){
+            return getCartView(userNo);
+        }
+        cartMapper.deleteItems(userNo, cartItemIds);
 
         return getCartView(userNo);
     }
+
 }
