@@ -3,7 +3,7 @@
 
 <mapper namespace="com.routy.routyback.mapper.user.CartMapper">
     
-    <resultMap id="CartItemDTOMap"  type="com.routy.routyback.dto.CartViewResponseDTO">
+    <resultMap id="CartItemDTOMap"  type="com.routy.routyback.dto.CartResponseDTO$CartItemDTO">
         <id property="cartItemId"       column="CARTNO"/>
         <result property="productId"    column="PRDNO"/>
         <result property="name"         column="PRDNAME"/>
@@ -34,5 +34,62 @@
             c.cartDate DESC
 
     </select>
+
+    <select id="findCartItemIdByUserAndProduct" resultType="long">
+        SELECT CARTNO
+        FROM CART
+        WHERE USERNO = #{userNo} AND PRDNO = #{productId}
+    </select>
+
+    <insert id="insertItem">
+        INSERT INTO CART (CARTNO, USERNO, PRDNO, CARTSTOCK)
+        VALUES (
+                #{userNo},
+                #{productId},
+                #{quantity}
+               )
+    </insert>
+
+    <update id="addStock">
+        UPDATE CART
+        SET CARTSTOCK = CARTSTOCK + #{quantity}
+        WHERE CARTNO = #{cartNo}
+    </update>
+
+    <update id="updateQuantity">
+        UPDATE CART
+        SET CARTSTOCK = #{quantity}
+        WHERE USERNO = #{userNo} AND CARTNO = #{cartItemId}
+    </update>
+
+    <update id="updateSelected">
+        UPDATE CART
+        SET CARTSELECT =
+            <choose>
+                <when test="selected == true">1</when>
+                <otherwise>0</otherwise>
+            </choose>
+        WHERE USERNO = #{userNo} AND CARTNO = #{cartItemId}
+    </update>
+
+    <update id="updateAllSelected">
+        UPDATE CART
+        SET CARTSELECT =
+            <choose>
+                <when test="selected == true">1</when>
+                <otherwise>0</otherwise>
+            </choose>
+        WHERE USERNO = #{userNo}
+    </update>
+
+    <delete id="deleteItem">
+        DELETE FROM CART
+        WHERE USERNO = #{userNo} AND CARTNO = #{cartItemId}
+    </delete>
+
+    <delete id="deleteSelectedItems">
+        DELETE FROM CART
+        WHERE USERNO = #{userNo} AND CARTSELECT = 1
+    </delete>
         
 </mapper>

@@ -1,6 +1,6 @@
 package com.routy.routyback.mapper.user;
 
-import com.routy.routyback.dto.CartViewResponseDTO;
+import com.routy.routyback.dto.CartResponseDTO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -9,11 +9,11 @@ import java.util.List;
 @Mapper
 public interface CartMapper {
     // 4.1 장바구니 목록 조회
-    List<CartViewResponseDTO.CartItemDTO> findItemByUserNo(Long userNo);
+    List<CartResponseDTO.CartItemDTO> findItemByUserNo(Long userNo);
 
     // 4.2 상품 추가
     Long findCartItemIdByUserAndProduct(@Param("userNo") Long userNo,
-                                        @Param("ProductId") Long productId);
+                                        @Param("productId") Long productId);
 
     // 4.2 새 상품 Insert
     void insertItem(@Param("userNo") Long userNo,

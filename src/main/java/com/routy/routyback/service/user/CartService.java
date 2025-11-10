@@ -1,6 +1,6 @@
 package com.routy.routyback.service.user;
 
-import com.routy.routyback.dto.CartViewResponseDTO;
+import com.routy.routyback.dto.CartResponseDTO;
 import com.routy.routyback.mapper.user.CartMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,12 +15,12 @@ public class CartService {
     private final CartMapper cartMapper;
 
     @Transactional(readOnly = true)
-    public CartViewResponseDTO getCartView(Long userNo) {
+    public CartResponseDTO getCartView(Long userNo) {
 
-        List<CartViewResponseDTO.CartItemDTO> items = cartMapper.findItemByUserNo(userNo);
+        List<CartResponseDTO.CartItemDTO> items = cartMapper.findItemByUserNo(userNo);
 
         long totalProductAmount = 0;
-        for(CartViewResponseDTO.CartItemDTO item : items){
+        for(CartResponseDTO.CartItemDTO item : items){
             if(item.isSelected()){
                 totalProductAmount += (long) item.getPrice() * item.getQuantity();
             }
@@ -29,20 +29,20 @@ public class CartService {
         int deliveryFee = (totalProductAmount >= 30000 || items.isEmpty()) ? 0 : 3000;
         long finalPaymentAmount = totalProductAmount + deliveryFee;
 
-        CartViewResponseDTO.SummaryDTO summary = CartViewResponseDTO.SummaryDTO.builder()
+        CartResponseDTO.SummaryDTO summary = CartResponseDTO.SummaryDTO.builder()
                 .totalProductAmount(totalProductAmount)
                 .deliveryFee(deliveryFee)
                 .finalPaymentAmount(finalPaymentAmount)
                 .build();
 
-        return CartViewResponseDTO.builder()
+        return CartResponseDTO.builder()
                 .summary(summary)
                 .items(items)
                 .build();
     }
 
     @Transactional
-    public CartViewResponseDTO addItem(Long userNo, Long productId, int quantity) {
+    public CartResponseDTO addItem(Long userNo, Long productId, int quantity) {
         Long existingCartItemId = cartMapper.findCartItemIdByUserAndProduct(userNo, productId);
 
         if(existingCartItemId != null){
@@ -55,7 +55,7 @@ public class CartService {
     }
 
     @Transactional
-    public CartViewResponseDTO updateItem(Long userNo, long cartItemId, Integer quantity, Boolean selected){
+    public CartResponseDTO updateItem(Long userNo, long cartItemId, Integer quantity, Boolean selected){
         if(quantity != null){
             if(quantity <= 0){
                 cartMapper.deleteItem(userNo, cartItemId);
@@ -72,7 +72,7 @@ public class CartService {
     }
 
     @Transactional
-    public CartViewResponseDTO updateAllItem(Long userNo, boolean selected) {
+    public CartResponseDTO updateAllItem(Long userNo, Boolean selected) {
 
         cartMapper.updateAllSelected(userNo, selected);
 
@@ -80,7 +80,7 @@ public class CartService {
     }
 
     @Transactional
-    public CartViewResponseDTO deleteItem(Long userNo, Long cartItemId){
+    public CartResponseDTO deleteItem(Long userNo, Long cartItemId){
 
         cartMapper.deleteItem(userNo, cartItemId);
 
@@ -88,7 +88,7 @@ public class CartService {
     }
 
     @Transactional
-    public CartViewResponseDTO deleteSelectedItem(Long userNo){
+    public CartResponseDTO deleteSelectedItem(Long userNo){
 
         cartMapper.deleteSelectedItems(userNo);
 

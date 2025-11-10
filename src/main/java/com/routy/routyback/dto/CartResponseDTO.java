@@ -6,7 +6,7 @@ import java.util.List;
 
 @Getter
 @Builder
-public class CartViewResponseDTO {
+public class CartResponseDTO {
 
     private SummaryDTO summary;
     private List<CartItemDTO> items;
