@@ -21,24 +21,33 @@
 
 	<!-- 전체 조회 -->
 	<select id="getAllIngredients" resultMap="ingredientResult">
-		SELECT * FROM INGREDIENT ORDER BY INGNO DESC
+		SELECT INGNO, INGNAME,
+		INGENNAME, INGDESC, INGALLERGEN,
+		INGDANGER, INGFUNCTIONAL, INGGRPNO, INGREGDATE FROM INGREDIENT ORDER BY INGNO
+		DESC
 	</select>
 
 	<!-- 단일 조회 -->
 	<select id="getIngredientByNo" parameterType="int"
 		resultMap="ingredientResult">
-		SELECT * FROM INGREDIENT WHERE INGNO = #{ingNo}
+		SELECT INGNO, INGNAME, INGENNAME, INGDESC, INGALLERGEN,
+		INGDANGER, INGFUNCTIONAL, INGGRPNO, INGREGDATE FROM INGREDIENT WHERE
+		INGNO = #{ingNo}
 	</select>
 
 	<!-- 등록 -->
 	<insert id="insertIngredient"
 		parameterType="com.routy.routyback.dto.admin.IngredientDTO">
 		INSERT INTO INGREDIENT (
-		INGNO, INGNAME, INGENNAME, INGDESC, INGALLERGEN, INGDANGER, INGFUNCTIONAL,
+		INGNO, INGNAME, INGENNAME,
+		INGDESC, INGALLERGEN, INGDANGER, INGFUNCTIONAL,
 		INGGRPNO, INGREGDATE
-		) VALUES (
-		ROUTY_TEAM."ISEQ$$_119836".nextval, #{ingName}, #{ingEnName}, #{ingDesc},
-		#{ingAllergen}, #{ingDanger}, #{ingFunctional}, #{ingGrpNo}, SYSDATE
+		)
+		VALUES (
+		ROUTY_TEAM."ISEQ$$_119836".nextval, #{ingName}, #{ingEnName},
+		#{ingDesc},
+		#{ingAllergen}, #{ingDanger}, #{ingFunctional},
+		#{ingGrpNo}, SYSDATE
 		)
 	</insert>
 
@@ -47,18 +56,21 @@
 		parameterType="com.routy.routyback.dto.admin.IngredientDTO">
 		UPDATE INGREDIENT
 		SET INGNAME = #{ingName},
-		INGENNAME = #{ingEnName},
+		INGENNAME =
+		#{ingEnName},
 		INGDESC = #{ingDesc},
 		INGALLERGEN = #{ingAllergen},
 		INGDANGER = #{ingDanger},
 		INGFUNCTIONAL = #{ingFunctional},
-		INGGRPNO = #{ingGrpNo}
+		INGGRPNO =
+		#{ingGrpNo}
 		WHERE INGNO = #{ingNo}
 	</update>
 
 	<!-- 삭제 -->
 	<delete id="deleteIngredient" parameterType="int">
-		DELETE FROM INGREDIENT WHERE INGNO = #{ingNo}
+		DELETE FROM
+		INGREDIENT WHERE INGNO = #{ingNo}
 	</delete>
 
 </mapper>

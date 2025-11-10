@@ -1,11 +1,19 @@
 package com.routy.routyback.service.admin;
 
+import java.util.ArrayList;
+
 import com.routy.routyback.dto.IngredientDTO;
 
+
 public interface IIngredientService {
-	void insertIngredient(IngredientDTO vo);
+	
+	ArrayList<IngredientDTO> getAllIngredients();
+	
+	IngredientDTO getIngredientByNo(int ingNo);
+	
+	void insertIngredient(IngredientDTO ingredient);
 
-	void updateIngredient(IngredientDTO vo);
+	void updateIngredient(IngredientDTO ingredient);
 
-	void deleteIngredient(int id);
+	void deleteIngredient(int ingNo);
 }
