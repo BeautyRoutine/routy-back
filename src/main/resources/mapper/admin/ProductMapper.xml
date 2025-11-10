@@ -90,12 +90,7 @@
 		WHERE PRDNO = #{prdNo}
 	</update>
 
-	<!-- 상태 업데이트 -->
-	<update id="productUpdateStatus">
-		UPDATE PRODUCT
-		SET PRDSTATUS = #{status}
-		WHERE PRDNO = #{prdNo}
-	</update>
+	
 
 </mapper>
 
