@@ -11,8 +11,6 @@ public interface CartMapper {
     // 장바구니 목록 조회
     List<CartResponseDTO.CartItemDTO> findItemsByUserNo(Long userNo);
 
-    Long findCartItemIdByUserAndProduct(@Param("userNo") Long userNo,
-                                        @Param("productId") Long productId);
 
     // 새 항목 추가 (MERGE문에서 사용)
     void insertNewItem(@Param("userNo") Long userNo,
