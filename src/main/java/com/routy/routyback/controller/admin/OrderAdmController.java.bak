@@ -1,5 +1,6 @@
 package com.routy.routyback.controller.admin;
 
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +18,7 @@ public class OrderAdmController {
 	OrderAdmService service;
 	
 	@GetMapping("/orders/list")
-	public Map<String, Object> listAllOrders(@RequestParam Map<String, Object> params) {
+	public List<Map<String, Object>> listAllOrders(@RequestParam Map<String, Object> params) {
 		return service.listAllOrders(params);
 	}
 }

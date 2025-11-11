@@ -31,7 +31,7 @@ public class OrderAdmService implements IOrderAdmService {
 
 
 	@Override
-	public List<Map<String, Object>> listAllOrders(Map<String, Object> params) {
+	public Map<String, Object> listAllOrders(Map<String, Object> params) {
 		// param 재가공
 		int page = 1;
 		if(params.containsKey("page")) {
@@ -57,11 +57,9 @@ public class OrderAdmService implements IOrderAdmService {
 		int offset = (page - 1) * pageGap;
 		params.put("offset", String.valueOf(offset));
 		params.put("limit", String.valueOf(pageGap));
-		
-		List<Map<String, Object>> resultList = dao.listAllOrders(params);
+        int total = dao.listAllOrdersCount(params);
 
-
-
+        List<Map<String, Object>> resultList = dao.listAllOrders(params);
         for (Map<String, Object> row : resultList) {
             for (String field : DATE_FIELDS) {
                 Object value = row.get(field);
@@ -70,8 +68,12 @@ public class OrderAdmService implements IOrderAdmService {
                 }
             }
         }
-		
-		return resultList;
+
+        Map<String, Object> result = new java.util.HashMap<>();
+        result.put("total", total);
+        result.put("list", resultList);
+
+		return result;
 	}
 
 }
