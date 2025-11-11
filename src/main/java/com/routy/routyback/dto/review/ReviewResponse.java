@@ -8,9 +8,10 @@ import lombok.Setter;
 public class ReviewResponse {
     private int revNo;
     private String userName;
-    private String revRank;
+    private int revRank;
     private int revStar;
-    private String revText;
+    private String revGood;
+    private String revBad;
     private String revImg;
     private String revDate;
     private int likeCount;

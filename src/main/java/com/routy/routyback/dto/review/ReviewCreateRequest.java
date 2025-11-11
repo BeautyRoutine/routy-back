@@ -9,6 +9,7 @@ public class ReviewCreateRequest {
     private int userNo;
     private int prdNo;
     private int revStar;
-    private String revText;
+    private String revGood;
+    private String revBad;
     private String revImg;
 }

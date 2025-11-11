@@ -34,7 +34,7 @@ public class ReviewController {
 	
 	//조회
 	@GetMapping("/products/{prdNo}/reviews")
-	public ResponseEntity<ReviewListResponse> getReviewsByProduct( //ReviewListResponse를 반환
+	public ResponseEntity<ReviewListResponse> getReviews( //ReviewListResponse를 반환
 			@PathVariable int prdNo,  //URL 경로 값을 가져옴, 필수, prdNo 받아옴
 			@RequestParam(defaultValue="1") int page, //기본값 쿼리 파라미터 설정, ?page=1 등
 			@RequestParam(defaultValue="10") int limit, //

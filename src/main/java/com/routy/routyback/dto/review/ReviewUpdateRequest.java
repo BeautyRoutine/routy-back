@@ -7,7 +7,8 @@ import lombok.Setter;
 @Setter
 public class ReviewUpdateRequest {
 	private int revStar;
-	private String revText;
+	private String revGood;
+	private String revBad;
 	private String revImg;
 	
 }

@@ -5,6 +5,8 @@ import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 
+@Getter
+@Setter
 public class ReviewListResponse {
 	  private SummaryDto summary; //평균 별점, 리뷰수
 	    private List<ReviewResponse> reviews;  //리뷰 내역
