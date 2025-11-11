@@ -29,7 +29,7 @@ public class CartService {
                 totalProductAmount += (long) item.getPrice() * item.getQuantity();
             }
         }
-        // 배송비 및 최종 결제금액 계산
+        // 배송비 및 최종 결제 금액 계산
         int deliveryFee = (totalProductAmount >= 30000 || items.isEmpty()) ? 0 : 3000;
         long finalPaymentAmount = totalProductAmount + deliveryFee;
 
