@@ -4,6 +4,11 @@ import java.util.Date;
 import org.springframework.format.annotation.DateTimeFormat;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+
+@Data
 public class ProductDTO {
 
     private int prdNo;
@@ -121,4 +126,7 @@ public class ProductDTO {
     public void setPrdRegdate(Date prdRegdate) {
         this.prdRegdate = prdRegdate;
     }
+    private Date prdRegDate;
+
+    
 }
