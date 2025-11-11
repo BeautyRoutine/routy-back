@@ -54,62 +54,78 @@
         <version>21.9.0.0</version>
     </dependency>
 
-    <!-- logback-core 버전 강제 재정의 -->
+		<!-- logback-core 버전 강제 재정의 -->
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-core</artifactId>
       <version>1.5.19</version>
     </dependency>
 
-    <!-- Spring Web (REST API 서버용) -->
+		<!-- Spring Web (REST API 서버용) -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-web</artifactId>
     </dependency>
 
-    <!-- JPA 제거 -->
-    <!--
+		<!-- JPA 제거 -->
+		<!--
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-data-jpa</artifactId>
     </dependency>
     -->
 
-    <!-- MyBatis 추가 -->
+		<!-- MyBatis 추가 -->
     <dependency>
       <groupId>org.mybatis.spring.boot</groupId>
       <artifactId>mybatis-spring-boot-starter</artifactId>
       <version>3.0.3</version>
     </dependency>
 
-    <!-- Validation -->
+		<!-- Validation -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-validation</artifactId>
     </dependency>
 
-    <!-- Oracle JDBC 드라이버 -->
+		<!-- Oracle JDBC 드라이버 -->
     <dependency>
       <groupId>com.oracle.database.jdbc</groupId>
       <artifactId>ojdbc11</artifactId>
       <scope>runtime</scope>
     </dependency>
+	
+	<dependency>
+    <groupId>com.oracle.database.security</groupId>
+    <artifactId>oraclepki</artifactId>
+    <version>21.12.0.0</version> <!-- 최신 버전으로 변경하세요 -->
+</dependency>
+<dependency>
+    <groupId>com.oracle.database.security</groupId>
+    <artifactId>osdt_core</artifactId>
+    <version>21.12.0.0</version> <!-- 최신 버전으로 변경하세요 -->
+</dependency>
+<dependency>
+    <groupId>com.oracle.database.security</groupId>
+    <artifactId>osdt_cert</artifactId>
+    <version>21.12.0.0</version> <!-- 최신 버전으로 변경하세요 -->
+</dependency>
 
-    <!-- Lombok -->
+		<!-- Lombok -->
     <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
       <scope>provided</scope>
     </dependency>
 
-    <!-- DevTools -->
+		<!-- DevTools -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-devtools</artifactId>
       <scope>runtime</scope>
     </dependency>
 
-    <!-- Test -->
+		<!-- Test -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
