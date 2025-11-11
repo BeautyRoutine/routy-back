@@ -15,43 +15,42 @@ import com.routy.routyback.dto.IngredientDTO;
 import com.routy.routyback.service.admin.IIngredientService;
 
 @RestController
-@RequestMapping("/api/products/{prdNo}/ingredients") //매핑 어디로 할까요???
+@RequestMapping("/api/products/{prdNo}/ingredients")
 public class IngredientController {
 
-    @Autowired
-    private IIngredientService ingredientService;
+	@Autowired
+	private IIngredientService ingredientService;
 
-    // 전체 조회
-    @GetMapping
-    public ResponseEntity<?> getAllIngredients() {
-        return ResponseEntity.ok(ingredientService.getAllIngredients());
-    }
+	// 전체 조회
+	@GetMapping
+	public ResponseEntity<?> getAllIngredients() {
+		return ResponseEntity.ok(ingredientService.getAllIngredients());
+	}
 
-    // 단일 조회
-    @GetMapping("/{ingNo}")
-    public ResponseEntity<?> getIngredientByNo(@PathVariable int ingNo) {
-        return ResponseEntity.ok(ingredientService.getIngredientByNo(ingNo));
-    }
+	// 단일 조회
+	@GetMapping("/{ingNo}")
+	public ResponseEntity<?> getIngredientByNo(@PathVariable int ingNo) {
+		return ResponseEntity.ok(ingredientService.getIngredientByNo(ingNo));
+	}
 
-    // 등록
-    @PostMapping
-    public ResponseEntity<?> insertIngredient(@RequestBody IngredientDTO ingredient) {
-        ingredientService.insertIngredient(ingredient);
-        return ResponseEntity.ok("성분 등록 완료");
-    }
+	// 등록
+	@PostMapping
+	public ResponseEntity<?> insertIngredient(@RequestBody IngredientDTO ingredient) {
+		ingredientService.insertIngredient(ingredient);
+		return ResponseEntity.ok("성분 등록 완료");
+	}
 
-    // 수정
-    @PutMapping
-    public ResponseEntity<?> updateIngredient(@RequestBody IngredientDTO ingredient) {
-        ingredientService.updateIngredient(ingredient);
-        return ResponseEntity.ok("성분 수정 완료");
-    }
+	// 수정
+	@PutMapping
+	public ResponseEntity<?> updateIngredient(@RequestBody IngredientDTO ingredient) {
+		ingredientService.updateIngredient(ingredient);
+		return ResponseEntity.ok("성분 수정 완료");
+	}
 
-    // 삭제
-    @DeleteMapping("/{ingNo}")
-    public ResponseEntity<?> deleteIngredient(@PathVariable int ingNo) {
-        ingredientService.deleteIngredient(ingNo);
-        return ResponseEntity.ok("성분 삭제 완료");
-    }
+	// 삭제
+	@DeleteMapping("/{ingNo}")
+	public ResponseEntity<?> deleteIngredient(@PathVariable int ingNo) {
+		ingredientService.deleteIngredient(ingNo);
+		return ResponseEntity.ok("성분 삭제 완료");
+	}
 }
-
