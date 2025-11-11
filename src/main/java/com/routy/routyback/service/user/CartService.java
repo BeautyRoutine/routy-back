@@ -60,9 +60,15 @@ public class CartService {
     @Transactional
     public CartResponseDTO updateItem(Long userNo, long cartItemId, Integer quantity, Boolean selected){
         if(quantity != null){
-            if(quantity <= 0){
+            // 검증 로직
+            if (quantity < 0){
+                throw new IllegalArgumentException("잘못된 요청입니다.");
+            }
+            // 수량이 0이 되면 해당 상품 삭제
+            if(quantity == 0){
                 cartMapper.deleteItems(userNo, List.of(cartItemId));
             } else{
+                // 수량 변경
                 cartMapper.updateQuantity(userNo, cartItemId, quantity);
             }
         }
