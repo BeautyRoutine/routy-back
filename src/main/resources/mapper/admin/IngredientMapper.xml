@@ -22,7 +22,7 @@
   <select id="getAllIngredients" resultMap="ingredientResult">
     SELECT INGNO, INGNAME, INGENNAME, INGDESC, INGALLERGEN,
            INGDANGER, INGFUNCTIONAL, INGGRPNO, INGREGDATE
-    FROM INGREDIENT
+    FROM INGREDIENTS
     ORDER BY INGNO DESC
   </select>
 
@@ -30,13 +30,13 @@
   <select id="getIngredientByNo" parameterType="int" resultMap="ingredientResult">
     SELECT INGNO, INGNAME, INGENNAME, INGDESC, INGALLERGEN,
            INGDANGER, INGFUNCTIONAL, INGGRPNO, INGREGDATE
-    FROM INGREDIENT
+    FROM INGREDIENTS
     WHERE INGNO = #{ingNo}
   </select>
 
   <!-- 등록 -->
   <insert id="insertIngredient" parameterType="com.routy.routyback.dto.IngredientDTO">
-    INSERT INTO INGREDIENT (
+    INSERT INTO INGREDIENTS (
       INGNO, INGNAME, INGENNAME, INGDESC, INGALLERGEN, INGDANGER,
       INGFUNCTIONAL, INGGRPNO, INGREGDATE
     )
@@ -50,7 +50,7 @@
 
   <!-- 수정 -->
   <update id="updateIngredient" parameterType="com.routy.routyback.dto.IngredientDTO">
-    UPDATE INGREDIENT
+    UPDATE INGREDIENTS
     SET INGNAME = #{ingName},
         INGENNAME = #{ingEnName},
         INGDESC = #{ingDesc},
@@ -63,7 +63,7 @@
 
   <!-- 삭제 -->
   <delete id="deleteIngredient" parameterType="int">
-    DELETE FROM INGREDIENT WHERE INGNO = #{ingNo}
+    DELETE FROM INGREDIENTS WHERE INGNO = #{ingNo}
   </delete>
 
 </mapper>

@@ -15,7 +15,7 @@ import com.routy.routyback.dto.IngredientDTO;
 import com.routy.routyback.service.admin.IIngredientService;
 
 @RestController
-@RequestMapping("/api/products/ingredients") //매핑 어디로 할까요???
+@RequestMapping("/api/products/{prdNo}/ingredients") //매핑 어디로 할까요???
 public class IngredientController {
 
     @Autowired
