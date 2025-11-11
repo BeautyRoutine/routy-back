@@ -12,23 +12,28 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CartService {
 
+    // Mapper 주입
     private final CartMapper cartMapper;
 
+    // 장바구니 조회 (목록과 금액요약 포함)
     @Transactional(readOnly = true)
     public CartResponseDTO getCartView(Long userNo) {
 
+        // DB에서 데이터 조회
         List<CartResponseDTO.CartItemDTO> items = cartMapper.findItemsByUserNo(userNo);
 
+        // 비즈니스 로직 처리 - 금액 요약 계산
         long totalProductAmount = 0;
         for(CartResponseDTO.CartItemDTO item : items){
             if(item.isSelected()){
                 totalProductAmount += (long) item.getPrice() * item.getQuantity();
             }
         }
-
+        // 배송비 및 최종 결제금액 계산
         int deliveryFee = (totalProductAmount >= 30000 || items.isEmpty()) ? 0 : 3000;
         long finalPaymentAmount = totalProductAmount + deliveryFee;
 
+        // 요약 정보 생성
         CartResponseDTO.SummaryDTO summary = CartResponseDTO.SummaryDTO.builder()
                 .totalProductAmount(totalProductAmount)
                 .deliveryFee(deliveryFee)
@@ -41,19 +46,17 @@ public class CartService {
                 .build();
     }
 
+    // SkinAlertDTO 처리 (null 체크)
+
+    // 장바구니 상품 추가 - MERGE문 사용
     @Transactional
     public CartResponseDTO addItem(Long userNo, Long productId, int quantity) {
-        Long existingCartItemId = cartMapper.findCartItemIdByUserAndProduct(userNo, productId);
-
-        if(existingCartItemId != null){
-            cartMapper.addStock(existingCartItemId, quantity);
-        } else{
-            cartMapper.insertItem(userNo, productId, quantity);
-        }
-
+        // MERGE 쿼리 호출
+        cartMapper.insertNewItem(userNo, productId, quantity);
         return getCartView(userNo);
     }
 
+    // 상품 속성 변경 (수량/선택여부)
     @Transactional
     public CartResponseDTO updateItem(Long userNo, long cartItemId, Integer quantity, Boolean selected){
         if(quantity != null){
@@ -71,9 +74,10 @@ public class CartService {
             return getCartView(userNo);
     }
 
+    // 상품 일괄 선택/해제
     @Transactional
     public CartResponseDTO updateAllItem(Long userNo, Boolean selected) {
-
+        // selected 값이 null인 경우 예외 처리
         if(selected == null){
             throw new IllegalArgumentException("Selected 'true' or 'false' value is required.");
         }
@@ -82,9 +86,10 @@ public class CartService {
         return getCartView(userNo);
     }
 
+    // 상품 삭제
     @Transactional
     public CartResponseDTO deleteItems(Long userNo, List<Long> cartItemIds){
-
+        // cartItemIds가 null이거나 비어있는 경우 예외 처리
         if(cartItemIds == null || cartItemIds.isEmpty()){
             return getCartView(userNo);
         }

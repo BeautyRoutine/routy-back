@@ -3,7 +3,7 @@
 
 <mapper namespace="com.routy.routyback.mapper.user.CartMapper">
     
-    <resultMap id="CartItemDTOMap"  type="com.routy.routyback.dto.CartResponseDTO$CartItemDTO">
+    <resultMap id="CartItemDTOMap"  type="com.routy.routyback.dto.CartResponseDTO$CartItemDTO" autoMapping="true">
         <id property="cartItemId"       column="CARTNO"/>
         <result property="productId"    column="PRDNO"/>
         <result property="name"         column="PRDNAME"/>
@@ -19,10 +19,10 @@
             c.cartNo,
             c.prdNo,
             p.prdName,
-            p.prdPrice,
             p.prdCompany,
-            p.prdImg,
+            p.prdPrice,
             c.cartStock,
+            p.prdImg,
             c.cartSelect
         FROM
             CART c
@@ -35,26 +35,23 @@
 
     </select>
 
-    <select id="findCartItemIdByUserAndProduct" resultType="long">
-        SELECT CARTNO
-        FROM CART
-        WHERE USERNO = #{userNo} AND PRDNO = #{productId}
-    </select>
-
-    <insert id="insertItem">
-        INSERT INTO CART (CARTNO, USERNO, PRDNO, CARTSTOCK)
-        VALUES (
-                #{userNo},
-                #{productId},
-                #{quantity}
-               )
+    <!-- 새 항목 추가 또는 수량 증가 (MERGE) -->
+    <insert id="insertNewItem">
+        MERGE INTO CART c
+            USING (
+                SELECT
+                    #{userNo} AS USERNO,
+                    #{productId} AS PRDNO,
+                    #{quantity} AS CARTSTOCK
+                FROM DUAL
+            ) src
+            ON (c.USERNO = src.USERNO AND c.PRDNO = src.PRDNO)
+            WHEN MATCHED THEN
+                UPDATE SET c.CARTSTOCK = c.CARTSTOCK + src.CARTSTOCK
+            WHEN NOT MATCHED THEN
+                INSERT (CARTNO, USERNO, PRDNO, CARTSTOCK, CARTSELECT, CARTDATE)
+                    VALUES (CART_SEQ.NEXTVAL, src.USERNO, src.PRDNO, src.CARTSTOCK, 1, SYSDATE)
     </insert>
-
-    <update id="addStock">
-        UPDATE CART
-        SET CARTSTOCK = CARTSTOCK + #{quantity}
-        WHERE CARTNO = #{cartNo}
-    </update>
 
     <update id="updateQuantity">
         UPDATE CART
@@ -65,30 +62,30 @@
     <update id="updateSelected">
         UPDATE CART
         SET CARTSELECT =
-            <choose>
-                <when test="selected == true">1</when>
-                <otherwise>0</otherwise>
-            </choose>
+        <choose>
+            <when test="selected == true">1</when>
+            <otherwise>0</otherwise>
+        </choose>
         WHERE USERNO = #{userNo} AND CARTNO = #{cartItemId}
     </update>
 
     <update id="updateAllSelected">
         UPDATE CART
         SET CARTSELECT =
-            <choose>
-                <when test="selected == true">1</when>
-                <otherwise>0</otherwise>
-            </choose>
+        <choose>
+            <when test="selected == true">1</when>
+            <otherwise>0</otherwise>
+        </choose>
         WHERE USERNO = #{userNo}
     </update>
 
-    <delete id="deleteItem">
+    <delete id="deleteItems">
         DELETE FROM CART
         WHERE USERNO = #{userNo}
-          AND CARTNO IN
+        AND CARTNO IN
         <foreach collection="cartItemIds" item="cartItemId" open="(" separator="," close=")">
             #{cartItemId}
         </foreach>
     </delete>
-        
+
 </mapper>
