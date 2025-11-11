@@ -4,7 +4,8 @@ import lombok.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-@Getter @Setter
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -22,7 +23,7 @@ public class MemberDTO {
     private String userHp;
 
     // 인증/식별
-    private Integer userAuth;   //오류나면 말해주세여 !
+    private String userAuth;   // 오류나면 말해주세여 ! -> VARCHAR2 사용으로 인한 String 변환
     private String userCi;
 
     // 주소

@@ -6,7 +6,8 @@
 
   <!-- 공용 컬럼 별칭: DB 컬럼 -> DTO 필드 오류뜨면 수정할게요 !  -->
   <sql id="memberColumns">
-    USERNO         AS userNo,
+    USERNO
+    AS userNo,
     USERID         AS userId,
     USEREMAIL      AS userEmail,
     USERNICK       AS userNick,
@@ -19,7 +20,7 @@
     USERJIBUNADDR  AS userJibunAddr,
     USERROADADDR   AS userRoadAddr,
     USERDETAILADDR AS userDetailAddr,
-    USERBCODE      AS userBcode,
+    USERBCCODE      AS userBcCode,
     USERSKIN       AS userSkin,
     USERCOLOR      AS userColor,
     USERLEVEL      AS userLevel,
@@ -31,21 +32,18 @@
 
   <!-- 회원가입: PK(USERNO)와 날짜 2개는 DB 기본값(CURRENT_TIMESTAMP/시퀀스) 사용 변경되면 수정할게요 -->
   <insert id="insertMember" parameterType="com.routy.routyback.dto.MemberDTO">
-    INSERT INTO USERS (
-      USERID, USEREMAIL, USERNICK, USERPW, USERNAME, USERHP,
-      USERAUTH, USERCI, USERZIP, USERJIBUNADDR, USERROADADDR, USERDETAILADDR,
-      USERBCODE, USERSKIN, USERCOLOR, USERLEVEL, USERSTATUS, USERBIRTH
-    ) VALUES (
-      #{userId}, #{userEmail}, #{userNick}, #{userPw}, #{userName}, #{userHp},
-      #{userAuth}, #{userCi}, #{userZip}, #{userJibunAddr}, #{userRoadAddr}, #{userDetailAddr},
-      #{userBcode}, #{userSkin}, #{userColor}, #{userLevel}, #{userStatus}, #{userBirth}
-    )
+    INSERT INTO USERS (USERID, USEREMAIL, USERNICK, USERPW, USERNAME, USERHP,
+                       USERAUTH, USERCI, USERZIP, USERJIBUNADDR, USERROADADDR, USERDETAILADDR,
+                       USERBCCODE, USERSKIN, USERCOLOR, USERLEVEL, USERSTATUS, USERBIRTH)
+    VALUES (#{userId}, #{userEmail}, #{userNick}, #{userPw}, #{userName}, #{userHp},
+            #{userAuth}, #{userCi}, #{userZip}, #{userJibunAddr}, #{userRoadAddr}, #{userDetailAddr},
+            #{userBcCode}, #{userSkin}, #{userColor}, #{userLevel}, #{userStatus}, #{userBirth})
   </insert>
 
   <!-- 이메일로 단건 -->
   <select id="findByEmail" resultType="com.routy.routyback.dto.MemberDTO">
     SELECT
-      <include refid="memberColumns"/>
+    <include refid="memberColumns"/>
     FROM USERS
     WHERE USEREMAIL = #{email}
   </select>
@@ -53,7 +51,7 @@
   <!-- PK로 단건 -->
   <select id="findById" resultType="com.routy.routyback.dto.MemberDTO">
     SELECT
-      <include refid="memberColumns"/>
+    <include refid="memberColumns"/>
     FROM USERS
     WHERE USERNO = #{id}
   </select>
@@ -61,15 +59,15 @@
   <!-- 목록 + 검색 + 페이지네이션 (Oracle 12c+: OFFSET/FETCH) -->
   <select id="findAll" resultType="com.routy.routyback.dto.MemberDTO">
     SELECT
-      <include refid="memberColumns"/>
+    <include refid="memberColumns"/>
     FROM USERS
     <where>
       <if test="type != null and type != '' and keyword != null and keyword != ''">
         <choose>
-          <when test="type == 'id'">       USERID    LIKE '%' || #{keyword} || '%'</when>
-          <when test="type == 'email'">    USEREMAIL LIKE '%' || #{keyword} || '%'</when>
-          <when test="type == 'nick'">     USERNICK  LIKE '%' || #{keyword} || '%'</when>
-          <otherwise>                      USERNAME  LIKE '%' || #{keyword} || '%'</otherwise>
+          <when test="type == 'id'">USERID LIKE '%' || #{keyword} || '%'</when>
+          <when test="type == 'email'">USEREMAIL LIKE '%' || #{keyword} || '%'</when>
+          <when test="type == 'nick'">USERNICK LIKE '%' || #{keyword} || '%'</when>
+          <otherwise>USERNAME LIKE '%' || #{keyword} || '%'</otherwise>
         </choose>
       </if>
     </where>
@@ -84,10 +82,10 @@
     <where>
       <if test="type != null and type != '' and keyword != null and keyword != ''">
         <choose>
-          <when test="type == 'id'">       USERID    LIKE '%' || #{keyword} || '%'</when>
-          <when test="type == 'email'">    USEREMAIL LIKE '%' || #{keyword} || '%'</when>
-          <when test="type == 'nick'">     USERNICK  LIKE '%' || #{keyword} || '%'</when>
-          <otherwise>                      USERNAME  LIKE '%' || #{keyword} || '%'</otherwise>
+          <when test="type == 'id'">USERID LIKE '%' || #{keyword} || '%'</when>
+          <when test="type == 'email'">USEREMAIL LIKE '%' || #{keyword} || '%'</when>
+          <when test="type == 'nick'">USERNICK LIKE '%' || #{keyword} || '%'</when>
+          <otherwise>USERNAME LIKE '%' || #{keyword} || '%'</otherwise>
         </choose>
       </if>
     </where>
