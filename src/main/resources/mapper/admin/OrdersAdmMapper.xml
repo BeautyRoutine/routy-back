@@ -32,4 +32,10 @@
     SELECT COUNT(1)
     <include refid="listAllOrdersFilter"/>
     </select>
+    
+    <select id="detailOrder">
+    SELECT *
+    FROM ORDERS o LEFT JOIN USERS u ON u.userNo=o.userNo
+    WHERE odNo = #{odNo}
+    </select>
 </mapper>
