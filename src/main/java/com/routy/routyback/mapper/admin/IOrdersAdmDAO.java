@@ -4,6 +4,6 @@ import java.util.List;
 import java.util.Map;
 
 public interface IOrdersAdmDAO {
-	List<Map<String, Object>> listAllOrders(); // 전체 주문 조회
-
+    int listAllOrdersCount(Map<String, Object> params); // 전체 주문 조회 레코드수
+    List<Map<String, Object>> listAllOrders(Map<String, Object> params); // 전체 주문 조회
 }
