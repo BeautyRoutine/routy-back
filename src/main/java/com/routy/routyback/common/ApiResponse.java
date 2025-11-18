@@ -37,4 +37,15 @@ public class ApiResponse<T> {
                 .data(null)
                 .build();
     }
+    
+    // 예외처리
+    public static ApiResponse fromException(Exception e) {
+    	if (e instanceof IllegalArgumentException) {
+            return error(400, "BAD_REQUEST: " + e.getMessage());
+        } else if (e instanceof SecurityException) {
+            return error(401, "UNAUTHORIZED: " + e.getMessage());
+        } else {
+            return error(500, "INTERNAL_SERVER_ERROR: " + e.getMessage());
+        }
+    }
 }
