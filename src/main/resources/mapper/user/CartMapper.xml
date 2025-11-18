@@ -1,91 +1,65 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.routy.routyback.mapper.user.CartMapper">
-    
-    <resultMap id="CartItemDTOMap"  type="com.routy.routyback.dto.CartResponseDTO$CartItemDTO" autoMapping="true">
-        <id property="cartItemId"       column="CARTNO"/>
-        <result property="productId"    column="PRDNO"/>
-        <result property="name"         column="PRDNAME"/>
-        <result property="brand"        column="PRDCOMPANY"/>
-        <result property="price"        column="PRDPRICE"/>
-        <result property="quantity"        column="CARTSTOCK"/>
-        <result property="imageUrl"        column="PRDIMG"/>
-        <result property="selected"        column="CARTSELECT"/>
-    </resultMap>
 
-    <select id="findItemsByUserNo" parameterType="long" resultMap="CartItemDTOMap">
-        SELECT
-            c.cartNo,
-            c.prdNo,
-            p.prdName,
-            p.prdCompany,
-            p.prdPrice,
-            c.cartStock,
-            p.prdImg,
-            c.cartSelect
-        FROM
-            CART c
-        JOIN
-            PRODUCT p ON c.prdNo = p.prdNo
-        WHERE
-            c.userNo = #{userNo}
-        ORDER BY
-            c.cartDate DESC
+  <resultMap id="CartItemDTOMap" type="com.routy.routyback.dto.CartResponseDTO$CartItemDTO"
+    autoMapping="true">
+    <id property="cartItemId" column="CARTNO"/>
+    <result property="productId" column="PRDNO"/>
+    <result property="name" column="PRDNAME"/>
+    <result property="brand" column="PRDCOMPANY"/>
+    <result property="price" column="PRDPRICE"/>
+    <result property="quantity" column="CARTSTOCK"/>
+    <result property="imageUrl" column="PRDIMG"/>
+  </resultMap>
 
-    </select>
+  <select id="findItemsByUserNo" parameterType="long" resultMap="CartItemDTOMap">
+    SELECT c.cartNo,
+           c.prdNo,
+           p.prdName,
+           p.prdCompany,
+           p.prdPrice,
+           c.cartStock,
+           p.prdImg
+    FROM CART c
+           JOIN
+         PRODUCT p ON c.prdNo = p.prdNo
+    WHERE c.userNo = #{userNo}
+    ORDER BY c.cartDate DESC
 
-    <!-- 새 항목 추가 또는 수량 증가 (MERGE) -->
-    <insert id="insertNewItem">
-        MERGE INTO CART c
-            USING (
-                SELECT
-                    #{userNo} AS USERNO,
+  </select>
+
+  <!-- 새 항목 추가 또는 수량 증가 (MERGE) -->
+  <insert id="insertNewItem">
+    MERGE INTO CART c
+      USING (SELECT #{userNo}    AS USERNO,
                     #{productId} AS PRDNO,
-                    #{quantity} AS CARTSTOCK
-                FROM DUAL
-            ) src
-            ON (c.USERNO = src.USERNO AND c.PRDNO = src.PRDNO)
-            WHEN MATCHED THEN
-                UPDATE SET c.CARTSTOCK = c.CARTSTOCK + src.CARTSTOCK
-            WHEN NOT MATCHED THEN
-                INSERT (CARTNO, USERNO, PRDNO, CARTSTOCK, CARTSELECT, CARTDATE)
-                    VALUES (CART_SEQ.NEXTVAL, src.USERNO, src.PRDNO, src.CARTSTOCK, 1, SYSDATE)
-    </insert>
+                    #{quantity}  AS CARTSTOCK
+             FROM DUAL) src
+      ON (c.USERNO = src.USERNO AND c.PRDNO = src.PRDNO)
+      WHEN MATCHED THEN
+        UPDATE SET c.CARTSTOCK = c.CARTSTOCK + src.CARTSTOCK
+      WHEN NOT MATCHED THEN
+        INSERT (CARTNO, USERNO, PRDNO, CARTSTOCK, CARTDATE)
+          VALUES (CART_SEQ.NEXTVAL, src.USERNO, src.PRDNO, src.CARTSTOCK, SYSDATE)
+  </insert>
 
-    <update id="updateQuantity">
-        UPDATE CART
-        SET CARTSTOCK = #{quantity}
-        WHERE USERNO = #{userNo} AND CARTNO = #{cartItemId}
-    </update>
+  <update id="updateQuantity">
+    UPDATE CART
+    SET CARTSTOCK = #{quantity}
+    WHERE USERNO = #{userNo}
+      AND CARTNO = #{cartItemId}
+  </update>
 
-    <update id="updateSelected">
-        UPDATE CART
-        SET CARTSELECT =
-        <choose>
-            <when test="selected == true">1</when>
-            <otherwise>0</otherwise>
-        </choose>
-        WHERE USERNO = #{userNo} AND CARTNO = #{cartItemId}
-    </update>
-
-    <update id="updateAllSelected">
-        UPDATE CART
-        SET CARTSELECT =
-        <choose>
-            <when test="selected == true">1</when>
-            <otherwise>0</otherwise>
-        </choose>
-        WHERE USERNO = #{userNo}
-    </update>
-
-    <delete id="deleteItems">
-        DELETE FROM CART
-        WHERE USERNO = #{userNo}
-        AND CARTNO IN
-        <foreach collection="cartItemIds" item="cartItemId" open="(" separator="," close=")">
-            #{cartItemId}
-        </foreach>
-    </delete>
+  <delete id="deleteItems">
+    DELETE FROM CART
+    WHERE USERNO = #{userNo}
+    AND CARTNO IN
+    <foreach collection="cartItemIds" item="cartItemId" open="(" separator="," close=")">
+      #{cartItemId}
+    </foreach>
+  </delete>
 
 </mapper>

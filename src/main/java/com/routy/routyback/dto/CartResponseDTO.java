@@ -1,11 +1,10 @@
 package com.routy.routyback.dto;
 
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
 
 @Getter
 @Builder
@@ -17,9 +16,8 @@ public class CartResponseDTO {
     @Getter
     @Builder
     public static class SummaryDTO {
-        private long totalProductAmount;
+
         private int deliveryFee;
-        private long finalPaymentAmount;
     }
 
     @Getter
@@ -27,20 +25,21 @@ public class CartResponseDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class CartItemDTO {
-        private Long cartItemId;
-        private Long productId;
+
+        private long cartItemId;
+        private long productId;
         private String name;
         private String brand;
         private int price;
         private int quantity;
         private String imageUrl;
-        private boolean selected;
         private SkinAlertDTO skinAlert;
     }
 
     @Getter
     @Builder
     public static class SkinAlertDTO {
+
         private String type;
         private String message;
     }
