@@ -82,23 +82,46 @@
 
     <!-- 리뷰 생성 : id는 insertReview, useGeneratedKeys : 자동 생성된 키 받아오기
     								 keyProperty : 받아온 키는 revNo에 넣기-->
-    <insert id="insertReview" parameterType="com.routy.routyback.domain.ReviewVO"
-        useGeneratedKeys="true" keyProperty="revNo">
-        INSERT INTO REVIEW (userNo, prdNo, revRank, revStar, revImg, revGood, revBad)
-        VALUES (#{userNo}, #{prdNo}, #{revRank}, #{revStar}, #{revImg}, #{revGood}, #{revBad})
+    <insert id="insertReview"
+        parameterType="com.routy.routyback.domain.ReviewVO"
+        useGeneratedKeys="true"
+        keyProperty="revNo">
+
+        INSERT INTO REVIEW (userNo,
+                            prdNo,
+                            odNo,
+                            revRank,
+                            revStar,
+                            revImg,
+                            revGood,
+                            revBad)
+        VALUES (#{userNo},
+                #{prdNo},
+                #{odNo},
+                #{revRank},
+                #{revStar},
+                #{revImg},
+                #{revGood},
+                #{revBad})
     </insert>
 
     <!-- 리뷰 1건 상세 조회-->
-    <select id="findReview" parameterType="int" resultType="com.routy.routyback.domain.ReviewVO">
+    <select id="findReview"
+        parameterType="int"
+        resultType="com.routy.routyback.domain.ReviewVO">
+
         SELECT r.revNo,
                r.userNo,
                r.prdNo,
+               r.odNo,
                r.revRank,
                r.revStar,
                r.revImg,
                r.revGood,
                r.revBad,
                r.revDate,
+               r.revTrustScore,
+               r.revTrustRank,
                u.userName,
                (SELECT COUNT(*) FROM REVIEW_UPDOWN ud WHERE ud.revNo = r.revNo) AS likeCount
         FROM REVIEW r
@@ -156,4 +179,11 @@
         WHERE revNo = #{revNo}
     </select>
 
+    <!-- 신뢰도 점수 계산 후 저장 -->
+    <update id="updateReviewTrustScore" parameterType="com.routy.routyback.domain.ReviewVO">
+        UPDATE REVIEW
+        SET revTrustScore = #{revTrustScore},
+            revTrustRank  = #{revTrustRank}
+        WHERE revNo = #{revNo}
+    </update>
 </mapper>
