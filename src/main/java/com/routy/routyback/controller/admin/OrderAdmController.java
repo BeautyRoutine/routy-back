@@ -17,11 +17,11 @@ public class OrderAdmController {
 	OrderAdmService service;
 	
 	@GetMapping("/api/orders/list")
-	public ApiResponse listAllOrders(@RequestParam Map<String, Object> params) { // ÀüÃ¼ ÁÖ¹® Á¶È¸
+	public ApiResponse listAllOrders(@RequestParam Map<String, Object> params) { // ì „ì²´ ì£¼ë¬¸ ì¡°íšŒ
 		return service.listAllOrders(params);
 	}
 	@GetMapping("/api/orders/detail/{odNo}")
-	public ApiResponse detailOrder(@PathVariable int odNo) { // ÁÖ¹®¹øÈ£ Á¶È¸
+	public ApiResponse detailOrder(@PathVariable int odNo) { // ì£¼ë¬¸ë²ˆí˜¸ ì¡°íšŒ
 		return service.detailOrder(odNo);
 	}
 }
