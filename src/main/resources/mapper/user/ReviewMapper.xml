@@ -24,7 +24,8 @@
         revTrustScore,
         revTrustRank,
         userName,
-        likeCount
+        likeCount,
+        photoCount
         FROM (
         SELECT
         r.revNo,
@@ -44,20 +45,35 @@
         SELECT COUNT(*)
         FROM REVIEW_UPDOWN ud
         WHERE ud.revNo = r.revNo
-        ) AS likeCount
+        ) AS likeCount,
+        (
+        SELECT COUNT(*)
+        FROM REVIEW_IMAGE ri
+        WHERE ri.revNo = r.revNo
+        ) AS photoCount
         FROM REVIEW r
         LEFT JOIN USERS u ON r.userNo = u.userNo
         WHERE r.prdNo = #{prdNo}
         ORDER BY
         <choose>
+            <!-- 좋아요순: likeCount 높은 순 + 최신순 -->
             <when test="sort == 'like'">
-                likeCount DESC
+                likeCount DESC, r.revDate DESC
             </when>
+
+            <!-- 별점순: 별점 높은 순 + 최신순 -->
             <when test="sort == 'rating'">
-                r.revStar DESC
+                r.revStar DESC, r.revDate DESC
             </when>
+
+            <!-- 최신순 정렬 -->
+            <when test="sort == 'new'">
+                r.revDate DESC
+            </when>
+
+            <!-- 기본값 = 추천순 -->
             <otherwise>
-                r.revNo DESC
+                r.revTrustScore DESC, r.revDate DESC
             </otherwise>
         </choose>
         )
@@ -123,7 +139,8 @@
                r.revTrustScore,
                r.revTrustRank,
                u.userName,
-               (SELECT COUNT(*) FROM REVIEW_UPDOWN ud WHERE ud.revNo = r.revNo) AS likeCount
+               (SELECT COUNT(*) FROM REVIEW_UPDOWN ud WHERE ud.revNo = r.revNo) AS likeCount,
+               (SELECT COUNT(*) FROM REVIEW_IMAGE ri WHERE ri.revNo = r.revNo)  AS photoCount
         FROM REVIEW r
                  LEFT JOIN USERS u ON r.userNo = u.userNo
         WHERE r.revNo = #{revNo}
