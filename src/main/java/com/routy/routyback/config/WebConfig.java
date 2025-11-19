@@ -14,7 +14,7 @@ public class WebConfig implements WebMvcConfigurer {
                 "http://localhost:3000",  // 사용자용
                 "http://localhost:3001"   // 관리자용
             )
-            .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+            .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
             .allowedHeaders("*")
             .allowCredentials(true)
             .maxAge(3600);
