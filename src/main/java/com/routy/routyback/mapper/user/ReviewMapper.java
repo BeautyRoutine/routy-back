@@ -1,12 +1,11 @@
 package com.routy.routyback.mapper.user;
 
+import com.routy.routyback.domain.ReviewImageVO;
+import com.routy.routyback.domain.ReviewVO;
 import java.util.List;
 import java.util.Map;
-
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-
-import com.routy.routyback.domain.ReviewVO;
 
 @Mapper
 public interface ReviewMapper {
@@ -35,4 +34,12 @@ public interface ReviewMapper {
     int countLikes(int revNo); // 리뷰 좋아요 카운트
 
     void updateReviewTrustScore(ReviewVO review); // 계산된 리뷰 신뢰도 점수 및 등급 업데이트
+
+    /**
+     * 특정 리뷰에 연결된 이미지 정보 목록 조회 (전체 VO 반환) 작성자 : 김지용
+     *
+     * @param revNo 리뷰 번호
+     * @return 이미지 VO 리스트
+     */
+    List<ReviewImageVO> findReviewImages(int revNo);
 }

@@ -42,6 +42,7 @@ public class ReviewService implements IReviewService {
         // vo를 dto로 변환
         List<ReviewResponse> reviewResponses = new ArrayList<>();
         for (ReviewVO vo : reviewVOs) {
+            vo.setImages(reviewMapper.findReviewImages(vo.getRevNo()));
             ReviewResponse dto = convertVoToResponseDto(vo); // vo를 dto로 변환
             reviewResponses.add(dto); // reviewResponses에 받아온 dto 넣기
         }
@@ -80,38 +81,37 @@ public class ReviewService implements IReviewService {
     @Override
     public ReviewResponse createReview(int prdNo, ReviewCreateRequest request) {
 
-        // 1) VO 객체 생성 후 , 요청값 세팅
-        ReviewVO reviewVO = new ReviewVO(); // vo 준비
-        reviewVO.setPrdNo(prdNo); // 컨트롤러로 받은 prdNo
-        reviewVO.setUserNo(request.getUserNo()); // request로 받은 dto들
-        reviewVO.setRevStar(request.getRevStar());  // 별점
+        // 1) VO 생성 및 기본값 세팅
+        ReviewVO reviewVO = new ReviewVO();
+        reviewVO.setPrdNo(prdNo);
+        reviewVO.setUserNo(request.getUserNo());
+        reviewVO.setRevStar(request.getRevStar());
         reviewVO.setRevGood(request.getRevGood());
         reviewVO.setRevBad(request.getRevBad());
-        reviewVO.setRevImg(request.getRevImg());
 
-        // 2) 리뷰 기본 정보 저장(REVNO 생성)
-        reviewMapper.insertReview(reviewVO); // vo를 통해 mapper 호출해서 insert 실행
+        // 2) 리뷰 저장 → REVNO 생성됨
+        reviewMapper.insertReview(reviewVO);
 
-        // 3) 방금 저장된 리뷰 다시 조회(odNo, userName 등 포함)
-        ReviewVO createdReviewVO = reviewMapper.findReview(reviewVO.getRevNo());
+        // 3) 생성된 리뷰 재조회 (odNo, userName, photoCount 포함)
+        ReviewVO created = reviewMapper.findReview(reviewVO.getRevNo());
+        created.setImages(reviewMapper.findReviewImages(created.getRevNo()));
 
-        // 4) 신뢰도 점수 계산 및 등급 부여 (Calculator 사용)
-        double trustScore = reviewTrustCalculator.calculateTrustScore(createdReviewVO);
-        String trustRank = reviewTrustCalculator.calculateTrustRank(trustScore,
-            createdReviewVO.getOdNo() != null);
+        // 4) 신뢰도 점수 계산
+        double score = reviewTrustCalculator.calculateTrustScore(created);
 
-        // 5) VO에 계산된 값 세팅
-        createdReviewVO.setRevTrustScore(trustScore);
-        createdReviewVO.setRevTrustRank(trustRank);
+        // 5) 등급 계산 (미인증이면 내부적으로 LOW 제한)
+        String rank = reviewTrustCalculator.calculateTrustRank(score,
+            created.getOdNo() != null);
 
-        // 6) DB에 신뢰도 점수/등급 업데이트
-        reviewMapper.updateReviewTrustScore(createdReviewVO);
+        // 6) VO에 계산값 적용
+        created.setRevTrustScore(score);
+        created.setRevTrustRank(rank);
 
-        // 7) 클라이언트로 내려줄 DTO로 변환
-        ReviewResponse responseDTO = convertVoToResponseDto(createdReviewVO); // vo를 dto로 변환
+        // 7) DB 업데이트
+        reviewMapper.updateReviewTrustScore(created);
 
-        // 응답 반환
-        return responseDTO;
+        // 8) Response DTO 변환 후 반환
+        return convertVoToResponseDto(created);
     }
 
     @Override
@@ -121,11 +121,12 @@ public class ReviewService implements IReviewService {
         reviewVO.setRevStar(request.getRevStar());
         reviewVO.setRevGood(request.getRevGood());
         reviewVO.setRevBad(request.getRevBad());
-        reviewVO.setRevImg(request.getRevImg()); // 리뷰 수정한 값을 vo에 저장
+        // 리뷰 수정한 값을 vo에 저장
 
         reviewMapper.updateReview(reviewVO);// vo를 통해 mapper 호출해서 update 실행
 
         ReviewVO updatedReviewVO = reviewMapper.findReview(revNo);// 방금 만든 리뷰 다시 조회
+        updatedReviewVO.setImages(reviewMapper.findReviewImages(updatedReviewVO.getRevNo()));
 
         return convertVoToResponseDto(updatedReviewVO); // 바로 반환
     }
@@ -150,6 +151,20 @@ public class ReviewService implements IReviewService {
         return new ReviewLikeResponse(revNo, currentLikeCount); //@AllArgsConstructor 생성자 사용해 바로 객체 생성 후 반환
     }
 
+    /**
+     * 특정 리뷰의 이미지 목록을 조회하는 서비스 메서드입니다. REVIEW_IMAGE 테이블을 조회하는 Mapper 메서드에 위임합니다.
+     *
+     * @param revNo 이미지 조회 대상 리뷰 번호
+     * @return 해당 리뷰에 연결된 이미지 경로(또는 URL) 문자열 리스트
+     */
+    @Override
+    public List<String> getReviewImages(int revNo) {
+        // Mapper를 통해 DB에서 이미지 목록을 조회하고 URL만 추출하여 반환
+        return reviewMapper.findReviewImages(revNo).stream()
+            .sorted((a, b) -> a.getRiSort() - b.getRiSort())
+            .map(img -> img.getRiUrl())
+            .toList();
+    }
 
     private ReviewResponse convertVoToResponseDto(ReviewVO vo) {
         if (vo == null) { // null 뜨면 null 반환
@@ -162,12 +177,21 @@ public class ReviewService implements IReviewService {
         dto.setRevStar(vo.getRevStar());
         dto.setRevGood(vo.getRevGood());
         dto.setRevBad(vo.getRevBad());
-        dto.setRevImg(vo.getRevImg());
         dto.setLikeCount(vo.getLikeCount()); // vo 값들 가져다가 dto에 넣어주기
         dto.setRevTrustScore(vo.getRevTrustScore());
         dto.setRevTrustRank(vo.getRevTrustRank());
         dto.setPhotoCount(vo.getPhotoCount());
-        
+
+        // 이미지 리스트를 DTO에 매핑
+        if (vo.getImages() != null) {
+            dto.setImages(
+                vo.getImages().stream()
+                    .sorted((a, b) -> a.getRiSort() - b.getRiSort())
+                    .map(img -> img.getRiUrl())
+                    .toList()
+            );
+        }
+
         if (vo.getRevDate() != null) {
             dto.setRevDate(vo.getRevDate().toString()); // "yyyy-MM-dd" 형식 반환
         }

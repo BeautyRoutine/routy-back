@@ -17,7 +17,6 @@
         odNo,
         revRank,
         revStar,
-        revImg,
         revGood,
         revBad,
         revDate,
@@ -25,7 +24,12 @@
         revTrustRank,
         userName,
         likeCount,
-        photoCount
+        photoCount,
+        (
+        SELECT LISTAGG(ri.RI_URL, '||') WITHIN GROUP (ORDER BY ri.RI_SORT)
+        FROM REVIEW_IMAGE ri
+        WHERE ri.REV_NO = r.REV_NO
+        ) AS imageUrls
         FROM (
         SELECT
         r.revNo,
@@ -34,7 +38,6 @@
         r.odNo,
         r.revRank,
         r.revStar,
-        r.revImg,
         r.revGood,
         r.revBad,
         r.revDate,
@@ -50,7 +53,12 @@
         SELECT COUNT(*)
         FROM REVIEW_IMAGE ri
         WHERE ri.revNo = r.revNo
-        ) AS photoCount
+        ) AS photoCount,
+        (
+        SELECT LISTAGG(ri.RI_URL, '||') WITHIN GROUP (ORDER BY ri.RI_SORT)
+        FROM REVIEW_IMAGE ri
+        WHERE ri.REV_NO = r.REV_NO
+        ) AS imageUrls
         FROM REVIEW r
         LEFT JOIN USERS u ON r.userNo = u.userNo
         WHERE r.prdNo = #{prdNo}
@@ -108,7 +116,6 @@
                             odNo,
                             revRank,
                             revStar,
-                            revImg,
                             revGood,
                             revBad)
         VALUES (#{userNo},
@@ -116,7 +123,6 @@
                 #{odNo},
                 #{revRank},
                 #{revStar},
-                #{revImg},
                 #{revGood},
                 #{revBad})
     </insert>
@@ -132,7 +138,6 @@
                r.odNo,
                r.revRank,
                r.revStar,
-               r.revImg,
                r.revGood,
                r.revBad,
                r.revDate,
@@ -140,9 +145,14 @@
                r.revTrustRank,
                u.userName                                                       AS userName,
                (SELECT COUNT(*) FROM REVIEW_UPDOWN ud WHERE ud.revNo = r.revNo) AS likeCount,
-               (SELECT COUNT(*) FROM REVIEW_IMAGE ri WHERE ri.revNo = r.revNo)  AS photoCount
+               (SELECT COUNT(*) FROM REVIEW_IMAGE ri WHERE ri.revNo = r.revNo)  AS photoCount,
+               (SELECT LISTAGG(ri.RI_URL, '||') WITHIN
+        GROUP (ORDER BY ri.RI_SORT)
+        FROM REVIEW_IMAGE ri
+        WHERE ri.REV_NO = r.REV_NO) AS imageUrls
         FROM REVIEW r
-                 LEFT JOIN USERS u ON r.userNo = u.userNo
+            LEFT JOIN USERS u
+        ON r.userNo = u.userNo
         WHERE r.revNo = #{revNo}
     </select>
 
@@ -151,8 +161,7 @@
         UPDATE REVIEW
         SET revStar = #{revStar},
             revGood = #{revGood},
-            revBad  = #{revBad},
-            revImg  = #{revImg}
+            revBad  = #{revBad}
         WHERE revNo = #{revNo}
     </update>
 
@@ -203,4 +212,22 @@
             revTrustRank  = #{revTrustRank}
         WHERE revNo = #{revNo}
     </update>
+
+
+    <!-- 리뷰 이미지 조회 -->
+    <select id="findReviewImages"
+        parameterType="int"
+        resultType="com.routy.routyback.domain.ReviewImageVO">
+
+        SELECT RI_NO      AS riNo,
+               REV_NO     AS revNo,
+               RI_URL     AS riUrl,
+               RI_SORT    AS riSort,
+               RI_REGDATE AS riRegDate
+        FROM REVIEW_IMAGE
+        WHERE REV_NO = #{revNo}
+        ORDER BY RI_SORT ASC
+
+    </select>
+    
 </mapper>
