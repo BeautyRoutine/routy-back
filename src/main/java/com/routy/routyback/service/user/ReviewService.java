@@ -1,13 +1,5 @@
 package com.routy.routyback.service.user;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.routy.routyback.domain.ReviewVO;
 import com.routy.routyback.dto.review.ReviewCreateRequest;
 import com.routy.routyback.dto.review.ReviewLikeResponse;
@@ -17,12 +9,21 @@ import com.routy.routyback.dto.review.ReviewListResponse.SummaryDto;
 import com.routy.routyback.dto.review.ReviewResponse;
 import com.routy.routyback.dto.review.ReviewUpdateRequest;
 import com.routy.routyback.mapper.user.ReviewMapper;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service("reviewService")
 public class ReviewService implements IReviewService {
 
     @Autowired
     ReviewMapper reviewMapper;
+
+    @Autowired
+    ReviewTrustCalculator reviewTrustCalculator;
 
     @Override
     public ReviewListResponse getReviewList(int prdNo, int page, int limit, String sort) {
@@ -94,13 +95,14 @@ public class ReviewService implements IReviewService {
         // 3) 방금 저장된 리뷰 다시 조회(odNo, userName 등 포함)
         ReviewVO createdReviewVO = reviewMapper.findReview(reviewVO.getRevNo());
 
-        // 4) 신뢰도 점수 계산 및 등급 부여
-        double trustScore = calculateTrustScore(createdReviewVO); // 길이 + 구매 인증 기준으로 점수 계산
-        String trustRank = calculateTrustRank(trustScore); // 점수 기준으로 등급 계산
+        // 4) 신뢰도 점수 계산 및 등급 부여 (Calculator 사용)
+        double trustScore = reviewTrustCalculator.calculateTrustScore(createdReviewVO);
+        String trustRank = reviewTrustCalculator.calculateTrustRank(trustScore,
+            createdReviewVO.getOdNo() != null);
 
         // 5) VO에 계산된 값 세팅
-        createdReviewVO.setRevTrustScore(trustScore);   // REVIEW.REVTRUSTSCORE에 들어갈 값
-        createdReviewVO.setRevTrustRank(trustRank); // REVIEW.REVTRUSTRANK에 들어갈 값
+        createdReviewVO.setRevTrustScore(trustScore);
+        createdReviewVO.setRevTrustRank(trustRank);
 
         // 6) DB에 신뢰도 점수/등급 업데이트
         reviewMapper.updateReviewTrustScore(createdReviewVO);
@@ -168,66 +170,5 @@ public class ReviewService implements IReviewService {
 
         return dto;
     }
-
-    /***
-     * 리뷰 신뢰도 점수 계산
-     * 작성자 : 김지용
-     * @param review
-     * @return reviewScore
-     */
-    private double calculateTrustScore(ReviewVO review) {
-
-        // 1) 구매 인증 여부
-        boolean isVerifiedPurchase = review.getOdNo() != null;
-
-        // 2) 리뷰 길이로 간단한 품질 측정
-        int reviewLength = 0;
-        if (review.getRevGood() != null) {
-            reviewLength += review.getRevGood().length();
-        }
-        if (review.getRevBad() != null) {
-            reviewLength += review.getRevBad().length();
-        }
-
-        // 3) 가중치 기본값
-        double reviewScore = 1.0; // 일반 후기 기본 값
-
-        if (!isVerifiedPurchase) {
-            return 0.1; // 미인증 후기
-        }
-
-        if (isVerifiedPurchase && reviewLength > 200) {
-            reviewScore = 2.0; // 프리미엄
-        } else if (isVerifiedPurchase && reviewLength > 50) {
-            reviewScore = 1.5; // 우수
-        } else if (isVerifiedPurchase) {
-            reviewScore = 1.0; // 일반
-        }
-
-        return reviewScore;
-
-    }
-
-
-    // 점수 구간에 따른 등급 이름 매핑 - 작성자 : 김지용
-    private String calculateTrustRank(double score) {
-        if (score >= 2.0) {
-            return "프리미엄 후기";
-        }
-        if (score >= 1.5) {
-            return "우수 후기";
-        }
-        if (score >= 1.0) {
-            return "일반 후기";
-        }
-        if (score >= 0.7) {
-            return "주의 후기";
-        }
-        if (score >= 0.5) {
-            return "의심 후기";
-        }
-        return "미인증 후기";
-    }
-
 
 }

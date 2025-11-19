@@ -26,4 +26,7 @@ public class ReviewVO {
     // 신뢰도 점수 / 등급
     private Double revTrustScore;   // REVIEW.REVTRUSTSCORE
     private String revTrustRank;    // REVIEW.REVTRUSTRANK
+
+    // 리뷰 이미지 개수 (신뢰도 계산에 사용)
+    private int photoCount;
 }
