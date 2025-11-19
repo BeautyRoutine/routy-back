@@ -138,7 +138,7 @@
                r.revDate,
                r.revTrustScore,
                r.revTrustRank,
-               u.userName,
+               u.userName                                                       AS userName,
                (SELECT COUNT(*) FROM REVIEW_UPDOWN ud WHERE ud.revNo = r.revNo) AS likeCount,
                (SELECT COUNT(*) FROM REVIEW_IMAGE ri WHERE ri.revNo = r.revNo)  AS photoCount
         FROM REVIEW r

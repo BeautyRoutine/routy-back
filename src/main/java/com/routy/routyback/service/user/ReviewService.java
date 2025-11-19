@@ -164,6 +164,10 @@ public class ReviewService implements IReviewService {
         dto.setRevBad(vo.getRevBad());
         dto.setRevImg(vo.getRevImg());
         dto.setLikeCount(vo.getLikeCount()); // vo 값들 가져다가 dto에 넣어주기
+        dto.setRevTrustScore(vo.getRevTrustScore());
+        dto.setRevTrustRank(vo.getRevTrustRank());
+        dto.setPhotoCount(vo.getPhotoCount());
+        
         if (vo.getRevDate() != null) {
             dto.setRevDate(vo.getRevDate().toString()); // "yyyy-MM-dd" 형식 반환
         }
