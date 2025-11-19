@@ -5,17 +5,12 @@
 
 <mapper namespace="com.routy.routyback.mapper.admin.IMembersAdmDAO">
 
-    <!-- 전체 회원 조회 -->
+    <!-- 
+        전체 회원 조회 -> SELECT * 로 변경했습니다. 
+    -->
     <select id="listAllMembers" resultType="map">
         SELECT
-            USERNO,
-            USERID,
-            USERNAME,
-            USERHP,
-            USEREMAIL,
-            USERLEVEL,
-            USERSTATUS,
-            USERREGDATE
+            *
         FROM USERS
         ORDER BY USERREGDATE DESC
     </select>
