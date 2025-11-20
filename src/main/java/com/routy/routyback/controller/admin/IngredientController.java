@@ -32,25 +32,4 @@ public class IngredientController {
 	public ResponseEntity<?> getIngredientByNo(@PathVariable int ingNo) {
 		return ResponseEntity.ok(ingredientService.getIngredientByNo(ingNo));
 	}
-
-	// 등록
-	@PostMapping
-	public ResponseEntity<?> insertIngredient(@RequestBody IngredientDTO ingredient) {
-		ingredientService.insertIngredient(ingredient);
-		return ResponseEntity.ok("성분 등록 완료");
-	}
-
-	// 수정
-	@PutMapping
-	public ResponseEntity<?> updateIngredient(@RequestBody IngredientDTO ingredient) {
-		ingredientService.updateIngredient(ingredient);
-		return ResponseEntity.ok("성분 수정 완료");
-	}
-
-	// 삭제
-	@DeleteMapping("/{ingNo}")
-	public ResponseEntity<?> deleteIngredient(@PathVariable int ingNo) {
-		ingredientService.deleteIngredient(ingNo);
-		return ResponseEntity.ok("성분 삭제 완료");
-	}
 }
