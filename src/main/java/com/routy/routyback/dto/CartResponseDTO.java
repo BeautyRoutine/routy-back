@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @Builder
@@ -33,6 +34,10 @@ public class CartResponseDTO {
         private int price;
         private int quantity;
         private String imageUrl;
+        private String allergenList;
+        private String dangerList;
+
+        @Setter
         private SkinAlertDTO skinAlert;
     }
 

@@ -13,6 +13,8 @@
     <result property="price" column="PRDPRICE"/>
     <result property="quantity" column="CARTSTOCK"/>
     <result property="imageUrl" column="PRDIMG"/>
+    <result property="allergenList" column="ALLERGEN_LIST"/>
+    <result property="dangerList" column="DANGER_LIST"/>
   </resultMap>
 
   <select id="findItemsByUserNo" parameterType="long" resultMap="CartItemDTOMap">
@@ -22,10 +24,29 @@
            p.prdCompany,
            p.prdPrice,
            c.cartStock,
-           p.prdImg
+           p.prdImg,
+           (SELECT LISTAGG(i.INGNAME, ', ') WITHIN
+    GROUP (ORDER BY i.INGNAME)
+    FROM PRD_ING_MAPPING pim
+      JOIN INGREDIENTS i
+    ON pim.INGNO = i.INGNO
+    WHERE pim.PRDNO = c.PRDNO
+      AND i.INGALLERGEN = 1
+      ) AS ALLERGEN_LIST
+        , (
+    SELECT LISTAGG(i.INGNAME, ', ') WITHIN
+    GROUP (ORDER BY i.INGNAME)
+    FROM PRD_ING_MAPPING pim
+      JOIN INGREDIENTS i
+    ON pim.INGNO = i.INGNO
+    WHERE pim.PRDNO = c.PRDNO
+      AND i.INGDANGER = 1
+      ) AS DANGER_LIST
+
     FROM CART c
-           JOIN
-         PRODUCT p ON c.prdNo = p.prdNo
+      JOIN
+      PRODUCT p
+    ON c.prdNo = p.prdNo
     WHERE c.userNo = #{userNo}
     ORDER BY c.cartDate DESC
 
