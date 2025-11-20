@@ -24,12 +24,18 @@
         </choose>
     </sql>
 	<select id="listAllOrders" resultType="Map">
-	SELECT *
+	SELECT o.*, u.userNo, u.userName, u.userNick, u.userId, u.userHp
     <include refid="listAllOrdersFilter"/>
 	OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
 	</select>
     <select id="listAllOrdersCount" resultType="int">
     SELECT COUNT(1)
     <include refid="listAllOrdersFilter"/>
+    </select>
+    
+    <select id="detailOrder">
+    SELECT o.*, u.userNo, u.userName, u.userNick, u.userId, u.userHp
+    FROM ORDERS o LEFT JOIN USERS u ON u.userNo=o.userNo
+    WHERE odNo = #{odNo}
     </select>
 </mapper>

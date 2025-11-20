@@ -61,4 +61,13 @@ public class OrderAdmService implements IOrderAdmService {
 		}
 	}
 
+	@Override
+	public ApiResponse detailOrder(int odNo) {
+		try {
+			return ApiResponse.success(dao.detailOrder(odNo));
+		} catch (Exception e) {
+			return ApiResponse.fromException(e);
+		}
+	}
+
 }
