@@ -1,122 +1,233 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper
-  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-  
-   <mapper namespace="com.routy.routyback.mapper.user.ReviewMapper">
-   <!-- 파라미터는 자바에서 db쪽으로 데이터 보낼때 사용 생략도 가능함, result는 db가 자바한테 데이터 보낼때 사용 -->
-   <!-- 리뷰 목록 조회 -->
-   <!-- findReviews 연결, Map<String,Object>가 파라미터, 쿼리를 ReviewVO에 매핑 -->
-   <select id="findReviews" parameterType="map" resultType="com.routy.routyback.domain.ReviewVO">
-   SELECT
-        revNo, userNo, prdNo, revRank, revStar, revImg, revGood, revBad, revDate, userName, likeCount
-   FROM (
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.routy.routyback.mapper.user.ReviewMapper">
+    <!-- 파라미터는 자바에서 db쪽으로 데이터 보낼때 사용 생략도 가능함, result는 db가 자바한테 데이터 보낼때 사용 -->
+    <!-- 리뷰 목록 조회 -->
+    <!-- findReviews 연결, Map<String,Object>가 파라미터, 쿼리를 ReviewVO에 매핑 -->
+    <select id="findReviews" parameterType="map"
+        resultType="com.routy.routyback.domain.ReviewVO">
+
         SELECT
-            r.revNo,
-            r.userNo,
-            r.prdNo,
-            r.revRank,
-            r.revStar,
-            r.revImg,
-            r.revGood,
-            r.revBad,
-            r.revDate,
-            u.userName,  -- USERS 테이블 JOIN해서 사용자 이름 가져오기
-            (SELECT COUNT(*) FROM REVIEW_UPDOWN ud WHERE ud.revNo = r.revNo) AS likeCount --서브쿼리로 likeCount 구성
-        FROM
-            REVIEW r
-            LEFT JOIN USERS u ON r.userNo = u.userNo --left join으로 리뷰랑 사용자 이름만 가져오기, 없으면 null로 채우기
-        WHERE
-            r.prdNo = #{prdNo}
-        -- 동적 정렬 처리, sort(정렬순서) 받기로 약속
+        revNo,
+        userNo,
+        prdNo,
+        odNo,
+        revRank,
+        revStar,
+        revGood,
+        revBad,
+        revDate,
+        revTrustScore,
+        revTrustRank,
+        userName,
+        likeCount,
+        photoCount,
+        (
+        SELECT LISTAGG(ri.RI_URL, '||') WITHIN GROUP (ORDER BY ri.RI_SORT)
+        FROM REVIEW_IMAGE ri
+        WHERE ri.REV_NO = r.REV_NO
+        ) AS imageUrls
+        FROM (
+        SELECT
+        r.revNo,
+        r.userNo,
+        r.prdNo,
+        r.odNo,
+        r.revRank,
+        r.revStar,
+        r.revGood,
+        r.revBad,
+        r.revDate,
+        r.revTrustScore,
+        r.revTrustRank,
+        u.userName,
+        (
+        SELECT COUNT(*)
+        FROM REVIEW_UPDOWN ud
+        WHERE ud.revNo = r.revNo
+        ) AS likeCount,
+        (
+        SELECT COUNT(*)
+        FROM REVIEW_IMAGE ri
+        WHERE ri.revNo = r.revNo
+        ) AS photoCount,
+        (
+        SELECT LISTAGG(ri.RI_URL, '||') WITHIN GROUP (ORDER BY ri.RI_SORT)
+        FROM REVIEW_IMAGE ri
+        WHERE ri.REV_NO = r.REV_NO
+        ) AS imageUrls
+        FROM REVIEW r
+        LEFT JOIN USERS u ON r.userNo = u.userNo
+        WHERE r.prdNo = #{prdNo}
         ORDER BY
-            <choose>
-                <when test="sort == 'like'">
-                    likeCount DESC --좋아요순
-                </when>
-                <when test="sort == 'rating'">
-                    r.revStar DESC --별점순
-                </when>
-                <otherwise>
-                    r.revNo DESC --최신순, 기본값
-                </otherwise>
-            </choose>
-            )
-        OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY --페이징
+        <choose>
+            <!-- 좋아요순: likeCount 높은 순 + 최신순 -->
+            <when test="sort == 'like'">
+                likeCount DESC, r.revDate DESC
+            </when>
+
+            <!-- 별점순: 별점 높은 순 + 최신순 -->
+            <when test="sort == 'rating'">
+                r.revStar DESC, r.revDate DESC
+            </when>
+
+            <!-- 최신순 정렬 -->
+            <when test="sort == 'new'">
+                r.revDate DESC
+            </when>
+
+            <!-- 기본값 = 추천순 -->
+            <otherwise>
+                r.revTrustScore DESC, r.revDate DESC
+            </otherwise>
+        </choose>
+        )
+        OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
     </select>
-    
+
     <!-- 전체 리뷰 개수 조회 -->
     <select id="countReviews" parameterType="int" resultType="int">
-        SELECT COUNT(*) FROM REVIEW WHERE prdNo = #{prdNo}
+        SELECT COUNT(*)
+        FROM REVIEW
+        WHERE prdNo = #{prdNo}
     </select>
 
     <!--평균 별점 조회 -->
     <select id="findAverageRating" parameterType="int" resultType="double">
-        SELECT AVG(revStar) FROM REVIEW WHERE prdNo = #{prdNo}
+        SELECT AVG(revStar)
+        FROM REVIEW
+        WHERE prdNo = #{prdNo}
     </select>
-    
+
     <!-- 리뷰 CRUD-->
 
     <!-- 리뷰 생성 : id는 insertReview, useGeneratedKeys : 자동 생성된 키 받아오기
     								 keyProperty : 받아온 키는 revNo에 넣기-->
-    <insert id="insertReview" parameterType="com.routy.routyback.domain.ReviewVO"
-            useGeneratedKeys="true" keyProperty="revNo">
-        INSERT INTO REVIEW (userNo, prdNo, revRank, revStar, revImg, revGood, revBad)
-        VALUES (#{userNo}, #{prdNo}, #{revRank}, #{revStar}, #{revImg}, #{revGood}, #{revBad})
+    <insert id="insertReview"
+        parameterType="com.routy.routyback.domain.ReviewVO"
+        useGeneratedKeys="true"
+        keyProperty="revNo">
+
+        INSERT INTO REVIEW (userNo,
+                            prdNo,
+                            odNo,
+                            revRank,
+                            revStar,
+                            revGood,
+                            revBad)
+        VALUES (#{userNo},
+                #{prdNo},
+                #{odNo},
+                #{revRank},
+                #{revStar},
+                #{revGood},
+                #{revBad})
     </insert>
 
     <!-- 리뷰 1건 상세 조회-->
-    <select id="findReview" parameterType="int" resultType="com.routy.routyback.domain.ReviewVO">
-        SELECT
-            r.revNo, r.userNo, r.prdNo, r.revRank, r.revStar, r.revImg, r.revGood, r.revBad, r.revDate,
-            u.userName,
-            (SELECT COUNT(*) FROM REVIEW_UPDOWN ud WHERE ud.revNo = r.revNo) AS likeCount
-        FROM
-            REVIEW r
-            LEFT JOIN USERS u ON r.userNo = u.userNo
-        WHERE
-            r.revNo = #{revNo}
+    <select id="findReview"
+        parameterType="int"
+        resultType="com.routy.routyback.domain.ReviewVO">
+
+        SELECT r.revNo,
+               r.userNo,
+               r.prdNo,
+               r.odNo,
+               r.revRank,
+               r.revStar,
+               r.revGood,
+               r.revBad,
+               r.revDate,
+               r.revTrustScore,
+               r.revTrustRank,
+               u.userName                                                       AS userName,
+               (SELECT COUNT(*) FROM REVIEW_UPDOWN ud WHERE ud.revNo = r.revNo) AS likeCount,
+               (SELECT COUNT(*) FROM REVIEW_IMAGE ri WHERE ri.revNo = r.revNo)  AS photoCount,
+               (SELECT LISTAGG(ri.RI_URL, '||') WITHIN
+        GROUP (ORDER BY ri.RI_SORT)
+        FROM REVIEW_IMAGE ri
+        WHERE ri.REV_NO = r.REV_NO) AS imageUrls
+        FROM REVIEW r
+            LEFT JOIN USERS u
+        ON r.userNo = u.userNo
+        WHERE r.revNo = #{revNo}
     </select>
 
     <!--리뷰 수정-->
     <update id="updateReview" parameterType="com.routy.routyback.domain.ReviewVO">
         UPDATE REVIEW
-        SET
-            revStar = #{revStar},
+        SET revStar = #{revStar},
             revGood = #{revGood},
-            revBad = #{revBad},
-            revImg = #{revImg}
-        WHERE
-            revNo = #{revNo}
+            revBad  = #{revBad}
+        WHERE revNo = #{revNo}
     </update>
 
     <!--리뷰 삭제 -->
     <delete id="deleteReview" parameterType="int">
-        DELETE FROM REVIEW WHERE revNo = #{revNo}
+        DELETE
+        FROM REVIEW
+        WHERE revNo = #{revNo}
     </delete>
 
 
-	<!-- 리뷰 좋아요 -->
-	
+    <!-- 리뷰 좋아요 -->
+
     <!-- id="findLikeByUserAndReview": 특정 유저가 특정 리뷰에 좋아요를 눌렀는지 확인 -->
     <!--  결과 없는 null이 당연한 상태라 null 받을 수 있는 Integer 사용 -->
-    <select id="findLikeByUserAndReview" resultType="Integer"> 
-        SELECT revUDNo FROM REVIEW_UPDOWN WHERE revNo = #{revNo} AND userNo = #{userNo}
+    <select id="findLikeByUserAndReview" resultType="Integer">
+        SELECT revUDNo
+        FROM REVIEW_UPDOWN
+        WHERE revNo = #{revNo}
+          AND userNo = #{userNo}
     </select>
 
     <!--좋아요 추가 -->
     <insert id="insertLike">
-        INSERT INTO REVIEW_UPDOWN (revNo, userNo) VALUES (#{revNo}, #{userNo})
+        INSERT INTO REVIEW_UPDOWN (revNo, userNo)
+        VALUES (#{revNo}, #{userNo})
     </insert>
 
     <!--좋아요 삭제 -->
     <delete id="deleteLike">
-        DELETE FROM REVIEW_UPDOWN WHERE revNo = #{revNo} AND userNo = #{userNo}
+        DELETE
+        FROM REVIEW_UPDOWN
+        WHERE revNo = #{revNo}
+          AND userNo = #{userNo}
     </delete>
 
     <!--특정 리뷰의 좋아요 카운트 -->
     <select id="countLikes" parameterType="int" resultType="int">
-        SELECT COUNT(*) FROM REVIEW_UPDOWN WHERE revNo = #{revNo}
+        SELECT COUNT(*)
+        FROM REVIEW_UPDOWN
+        WHERE revNo = #{revNo}
     </select>
 
+    <!-- 신뢰도 점수 계산 후 저장 -->
+    <update id="updateReviewTrustScore" parameterType="com.routy.routyback.domain.ReviewVO">
+        UPDATE REVIEW
+        SET revTrustScore = #{revTrustScore},
+            revTrustRank  = #{revTrustRank}
+        WHERE revNo = #{revNo}
+    </update>
+
+
+    <!-- 리뷰 이미지 조회 -->
+    <select id="findReviewImages"
+        parameterType="int"
+        resultType="com.routy.routyback.domain.ReviewImageVO">
+
+        SELECT RI_NO      AS riNo,
+               REV_NO     AS revNo,
+               RI_URL     AS riUrl,
+               RI_SORT    AS riSort,
+               RI_REGDATE AS riRegDate
+        FROM REVIEW_IMAGE
+        WHERE REV_NO = #{revNo}
+        ORDER BY RI_SORT ASC
+
+    </select>
+    
 </mapper>
