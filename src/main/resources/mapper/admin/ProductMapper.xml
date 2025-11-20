@@ -44,20 +44,14 @@
 	</select>
 
 	<!-- 등록 -->
-	<insert id="productInsert"
-		parameterType="com.routy.routyback.dto.ProductDTO">
-		INSERT INTO PRODUCT (
-		PRDNO, PRDNAME, PRDPRICE, PRDVOLUME, PRDCOMPANY,
-		PRDSTOCK, PRDMAINCATE, PRDSUBCATE,
-		PRDIMG, PRDDESC, PRDUPDATE, PRDREGDATE
-		)
-		VALUES (
-		PRODUCT_SEQ.NEXTVAL,
-		#{prdName}, #{prdPrice}, #{prdVolume}, #{prdCompany},
-		#{prdStock}, #{prdMainCate}, #{prdSubCate},
-		#{prdImg}, #{prdDesc}, SYSDATE, SYSDATE
-		)
-	</insert>
+    <insert id="productInsert" parameterType="com.routy.routyback.dto.ProductDTO">
+        INSERT INTO PRODUCT (PRDNAME, PRDPRICE, PRDVOLUME, PRDCOMPANY,
+                             PRDSTOCK, PRDMAINCATE, PRDSUBCATE,
+                             PRDIMG, PRDDESC, PRDUPDATE, PRDREGDATE)
+        VALUES (#{prdName}, #{prdPrice}, #{prdVolume}, #{prdCompany},
+                #{prdStock}, #{prdMainCate}, #{prdSubCate},
+                #{prdImg}, #{prdDesc}, SYSDATE, SYSDATE)
+    </insert>
 
 	<!-- 수정 -->
 	<update id="productUpdate"

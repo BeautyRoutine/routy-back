@@ -32,6 +32,6 @@ public class ProductDTO {
 
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
-    private Date prdRegdate;
+    private Date prdRegDate;
 
 }
