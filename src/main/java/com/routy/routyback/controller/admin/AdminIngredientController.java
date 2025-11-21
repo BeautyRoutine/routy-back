@@ -29,6 +29,8 @@ public class AdminIngredientController {
         return ResponseEntity.ok(result);
     }
 
+
+
     // 단일 조회
     @GetMapping("/{ingNo}")
     public ResponseEntity<?> getIngredientByNo(@PathVariable int ingNo) {

@@ -9,6 +9,8 @@ import java.util.Map;
 @Mapper
 public interface ProductMapper {
 
+    // 전체 조회
+
     // 단건 조회
     ProductDTO selectById(int prdNo);
 

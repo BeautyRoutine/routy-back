@@ -19,7 +19,7 @@ public class AdminProductController {
 
     // ⭐ 검색 + 페이징
     @GetMapping
-    public ResponseEntity<?> getAll(
+    public ResponseEntity<?> getProductList(
             @RequestParam(value = "prd_name", required = false) String prdName,
             @RequestParam(value = "prd_company", required = false) String prdCompany,
             @RequestParam(defaultValue = "1") int page,
@@ -29,9 +29,11 @@ public class AdminProductController {
         params.put("prdName", prdName);
         params.put("prdCompany", prdCompany);
         params.put("page", page);
+        params.put("pageGap", pageGap);
 
         return ResponseEntity.ok(productService.getList(params));
     }
+
 
     // 단건 조회
     @GetMapping("/{prdNo}")
