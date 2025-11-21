@@ -10,11 +10,13 @@ import java.util.Date;
 @Setter
 @ToString
 public class IngredientDTO {
-	private int ingNo;
-	private String ingName;
-	private String ingEnName;
-	private String ingDesc;
-	private int ingAllergen;
-	private int ingGrpNo;
-	private Date ingRegDate;
+    private int ingNo;
+    private String ingName;
+    private String ingEnName;
+    private String ingDesc;
+    private int ingAllergen;
+    private int ingDanger;
+    private String ingFunctional;
+    private int ingGrpNo;
+    private Date ingRegDate;
 }

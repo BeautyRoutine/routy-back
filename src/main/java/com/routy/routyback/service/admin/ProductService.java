@@ -1,52 +1,46 @@
 package com.routy.routyback.service.admin;
 
-import java.util.ArrayList;
-
-import com.routy.routyback.service.admin.IProductService;
+import com.routy.routyback.dto.ProductDTO;
+import com.routy.routyback.mapper.admin.ProductMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.routy.routyback.dto.ProductDTO;
-import com.routy.routyback.mapper.admin.ProductMapper;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class ProductService implements IProductService {
 
     @Autowired
-    ProductMapper productMapper;
+    private ProductMapper productMapper;
 
     @Override
-    public ArrayList<ProductDTO> getAll(String prdName, String prdCompany) {
-        return productMapper.getAll(prdName, prdCompany);
+    public Map<String, Object> getList(Map<String, Object> params) {
+
+        // page 값 꺼내기
+        int page = (int) params.getOrDefault("page", 1);
+        int pageSize = 10;
+
+        // start, end 자동 계산
+        params.put("start", (page - 1) * pageSize + 1);
+        params.put("end", page * pageSize);
+
+        // 목록 조회
+        List<ProductDTO> list = productMapper.searchProducts(params);
+        int total = productMapper.countProducts(params);
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("list", list);
+        result.put("total", total);
+
+        return result;
     }
 
     @Override
     public ProductDTO getById(int prdNo) {
         return productMapper.selectById(prdNo);
-    }
-
-    @Override
-    @Transactional
-    public void updateStock(int prdNo, int stock) {
-        ProductDTO currentProduct = productMapper.selectById(prdNo);
-
-        if (currentProduct == null) {
-            throw new IllegalArgumentException("상품 번호 " + prdNo + "에 해당하는 상품이 없습니다.");
-        }
-
-        int newStock = currentProduct.getPrdStock() + stock;
-
-        if (newStock < 0) {
-            throw new RuntimeException("상품 [" + currentProduct.getPrdName() + "]의 재고가 부족합니다.");
-        }
-
-        productMapper.productUpdateStock(prdNo, newStock);
-    }
-
-    @Override
-    public void updateStatus(int prdNo, String status) {
-        productMapper.productUpdateStatus(prdNo, status);
     }
 
     @Override
@@ -62,5 +56,26 @@ public class ProductService implements IProductService {
     @Override
     public void deleteProduct(int prdNo) {
         productMapper.productDelete(prdNo);
+    }
+
+    @Override
+    @Transactional
+    public void updateStock(int prdNo, int stock) {
+        ProductDTO dto = productMapper.selectById(prdNo);
+        if (dto == null) {
+            throw new RuntimeException("상품이 존재하지 않습니다.");
+        }
+
+        int updatedStock = dto.getPrdStock() + stock;
+        if (updatedStock < 0) {
+            throw new RuntimeException("재고 부족");
+        }
+
+        productMapper.productUpdateStock(prdNo, updatedStock);
+    }
+
+    @Override
+    public void updateStatus(int prdNo, String status) {
+        productMapper.productUpdateStatus(prdNo, status);
     }
 }
