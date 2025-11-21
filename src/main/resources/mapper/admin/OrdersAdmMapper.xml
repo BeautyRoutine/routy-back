@@ -38,4 +38,45 @@
     FROM ORDERS o LEFT JOIN USERS u ON u.userNo=o.userNo
     WHERE odNo = #{odNo}
     </select>
+    
+    <sql id="listAllOrderDeliveryFilter">
+        FROM DELIVERY d LEFT JOIN ORDERS o ON o.odNo=d.odNo LEFT JOIN USERS u ON u.userNo=o.userNo
+        WHERE 1=1
+        <if test="mem_name != null and mem_name != ''">
+            AND u.userName LIKE #{mem_name}
+        </if>
+        <if test="delv_s_start_day != null and delv_s_start_day != ''">
+            AND d.delvRegdate >= #{delv_s_start_day}
+        </if>
+        <if test="delv_s_end_day  != null and delv_s_end_day  != ''">
+            AND d.delvRegdate &lt;= #{delv_s_end_day}
+        </if>
+        <if test="delv_e_start_day != null and delv_e_start_day != ''">
+            AND d.delvEnddate >= #{delv_e_start_day}
+        </if>
+        <if test="delv_e_end_day  != null and delv_e_end_day  != ''">
+            AND d.delvEnddate &lt;= #{delv_e_end_day}
+        </if>
+
+        <choose>
+            <otherwise>
+                ORDER BY d.delvNo DESC
+            </otherwise>
+        </choose>
+    </sql>
+	<select id="listAllOrdersDelivery" resultType="Map">
+	SELECT d.*, u.userNo, u.userName, u.userNick, u.userId, u.userHp
+    <include refid="listAllOrderDeliveryFilter"/>
+	OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
+	</select>
+    <select id="listAllOrdersDeliveryCount" resultType="int">
+    SELECT COUNT(1)
+    <include refid="listAllOrderDeliveryFilter"/>
+    </select>
+    
+    <select id="detailOrderDelivery">
+    SELECT d.*, u.userNo, u.userName, u.userNick, u.userId, u.userHp
+    FROM DELIVERY d LEFT JOIN ORDERS o ON o.odNo=d.odNo LEFT JOIN USERS u ON u.userNo=o.userNo
+    WHERE d.delvNo = #{delvNo}
+    </select>
 </mapper>

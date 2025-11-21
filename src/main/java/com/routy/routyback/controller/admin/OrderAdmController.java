@@ -24,4 +24,12 @@ public class OrderAdmController {
 	public ApiResponse detailOrder(@PathVariable int odNo) { // 주문번호 조회
 		return service.detailOrder(odNo);
 	}
+	@GetMapping("/api/order_delivery/list")
+	public ApiResponse listAllOrdersDelivery(@RequestParam Map<String, Object> params) { // 전체 택배 조회
+		return service.listAllOrdersDelivery(params);
+	}
+	@GetMapping("/api/order_delivery/detail/{delvNo}")
+	public ApiResponse detailOrderDelivery(@PathVariable int delvNo) { // 택배번호 조회
+		return service.detailOrderDelivery(delvNo);
+	}
 }

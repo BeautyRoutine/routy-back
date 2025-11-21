@@ -28,6 +28,7 @@ public class OrderAdmService implements IOrderAdmService {
     private static final List<String> DATE_FIELDS = Arrays.asList(
             "ODREGDATE"
     		, "USERREGDATE", "USERUPDATE"
+    		, "DELVREGDATE", "DELVENDDATE"
     );
 
 
@@ -64,7 +65,61 @@ public class OrderAdmService implements IOrderAdmService {
 	@Override
 	public ApiResponse detailOrder(int odNo) {
 		try {
-			return ApiResponse.success(dao.detailOrder(odNo));
+			Map<String, Object> resultRow = dao.detailOrder(odNo);
+			for (String field : DATE_FIELDS) {
+	            Object value = resultRow.get(field);
+	            if (value instanceof Timestamp ts) {
+	            	resultRow.put(field, KST_FORMATTER.format(ts.toInstant()));
+	            }
+	        }
+			
+			return ApiResponse.success(resultRow);
+		} catch (Exception e) {
+			return ApiResponse.fromException(e);
+		}
+	}
+
+	@Override
+	public ApiResponse listAllOrdersDelivery(Map<String, Object> params) {
+		try {
+			// param 재가공
+			ParamProcessor.paging(params);
+			ParamProcessor.likeBothString(params, "mem_name");
+			
+			int total = dao.listAllOrdersDeliveryCount(params);
+
+	        List<Map<String, Object>> resultList = dao.listAllOrdersDelivery(params);
+	        for (Map<String, Object> row : resultList) {
+	            for (String field : DATE_FIELDS) {
+	                Object value = row.get(field);
+	                if (value instanceof Timestamp ts) {
+	                    row.put(field, KST_FORMATTER.format(ts.toInstant()));
+	                }
+	            }
+	        }
+	        
+	        Map<String, Object> result = new java.util.HashMap<>();
+	        result.put("total", total);
+	        result.put("list", resultList);
+	        
+	        return ApiResponse.success(result);
+		} catch (Exception e) {
+			return ApiResponse.fromException(e);
+		}
+	}
+
+	@Override
+	public ApiResponse detailOrderDelivery(int delvNo) {
+		try {
+			Map<String, Object> resultRow = dao.detailOrderDelivery(delvNo);
+			for (String field : DATE_FIELDS) {
+	            Object value = resultRow.get(field);
+	            if (value instanceof Timestamp ts) {
+	            	resultRow.put(field, KST_FORMATTER.format(ts.toInstant()));
+	            }
+	        }
+			
+			return ApiResponse.success(resultRow);
 		} catch (Exception e) {
 			return ApiResponse.fromException(e);
 		}
