@@ -1,8 +1,11 @@
 package com.routy.routyback.service.user;
 
 import com.routy.routyback.dto.CartResponseDTO;
+import com.routy.routyback.dto.CartResponseDTO.CartItemDTO;
+import com.routy.routyback.dto.CartResponseDTO.SkinAlertDTO;
 import com.routy.routyback.dto.CartResponseDTO.SummaryDTO;
 import com.routy.routyback.mapper.user.CartMapper;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,6 +24,30 @@ public class CartService {
 
         // DB에서 데이터 조회
         List<CartResponseDTO.CartItemDTO> items = cartMapper.findItemsByUserNo(userNo);
+
+        for (CartItemDTO item : items) {
+            List<String> alerts = new ArrayList<>();
+
+            // 알레르기 성분이 있으면 (예: "리날룰, 리모넨")
+            if (item.getAllergenList() != null) {
+                alerts.add("알레르기 유발 성분 : " + item.getAllergenList() + " 포함");
+            }
+
+            // 주의 성분이 있으면 (예: "향료")
+            if (item.getDangerList() != null) {
+                alerts.add("20가지 주의 성분 : " + item.getDangerList() + " 포함");
+            }
+
+            // 경고 메시지 설정
+            if (!alerts.isEmpty()) {
+                String message = String.join("\n", alerts);
+
+                item.setSkinAlert(SkinAlertDTO.builder()
+                    .type("warning")
+                    .message(message)
+                    .build());
+            }
+        }
 
         SummaryDTO summary = SummaryDTO.builder()
             .deliveryFee(3000)
