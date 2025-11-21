@@ -76,9 +76,12 @@
         INGNO, INGNAME, INGENNAME, INGDESC, INGALLERGEN,
         INGDANGER, INGFUNCTIONAL, INGGRPNO, INGREGDATE
         FROM INGREDIENTS
-        WHERE (#{ingName} IS NULL OR INGNAME LIKE '%' || #{ingName} || '%')
-        AND (#{ingAllergen} IS NULL OR INGALLERGEN LIKE '%' || #{ingAllergen} || '%')
-        ORDER BY INGNO ASC   <!-- 낮은 번호 → 높은 번호 -->
+        WHERE (#{ingName, jdbcType=VARCHAR} IS NULL
+        OR INGNAME LIKE '%' || #{ingName, jdbcType=VARCHAR} || '%')
+        AND (#{ingAllergen, jdbcType=VARCHAR} IS NULL
+        OR INGALLERGEN LIKE '%' || #{ingAllergen, jdbcType=VARCHAR} || '%')
+
+        ORDER BY INGNO ASC  /*오름차순*/
         ) A
         WHERE ROWNUM &lt;= #{end}
         )
@@ -89,8 +92,10 @@
     <select id="countIngredients" parameterType="map" resultType="int">
         SELECT COUNT(*)
         FROM INGREDIENTS
-        WHERE (#{ingName} IS NULL OR INGNAME LIKE '%' || #{ingName} || '%')
-          AND (#{ingAllergen} IS NULL OR INGALLERGEN LIKE '%' || #{ingAllergen} || '%')
+        WHERE (#{ingName, jdbcType=VARCHAR} IS NULL
+            OR INGNAME LIKE '%' || #{ingName, jdbcType=VARCHAR} || '%')
+          AND (#{ingAllergen, jdbcType=VARCHAR} IS NULL
+            OR INGALLERGEN LIKE '%' || #{ingAllergen, jdbcType=VARCHAR} || '%')
     </select>
 
 </mapper>
