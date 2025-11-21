@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.routy.routyback.mapper.user.IIngredientUserMapper">
+	<select id="effectGoodPrdSkin" resultType="Map">
+	SELECT e.*
+	FROM PRD_ING_MAPPING pi
+		INNER JOIN EFF_ING_MAPPING ei ON ei.ingNo=pi.ingNo
+		INNER JOIN EFFECT e ON e.effNo=ei.effNo
+	WHERE e.effStatus = 1 AND pi.prdNo = #{prdNo} AND e.effSkin = #{userSkin}
+	</select>
+	<select id="effectBadPrdSkin" resultType="Map">
+	SELECT e.*
+	FROM PRD_ING_MAPPING pi
+		INNER JOIN EFF_ING_MAPPING ei ON ei.ingNo=pi.ingNo
+		INNER JOIN EFFECT e ON e.effNo=ei.effNo
+	WHERE e.effStatus = 2 AND pi.prdNo = #{prdNo} AND e.effSkin = #{userSkin}
+	</select>
+</mapper>
