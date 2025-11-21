@@ -7,4 +7,6 @@ import com.routy.routyback.common.ApiResponse;
 public interface IOrderAdmService {
 	ApiResponse listAllOrders(Map<String, Object> params); // 전체 주문 조회
 	ApiResponse detailOrder(int odNo); // 주문번호 조회
+	ApiResponse listAllOrdersDelivery(Map<String, Object> params); // 전체 택배 조회
+	ApiResponse detailOrderDelivery(int delvNo); // 택배번호 조회
 }
