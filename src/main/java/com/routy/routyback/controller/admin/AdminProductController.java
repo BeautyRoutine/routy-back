@@ -1,20 +1,14 @@
 package com.routy.routyback.controller.admin;
 
-import java.io.File;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-
+import com.routy.routyback.dto.ProductDTO;
+import com.routy.routyback.service.admin.IProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.routy.routyback.dto.ProductDTO;
-import com.routy.routyback.service.admin.IProductService;
-import org.springframework.web.multipart.MultipartFile;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/admin/products")
@@ -23,92 +17,62 @@ public class AdminProductController {
     @Autowired
     private IProductService productService;
 
-    @PostMapping
-    public ResponseEntity<?> create(@RequestBody ProductDTO product) {
-        productService.insertProduct(product);
-        return ResponseEntity.status(HttpStatus.CREATED).body("상품 등록 완료");
-    }
-
+    // ⭐ 검색 + 페이징
     @GetMapping
     public ResponseEntity<?> getAll(
-            @RequestParam(required = false) String prd_name,
-            @RequestParam(required = false) String prd_company
+            @RequestParam(value = "prd_name", required = false) String prdName,
+            @RequestParam(value = "prd_company", required = false) String prdCompany,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int pageGap
     ) {
-        ArrayList<ProductDTO> list = productService.getAll(prd_name, prd_company);
+        Map<String, Object> params = new HashMap<>();
+        params.put("prdName", prdName);
+        params.put("prdCompany", prdCompany);
+        params.put("page", page);
 
-        Map<String, Object> result = new HashMap<>();
-        result.put("list", list);
-        result.put("total", list.size());
-
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(productService.getList(params));
     }
 
-
+    // 단건 조회
     @GetMapping("/{prdNo}")
-    public ResponseEntity<ProductDTO> getOne(@PathVariable int prdNo) {
-        ProductDTO product = productService.getById(prdNo);
-
-        if (product == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-        return ResponseEntity.ok(product);
+    public ResponseEntity<?> getOne(@PathVariable int prdNo) {
+        ProductDTO dto = productService.getById(prdNo);
+        if (dto == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).body("상품 없음");
+        return ResponseEntity.ok(dto);
     }
 
-    @PutMapping(value = "/{prdNo}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> update(
-            @PathVariable int prdNo,
-            @ModelAttribute ProductDTO product,
-            @RequestPart(value = "prdImg", required = false) MultipartFile file
-    ) {
-
-        try {
-            // 상품번호 세팅
-            product.setPrdNo(prdNo);
-
-            // 이미지 수정이 들어온 경우
-            if (file != null && !file.isEmpty()) {
-                String fileName = file.getOriginalFilename();
-                product.setPrdImg(fileName);
-
-                // 파일 저장 경로 (수정 필요 시 알려줘)
-                String uploadPath = "C:/upload/product/";
-
-                File dest = new File(uploadPath + fileName);
-                file.transferTo(dest);
-            }
-
-            // DB 업데이트 실행
-            productService.updateProduct(product);
-
-            return ResponseEntity.ok("상품 수정 완료");
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("상품 수정 실패");
-        }
+    // 등록
+    @PostMapping
+    public ResponseEntity<?> create(@RequestBody ProductDTO dto) {
+        productService.insertProduct(dto);
+        return ResponseEntity.ok("등록 완료");
     }
 
+    // 수정
+    @PutMapping
+    public ResponseEntity<?> update(@RequestBody ProductDTO dto) {
+        productService.updateProduct(dto);
+        return ResponseEntity.ok("수정 완료");
+    }
+
+    // 삭제
     @DeleteMapping("/{prdNo}")
     public ResponseEntity<?> delete(@PathVariable int prdNo) {
         productService.deleteProduct(prdNo);
-        return ResponseEntity.ok("상품 삭제 완료");
+        return ResponseEntity.ok("삭제 완료");
     }
 
+    // 재고
     @PutMapping("/{prdNo}/stock")
-    public ResponseEntity<?> updateStock(@PathVariable int prdNo, @RequestParam("stock") int stock) {
-        try {
-            productService.updateStock(prdNo, stock);
-            return ResponseEntity.ok("재고 업데이트 완료");
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        }
+    public ResponseEntity<?> updateStock(@PathVariable int prdNo, @RequestParam int stock) {
+        productService.updateStock(prdNo, stock);
+        return ResponseEntity.ok("재고 수정 완료");
     }
 
+    // 상태
     @PutMapping("/{prdNo}/status")
-    public ResponseEntity<?> updateStatus(@PathVariable int prdNo, @RequestParam("status") String status) {
-
+    public ResponseEntity<?> updateStatus(@PathVariable int prdNo, @RequestParam String status) {
         productService.updateStatus(prdNo, status);
-        return ResponseEntity.ok("상태 업데이트 완료");
+        return ResponseEntity.ok("상태 수정 완료");
     }
 }

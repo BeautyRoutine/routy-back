@@ -1,69 +1,96 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper
-  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.routy.routyback.mapper.admin.IngredientMapper">
 
-  <!-- 결과 매핑 -->
-  <resultMap id="ingredientResult" type="com.routy.routyback.dto.IngredientDTO">
-    <result property="ingNo" column="INGNO" />
-    <result property="ingName" column="INGNAME" />
-    <result property="ingEnName" column="INGENNAME" />
-    <result property="ingDesc" column="INGDESC" />
-    <result property="ingAllergen" column="INGALLERGEN" />
-    <result property="ingDanger" column="INGDANGER" />
-    <result property="ingFunctional" column="INGFUNCTIONAL" />
-    <result property="ingGrpNo" column="INGGRPNO" />
-    <result property="ingRegDate" column="INGREGDATE" />
-  </resultMap>
+    <!-- 결과 매핑 -->
+    <resultMap id="ingredientResult" type="com.routy.routyback.dto.IngredientDTO">
+        <result property="ingNo" column="INGNO"/>
+        <result property="ingName" column="INGNAME"/>
+        <result property="ingEnName" column="INGENNAME"/>
+        <result property="ingDesc" column="INGDESC"/>
+        <result property="ingAllergen" column="INGALLERGEN"/>
+        <result property="ingDanger" column="INGDANGER"/>
+        <result property="ingFunctional" column="INGFUNCTIONAL"/>
+        <result property="ingGrpNo" column="INGGRPNO"/>
+        <result property="ingRegDate" column="INGREGDATE"/>
+    </resultMap>
 
-  <!-- 전체 조회 -->
-  <select id="getAllIngredients" resultMap="ingredientResult">
-    SELECT INGNO, INGNAME, INGENNAME, INGDESC, INGALLERGEN,
-           INGDANGER, INGFUNCTIONAL, INGGRPNO, INGREGDATE
-    FROM INGREDIENTS
-    ORDER BY INGNO DESC
-  </select>
+    <!-- 전체 조회 -->
+    <select id="getAllIngredients" resultMap="ingredientResult">
+        SELECT INGNO, INGNAME, INGENNAME, INGDESC, INGALLERGEN,
+               INGDANGER, INGFUNCTIONAL, INGGRPNO, INGREGDATE
+        FROM INGREDIENTS
+        ORDER BY INGNO DESC
+    </select>
 
-  <!-- 단일 조회 -->
-  <select id="getIngredientByNo" parameterType="int" resultMap="ingredientResult">
-    SELECT INGNO, INGNAME, INGENNAME, INGDESC, INGALLERGEN,
-           INGDANGER, INGFUNCTIONAL, INGGRPNO, INGREGDATE
-    FROM INGREDIENTS
-    WHERE INGNO = #{ingNo}
-  </select>
+    <!-- 단일 조회 -->
+    <select id="getIngredientByNo" parameterType="int" resultMap="ingredientResult">
+        SELECT INGNO, INGNAME, INGENNAME, INGDESC, INGALLERGEN,
+               INGDANGER, INGFUNCTIONAL, INGGRPNO, INGREGDATE
+        FROM INGREDIENTS
+        WHERE INGNO = #{ingNo}
+    </select>
 
-  <!-- 등록 -->
-  <insert id="insertIngredient" parameterType="com.routy.routyback.dto.IngredientDTO">
-    INSERT INTO INGREDIENTS (
-      INGNO, INGNAME, INGENNAME, INGDESC, INGALLERGEN, INGDANGER,
-      INGFUNCTIONAL, INGGRPNO, INGREGDATE
-    )
-    VALUES (
-      ROUTY_TEAM."ISEQ$$_119836".nextval,
-      #{ingName}, #{ingEnName}, #{ingDesc},
-      #{ingAllergen}, #{ingDanger}, #{ingFunctional},
-      #{ingGrpNo}, SYSDATE
-    )
-  </insert>
+    <!-- 등록 -->
+    <insert id="insertIngredient" parameterType="com.routy.routyback.dto.IngredientDTO">
+        INSERT INTO INGREDIENTS (
+            INGNO, INGNAME, INGENNAME, INGDESC, INGALLERGEN, INGDANGER,
+            INGFUNCTIONAL, INGGRPNO, INGREGDATE
+        )
+        VALUES (
+                   ROUTY_TEAM.ISEQ$$_119836.nextval,
+                   #{ingName}, #{ingEnName}, #{ingDesc},
+                   #{ingAllergen}, #{ingDanger}, #{ingFunctional},
+                   #{ingGrpNo}, SYSDATE
+               )
+    </insert>
 
-  <!-- 수정 -->
-  <update id="updateIngredient" parameterType="com.routy.routyback.dto.IngredientDTO">
-    UPDATE INGREDIENTS
-    SET INGNAME = #{ingName},
-        INGENNAME = #{ingEnName},
-        INGDESC = #{ingDesc},
-        INGALLERGEN = #{ingAllergen},
-        INGDANGER = #{ingDanger},
-        INGFUNCTIONAL = #{ingFunctional},
-        INGGRPNO = #{ingGrpNo}
-    WHERE INGNO = #{ingNo}
-  </update>
+    <!-- 수정 -->
+    <update id="updateIngredient" parameterType="com.routy.routyback.dto.IngredientDTO">
+        UPDATE INGREDIENTS
+        SET INGNAME = #{ingName},
+            INGENNAME = #{ingEnName},
+            INGDESC = #{ingDesc},
+            INGALLERGEN = #{ingAllergen},
+            INGDANGER = #{ingDanger},
+            INGFUNCTIONAL = #{ingFunctional},
+            INGGRPNO = #{ingGrpNo}
+        WHERE INGNO = #{ingNo}
+    </update>
 
-  <!-- 삭제 -->
-  <delete id="deleteIngredient" parameterType="int">
-    DELETE FROM INGREDIENTS WHERE INGNO = #{ingNo}
-  </delete>
+    <!-- 삭제 -->
+    <delete id="deleteIngredient" parameterType="int">
+        DELETE FROM INGREDIENTS WHERE INGNO = #{ingNo}
+    </delete>
+
+    <!-- 검색 + 페이징 -->
+    <select id="searchIngredients" parameterType="map" resultMap="ingredientResult">
+        SELECT *
+        FROM (
+        SELECT ROWNUM AS RN, A.*
+        FROM (
+        SELECT
+        INGNO, INGNAME, INGENNAME, INGDESC, INGALLERGEN,
+        INGDANGER, INGFUNCTIONAL, INGGRPNO, INGREGDATE
+        FROM INGREDIENTS
+        WHERE (#{ingName} IS NULL OR INGNAME LIKE '%' || #{ingName} || '%')
+        AND (#{ingAllergen} IS NULL OR INGALLERGEN LIKE '%' || #{ingAllergen} || '%')
+        ORDER BY INGNO ASC   <!-- 낮은 번호 → 높은 번호 -->
+        ) A
+        WHERE ROWNUM &lt;= #{end}
+        )
+        WHERE RN &gt;= #{start}
+    </select>
+
+    <!-- 검색 개수 -->
+    <select id="countIngredients" parameterType="map" resultType="int">
+        SELECT COUNT(*)
+        FROM INGREDIENTS
+        WHERE (#{ingName} IS NULL OR INGNAME LIKE '%' || #{ingName} || '%')
+          AND (#{ingAllergen} IS NULL OR INGALLERGEN LIKE '%' || #{ingAllergen} || '%')
+    </select>
 
 </mapper>
