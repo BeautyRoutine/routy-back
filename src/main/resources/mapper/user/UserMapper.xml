@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.routy.routyback.mapper.user.UserMapper">
+
+    <!-- USERS → User 도메인 매핑 -->
+    <resultMap id="UserResultMap" type="com.routy.routyback.domain.user.User">
+        <id     column="USERNO"      property="userNo"/>
+        <result column="USERID"      property="userId"/>
+        <result column="USERPW"      property="userPw"/>
+        <result column="USERNAME"    property="userName"/>
+        <result column="USERNICK"    property="userNick"/>
+        <result column="USEREMAIL"   property="userEmail"/>
+        <result column="USERPHONE"   property="userPhone"/>
+        <result column="USERAUTH"    property="userAuth"/>
+        <result column="USERSTATUS"  property="userStatus"/>
+    </resultMap>
+
+    <!-- USERID 기준 조회 (기본 로그인) -->
+    <select id="findByUserId" parameterType="string"
+            resultMap="UserResultMap">
+        SELECT
+            USERNO,
+            USERID,
+            USERPW,
+            USERNAME,
+            USERNICK,
+            USEREMAIL,
+            USERPHONE,
+            USERAUTH,
+            USERSTATUS
+        FROM USERS
+        WHERE USERID = #{userId}
+    </select>
+
+    <!-- USEREMAIL 기준 조회 (카카오 로그인용) -->
+    <select id="findByUserEmail" parameterType="string"
+            resultMap="UserResultMap">
+        SELECT
+            USERNO,
+            USERID,
+            USERPW,
+            USERNAME,
+            USERNICK,
+            USEREMAIL,
+            USERPHONE,
+            USERAUTH,
+            USERSTATUS
+        FROM USERS
+        WHERE USEREMAIL = #{userEmail}
+    </select>
+
+    <!-- 회원 INSERT
+         USERNO 는 IDENTITY라서 컬럼에서 제외
+         USERUPDATE, USERREGDATE 는 DEFAULT CURRENT_TIMESTAMP 사용 -->
+    <insert id="insertUser"
+            parameterType="com.routy.routyback.domain.user.User">
+        INSERT INTO USERS (
+            USERID,
+            USERPW,
+            USERNAME,
+            USERNICK,
+            USEREMAIL,
+            USERPHONE,
+            USERAUTH,
+            USERSTATUS
+        ) VALUES (
+            #{userId},
+            #{userPw},
+            #{userName},
+            #{userNick},
+            #{userEmail},
+            #{userPhone},
+            #{userAuth},
+            #{userStatus}
+        )
+    </insert>
+
+</mapper>
