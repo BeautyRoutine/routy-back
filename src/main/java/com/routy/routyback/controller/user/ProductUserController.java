@@ -1,12 +1,17 @@
 package com.routy.routyback.controller.user;
 
+import com.routy.routyback.common.ApiResponse;
 import com.routy.routyback.dto.ProductUserDTO;
 import com.routy.routyback.service.user.IProductUserService;
+
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController // restapi
@@ -23,5 +28,10 @@ public class ProductUserController {
         ProductUserDTO dto = service.productDetailView(prdNo);  // dto에 서비스 detailview로 객체 만들어서 저장
 
         return dto; // dto 반환(json)
+    }
+    
+    @GetMapping("/list/skin_cate")
+    public ApiResponse productAllSkinCate(@RequestParam Map<String, Object> param) { // 피부타입별 추천 제품목록
+    	return service.productAllSkinCate(param);
     }
 }
