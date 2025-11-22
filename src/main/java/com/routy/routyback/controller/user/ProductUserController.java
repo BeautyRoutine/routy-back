@@ -34,4 +34,8 @@ public class ProductUserController {
     public ApiResponse productAllSkinCate(@RequestParam Map<String, Object> param) { // 피부타입별 추천 제품목록
     	return service.productAllSkinCate(param);
     }
+    @GetMapping("/list/skin_commend")
+    public ApiResponse productAllSkinCommend(@RequestParam Map<String, Object> param) { // 당신을 위한 맞춤 추천
+    	return service.productAllSkinCommend(param);
+    }
 }

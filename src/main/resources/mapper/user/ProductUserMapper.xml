@@ -17,14 +17,15 @@
 		<result property="prdDesc" column="prdDesc"/>	
 	</resultMap>
 	
-	<select id="productDetailView" resultMap="prdResult">
+	<select id="productDetailView" resultType="com.routy.routyback.dto.ProductUserDTO">
 		SELECT
 			prdNo, prdName,prdPrice,prdVolume,prdCompany,prdMainCate,prdSubCate,prdImg,prdDesc
 		FROM 
 			PRODUCT
 		WHERE prdNo=#{prdNo}
 	</select>
-	<select id="productAllSkinCate" resultMap="prdResult">
+	
+	<select id="productAllSkinCate" resultType="com.routy.routyback.dto.ProductUserDTO">
 		SELECT
 			p.*
 			, (
@@ -42,11 +43,23 @@
 			) cnt
 		FROM 
 			PRODUCT p
-		WHERE ROWNUM &lt; = #{limit}
+		WHERE 1 = 1 
 			<if test="sub_cate != null and sub_cate != ''">
 	            AND p.prdSubCate = #{sub_cate}
 	        </if>
 		ORDER BY cnt DESC
+		FETCH FIRST #{limit} ROWS ONLY
+	</select>
+	
+	<select id="productCateViewed" resultType="int">
+		SELECT
+			prdSubCate, count(*) cnt
+		FROM
+			VIEWED_PRODUCT
+		WHERE userNo = #{user_no}
+		GROUP BY prdSubCate
+		ORDER BY cnt DESC
+		FETCH FIRST 5 ROWS ONLY
 	</select>
 	
 </mapper>
