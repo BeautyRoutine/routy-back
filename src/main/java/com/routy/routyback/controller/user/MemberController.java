@@ -14,7 +14,7 @@ import com.routy.routyback.dto.MemberSearchRequest;
  * - 회원 목록 조회, 단일 회원 조회
  */
 @RestController
-@RequestMapping("/member")
+@RequestMapping("/api/member")
 @RequiredArgsConstructor
 public class MemberController {
 
