@@ -3,6 +3,7 @@ package com.routy.routyback.service.admin;
 import java.sql.Timestamp;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -11,15 +12,25 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import com.routy.routyback.mapper.admin.IOrderPrdAdmDAO;
 import com.routy.routyback.mapper.admin.IOrdersAdmDAO;
 import com.routy.routyback.common.ApiResponse;
 import com.routy.routyback.common.ParamProcessor;
+import com.routy.routyback.common.category.CategoryRepository;
+import com.routy.routyback.dto.OrderPrdDTO;
 
 @Service
 public class OrderAdmService implements IOrderAdmService {
 	@Autowired
 	@Qualifier("IOrdersAdmDAO")
 	IOrdersAdmDAO dao;
+	
+	@Autowired
+	@Qualifier("IOrderPrdAdmDAO")
+	IOrderPrdAdmDAO prddao;
+	
+	@Autowired
+	CategoryRepository cateRepo;
 	
 	// KST 포맷터
     private static final DateTimeFormatter KST_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
@@ -78,6 +89,26 @@ public class OrderAdmService implements IOrderAdmService {
 			return ApiResponse.fromException(e);
 		}
 	}
+	
+	@Override
+	public ApiResponse detailPrdOrder(int odNo) {
+		try {
+			ArrayList<OrderPrdDTO> resultRow = prddao.detailPrdOrder(odNo);
+			
+			for(OrderPrdDTO row : resultRow) {
+				int mainNo = row.getPrdMainCate();
+				int subNo = row.getPrdSubCate();
+				row.setMainCateStr(cateRepo.getMainCateStr(mainNo));
+				row.setSubCateStr(cateRepo.getSubCateStr(subNo));
+			}
+			
+			return ApiResponse.success(resultRow);
+		} catch (Exception e) {
+			return ApiResponse.fromException(e);
+		}
+	}
+
+
 
 	@Override
 	public ApiResponse listAllOrdersDelivery(Map<String, Object> params) {
