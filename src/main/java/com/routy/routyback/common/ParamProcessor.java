@@ -48,7 +48,7 @@ public final class ParamProcessor {
 	 * @return
 	 * 	최종 결과값 (Int)
 	 */
-	private static int parseInt(Object value, int defaultValue) {
+	public static int parseInt(Object value, int defaultValue) {
         try {
             return value != null ? Integer.parseInt(value.toString()) : defaultValue;
         } catch (NumberFormatException e) {
