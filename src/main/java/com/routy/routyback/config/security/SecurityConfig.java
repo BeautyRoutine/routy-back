@@ -43,7 +43,8 @@ public class SecurityConfig {
                         "/auth/signup",
                         "/auth/kakao/**",
                         "/swagger-ui/**",
-                        "/v3/api-docs/**"
+                        "/v3/api-docs/**",
+                        "/api/products/**"
                 ).permitAll()
                 .anyRequest().authenticated()
         );
