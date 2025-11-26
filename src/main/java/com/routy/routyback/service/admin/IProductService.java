@@ -13,7 +13,7 @@ public interface IProductService {
     ProductDTO getById(int prdNo);
 
     // 등록
-    void insertProduct(ProductDTO product);
+    String insertProduct(ProductDTO product);
 
     // 수정
     void updateProduct(ProductDTO product);

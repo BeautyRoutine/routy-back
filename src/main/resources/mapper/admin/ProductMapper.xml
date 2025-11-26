@@ -41,6 +41,10 @@
 
     <!-- 등록 -->
     <insert id="productInsert" parameterType="com.routy.routyback.dto.ProductDTO">
+	    <selectKey keyProperty="prdNo" resultType="int" order="AFTER">
+	        SELECT ISEQ$$_119801.CURRVAL FROM dual
+	    </selectKey>
+	    
         INSERT INTO PRODUCT (
             PRDNAME, PRDPRICE, PRDVOLUME, PRDCOMPANY, PRDSTOCK,
             PRDMAINCATE, PRDSUBCATE, PRDIMG, PRDDESC,
@@ -117,5 +121,36 @@
         WHERE (#{prdName, jdbcType=VARCHAR} IS NULL OR PRDNAME LIKE '%' || #{prdName, jdbcType=VARCHAR} || '%')
           AND (#{prdCompany, jdbcType=VARCHAR} IS NULL OR PRDCOMPANY LIKE '%' || #{prdCompany, jdbcType=VARCHAR} || '%')
     </select>
+    
+    <!-- 성분 이름으로 성분 번호 조회 -->
+    <select id="searchIngredients" parameterType="string" resultType="integer">
+    	SELECT ingNo
+	    FROM INGREDIENTS
+	    WHERE DBMS_LOB.SUBSTR(ingName, 4000, 1) = #{name}
+    </select>
+    
+    <!-- 성분 매핑 -->
+    <insert id="mappingIngredients">
+    	INSERT INTO PRD_ING_MAPPING (
+            PRDNO, INGNO, PIMAPREGDATE
+        )
+        VALUES (
+        	#{prdNo}, #{ingNo}, SYSDATE
+        )
+    </insert>
+    
+    <!-- 성분 추가 -->
+    <insert id="insertIngredients" parameterType="map" useGeneratedKeys="false">
+    	<selectKey keyProperty="ingNo" resultType="int" order="BEFORE">
+	        SELECT NVL(MAX(INGNO), 0) + 1 AS INGNO
+        	FROM INGREDIENTS
+	    </selectKey>
+    	INSERT INTO INGREDIENTS (
+            INGNO, INGNAME
+        )
+        VALUES (
+        	#{ingNo}, #{ingName}
+        )
+    </insert>
 
 </mapper>
