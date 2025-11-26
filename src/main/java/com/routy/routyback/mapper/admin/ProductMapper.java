@@ -34,4 +34,13 @@ public interface ProductMapper {
 
     // ⭐ 검색된 데이터 개수
     int countProducts(Map<String, Object> params);
+    
+    // 성분 번호 검색
+    Integer searchIngredients(String name);
+    
+    // 성분 매핑
+    void mappingIngredients(int prdNo, int ingNo);
+    
+    // 없는 성분 이름 등록
+    void insertIngredients(Map<String, Object> param);
 }
