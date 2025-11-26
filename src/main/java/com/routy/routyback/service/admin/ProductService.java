@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,8 +46,31 @@ public class ProductService implements IProductService {
     }
 
     @Override
-    public void insertProduct(ProductDTO product) {
-        productMapper.productInsert(product);
+    public String insertProduct(ProductDTO product) {
+    	// 상품정보 등록
+    	productMapper.productInsert(product);
+    	int prdNo = product.getPrdNo();
+        // 성분 자동 매핑
+        // 1. 파싱
+    	String[] ingArray = product.getIngredients().split(";");
+    	// 2. 매핑 실패 시 mapper로 넘길 param
+    	Map<String, Object> param = new HashMap<>();
+    	// 3. 찾고 매핑하고 실패 시 성분 등록 후 재시도
+    	for (String ingName : ingArray) {
+    		ingName = ingName.trim(); // 공백 제거
+            Integer ingNo = productMapper.searchIngredients(ingName);
+
+            if (ingNo == null) {
+            	param.put("ingName", ingName);
+            	productMapper.insertIngredients(param);
+            	Integer tempIngNo = (Integer) param.get("ingNo");
+            	productMapper.mappingIngredients(prdNo, tempIngNo);
+            } else {
+            	productMapper.mappingIngredients(prdNo, ingNo);
+            }
+        }
+    	// 4. 성공응답
+        return "[prdNo:" + prdNo + "] 등록 성공";
     }
 
     @Override

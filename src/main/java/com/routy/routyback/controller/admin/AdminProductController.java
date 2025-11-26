@@ -46,8 +46,8 @@ public class AdminProductController {
     // 등록
     @PostMapping
     public ResponseEntity<?> create(@RequestBody ProductDTO dto) {
-        productService.insertProduct(dto);
-        return ResponseEntity.ok("등록 완료");
+        String result = productService.insertProduct(dto);
+        return ResponseEntity.ok(result);
     }
 
     // 수정
