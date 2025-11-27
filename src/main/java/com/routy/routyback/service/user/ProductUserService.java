@@ -37,13 +37,19 @@ public class ProductUserService implements IProductUserService{
 		
 	     //이미지 for문으로 나누기
 	     for (ProductImageVO img : imgList) {
-	            // GALLERY는 상품 이미지, DETAIL은 상품 설명용 이미지
-	            if ("GALLERY".equals(img.getPiType())) {
+	    	 String type = img.getPiType();//일단 변수로
+	    	 
+	    	 if (type != null) { //null 체크하고, 공백( ) 제거
+					type = type.trim();
+					
+	            // GALLERY는 상품 이미지, DETAIL은 상품 설명용 이미지, 대소문자 상관없게 수정
+	            if ("GALLERY".equalsIgnoreCase(type)) {
 	                galleryList.add(img.getPiUrl());
-	            } else if ("DETAIL".equals(img.getPiType())) {
+	            } else if ("DETAIL".equalsIgnoreCase(type)) {
 	                detailList.add(img.getPiUrl());
 	            }
 	        }
+	     }
 	     
 	   //만약 갤러리에 이미지 없으면 상품 테이블에 있는 이미지 보여주기
 	     if (galleryList.isEmpty() && product.getPrdImg() != null) {
