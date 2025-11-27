@@ -2,6 +2,7 @@ package com.routy.routyback.service.user;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.routy.routyback.common.ApiResponse;
 import com.routy.routyback.common.ParamProcessor;
+import com.routy.routyback.domain.ProductImageVO;
 import com.routy.routyback.dto.ProductUserDTO;
 import com.routy.routyback.mapper.user.ProductUserMapper;
 
@@ -22,7 +24,40 @@ public class ProductUserService implements IProductUserService{
 	
 	@Override
 	public ProductUserDTO productDetailView(int prdNo) { //사용자 제품 상세조회
-		return productUserMapper.productDetailView(prdNo);
+		//기본 정보 조회
+		ProductUserDTO product =productUserMapper.productDetailView(prdNo);
+		//상품 없으면 null
+		if(product==null) return null;
+		//이미지 리스트 조회
+		 List<ProductImageVO> imgList = productUserMapper.selectProductImageList(prdNo);
+		 
+		 //이미지 분류 -제품 이미지, 설명용 이미지
+		 List<String> galleryList = new ArrayList<>();
+	     List<String> detailList = new ArrayList<>();
+		
+	     //이미지 for문으로 나누기
+	     for (ProductImageVO img : imgList) {
+	            // GALLERY는 상품 이미지, DETAIL은 상품 설명용 이미지
+	            if ("GALLERY".equals(img.getPiType())) {
+	                galleryList.add(img.getPiUrl());
+	            } else if ("DETAIL".equals(img.getPiType())) {
+	                detailList.add(img.getPiUrl());
+	            }
+	        }
+	     
+	   //만약 갤러리에 이미지 없으면 상품 테이블에 있는 이미지 보여주기
+	     if (galleryList.isEmpty() && product.getPrdImg() != null) {
+	            galleryList.add(product.getPrdImg());
+	        }
+	     
+	     //Map 생성해서 dto에 넣기
+	     Map<String, List<String>> imageMap = new HashMap<>();
+	        imageMap.put("gallery", galleryList);
+	        imageMap.put("detail", detailList);
+
+	        product.setImages(imageMap);
+	        
+		return product;
 	}
 
 	@Override
