@@ -24,6 +24,21 @@
 			PRODUCT
 		WHERE prdNo=#{prdNo}
 	</select>
+	<!--  이미지 리스트 조회 -->
+	<select id="selectProductImageList" resultType="com.routy.routyback.domain.ProductImageVO">
+        SELECT 
+            PI_NO as piNo,
+            PRD_NO as prdNo,
+            PI_URL as piUrl,
+            PI_TYPE as piType,
+            PI_SORT as piSort
+        FROM 
+            PRODUCT_IMAGE
+        WHERE 
+            PRD_NO = #{prdNo}
+        ORDER BY 
+            PI_SORT ASC
+    </select>
 	
 	<select id="productAllSkinCate" resultType="com.routy.routyback.dto.ProductUserDTO">
 		SELECT
