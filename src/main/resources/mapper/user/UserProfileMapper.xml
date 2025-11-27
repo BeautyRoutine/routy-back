@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+    마이페이지 - 사용자 프로필 정보를 조회하는 MyBatis Mapper XML입니다.
+    UserProfileMapper.java 인터페이스와 1:1로 매핑되며,
+    USERS / REVIEW / POINT_HISTORY 테이블을 조합해서
+    회원의 기본 정보 + 리뷰 수 + 포인트 합계를 한 번에 조회합니다.
+-->
+<mapper namespace="com.routy.routyback.mapper.user.UserProfileMapper">
+
+    <!--
+        단일 회원의 프로필 요약 정보를 조회하는 쿼리입니다.
+        파라미터 : userNo (회원 번호)
+        결과 타입 : UserProfileResponseDto
+     -->
+    <select id="selectUserProfile"
+        parameterType="long"
+        resultType="com.routy.routyback.dto.user.UserProfileResponse">
+
+        SELECT
+        -- 회원 기본 정보
+        U.USERNO AS userNo, -- 회원 번호
+        U.USERNAME AS userName, -- 회원 이름
+        U.USERLEVEL AS userLevel, -- 회원 등급 코드
+
+        -- 회원이 작성한 리뷰 개수
+        (
+        SELECT COUNT(*)
+        FROM REVIEW R
+        WHERE R.USERNO = U.USERNO
+        ) AS reviewCount,
+
+        -- 회원의 누적 포인트 합계 (없으면 0)
+        (
+        SELECT NVL(SUM(PH.PHPRICE), 0)
+        FROM POINT_HISTORY PH
+        WHERE PH.USERNO = U.USERNO
+        ) AS points
+
+        FROM USERS U
+        WHERE U.USERNO = #{userNo}
+        <!--
+            #{userNo} : Java에서 전달받은 파라미터(Long userNo)가 바인딩되는 자리입니다.
+        -->
+    </select>
+
+</mapper>
