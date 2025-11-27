@@ -2,10 +2,13 @@ package com.routy.routyback.controller.user;
 
 import com.routy.routyback.common.ApiResponse;
 import com.routy.routyback.dto.ProductUserDTO;
+import com.routy.routyback.dto.RecommendedProductDTO;
 import com.routy.routyback.service.user.IProductUserService;
 
+import java.util.List;
 import java.util.Map;
 
+import com.routy.routyback.service.user.IRecommendedProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,13 +26,16 @@ public class ProductUserController {
     @Qualifier("productUserService")
     IProductUserService service;  // 서비스 인터페이스 주입
 
+    @Autowired
+    IRecommendedProductService recommendedProductService;
+
     @GetMapping("/{prdNo}") //   /api/products/123 등
     public ProductUserDTO productDetailView(@PathVariable int prdNo) { // DTO 타입
         ProductUserDTO dto = service.productDetailView(prdNo);  // dto에 서비스 detailview로 객체 만들어서 저장
 
         return dto; // dto 반환(json)
     }
-    
+
     @GetMapping("/list/skin_cate")
     public ApiResponse productAllSkinCate(@RequestParam Map<String, Object> param) { // 피부타입별 추천 제품목록
     	return service.productAllSkinCate(param);
@@ -38,4 +44,13 @@ public class ProductUserController {
     public ApiResponse productAllSkinCommend(@RequestParam Map<String, Object> param) { // 당신을 위한 맞춤 추천
     	return service.productAllSkinCommend(param);
     }
+
+    @GetMapping("/recommend")
+    public List<RecommendedProductDTO> getRecommendedProducts(
+            @RequestParam(required = false) Integer userNo,
+            @RequestParam(required = false) List<Integer> recent
+    ) {
+        return recommendedProductService.getRecommendedProducts(userNo, recent);
+    }
+
 }

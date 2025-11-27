@@ -4,15 +4,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.routy.routyback.dto.RecommendedProductDTO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import com.routy.routyback.domain.ProductImageVO;
 import com.routy.routyback.dto.ProductUserDTO;
 
 @Mapper
 public interface ProductUserMapper {
 	
 	ProductUserDTO productDetailView(@Param("prdNo") int prdNo); //제품 상세조회
+	List<ProductImageVO> selectProductImageList(@Param("prdNo") int prdNo); //이미지 리스트 조회
 	
 	/**
 	 * 피부타입값을 받아 해당 피부타입 사람들이 가장 많이 긍정적인 반응을 보인 제품 목록을 받아옴
@@ -29,5 +32,7 @@ public interface ProductUserMapper {
 	 * @return 카테고리 (List)
 	 */
 	List<Integer> productCateViewed(Map<String, Object> params);
+
+	
 
 }
