@@ -5,7 +5,9 @@
 package com.routy.routyback.mapper.user;
 
 import com.routy.routyback.dto.user.UserProfileResponse;
+import com.routy.routyback.dto.user.UserProfileUpdateRequest;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 @Mapper // MyBatis가 이 인터페이스를 Mapper로 인식하도록 해주는 애노테이션
 public interface UserProfileMapper {
@@ -22,4 +24,13 @@ public interface UserProfileMapper {
      *         - points      : 누적 포인트 합계
      */
     UserProfileResponse selectUserProfile(Long userNo);
+
+    /**
+     * 사용자 프로필 정보를 수정합니다.
+     * @param userNo 수정할 회원 번호
+     * @param req 수정 요청 데이터
+     * @return int 업데이트된 행 수
+     */
+    int updateUserProfile(@Param("userNo") Long userNo,
+        @Param("req") UserProfileUpdateRequest req);
 }

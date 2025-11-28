@@ -34,6 +34,8 @@
         U.USERNAME AS userName, -- 회원 이름
         U.USERLEVEL AS userLevel, -- 회원 등급 코드
         U.USERNICK AS nickName, -- 회원 닉네임
+        U.USERPROFILEIMG AS profileImageUrl, -- 프로필 이미지 URL
+
 
         <!-- ========================= -->
         <!-- 2. 회원 연락처 / 계정 정보 -->
@@ -79,15 +81,9 @@
         FROM POINT_HISTORY PH2
         WHERE PH2.USERNO = U.USERNO
         AND PH2.POINTCPNO IS NOT NULL
-        ) AS couponCount -- 쿠폰 관련 포인트 내역 개수 (쿠폰 발급/사용 건수)
+        ) AS couponCount, -- 쿠폰 관련 포인트 내역 개수 (쿠폰 발급/사용 건수)
 
-        <!--
-            필요하다면 피부 타입/피부 고민 컬럼도 여기서 함께 내려줄 수 있습니다.
-            예시)
-            U.USERSKINTYPE        AS skinType,
-            U.USERSKINCONCERNS    AS skinConcerns
-            실제 컬럼명에 맞춰 추가 사용.
-        -->
+        U.USERSKIN AS skinType -- 사용자 피부 타입 (단일 선택)
 
         FROM
         USERS U -- 회원 기본 정보 테이블
@@ -98,5 +94,30 @@
             ex) userProfileMapper.selectUserProfile(1L);
          -->
     </select>
+
+    <!--
+    사용자 프로필 정보를 수정하는 UPDATE 쿼리입니다.
+    UserProfileMapper.updateUserProfile() 와 매핑됩니다.
+    수정 가능한 필드:
+    이름, 닉네임, 이메일, 연락처, 도로명주소, 상세주소, 우편번호,
+    피부 타입, 프로필 이미지 URL
+    @author 김지용
+    -->
+    <update id="updateUserProfile">
+
+        UPDATE USERS
+        SET USERNAME       = #{req.userName},       -- 회원 이름
+            USERNICK       = #{req.nickName},       -- 닉네임
+            USEREMAIL      = #{req.email},          -- 이메일
+            USERHP         = #{req.phone},          -- 연락처
+            USERROADADDR   = #{req.roadAddress},    -- 도로명 주소
+            USERDETAILADDR = #{req.detailAddress},  -- 상세 주소
+            USERZIP        = #{req.zipCode},        -- 우편번호
+            USERSKIN       = #{req.skinType},       -- 피부 타입
+            USERPROFILEIMG = #{req.profileImageUrl} -- 프로필 이미지 URL
+
+        WHERE USERNO = #{userNo}
+
+    </update>
 
 </mapper>

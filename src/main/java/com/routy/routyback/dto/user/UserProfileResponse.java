@@ -4,7 +4,6 @@
  */
 package com.routy.routyback.dto.user;
 
-import java.util.List;
 import lombok.Data;
 
 @Data
@@ -26,8 +25,6 @@ public class UserProfileResponse {
 
     private Integer couponCount;     // 보유 쿠폰 수
 
-    private List<String> skinType;       // 피부 타입 리스트
-    private List<String> skinConcerns;   // 피부 고민 리스트
-
-
+    private String skinType;       // 피부 타입 리스트
+    
 }

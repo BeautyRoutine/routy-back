@@ -1,6 +1,7 @@
 package com.routy.routyback.service.user;
 
 import com.routy.routyback.dto.user.UserProfileResponse;
+import com.routy.routyback.dto.user.UserProfileUpdateRequest;
 import com.routy.routyback.mapper.user.UserProfileMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,5 +19,17 @@ public class UserProfileService implements IUserProfileService {
     @Override
     public UserProfileResponse getUserProfile(Long userNo) {
         return userProfileMapper.selectUserProfile(userNo);
+    }
+
+    /**
+     * 사용자 프로필 수정 서비스
+     * 회원의 프로필 정보를 업데이트합니다.
+     * @param userNo 회원 번호
+     * @param req 수정 요청 DTO
+     * @return boolean 업데이트 성공 여부
+     */
+    public boolean updateUserProfile(Long userNo, UserProfileUpdateRequest req) {
+        int result = userProfileMapper.updateUserProfile(userNo, req);
+        return result > 0;
     }
 }

@@ -1,12 +1,17 @@
 package com.routy.routyback.controller.user;
 
+import com.routy.routyback.common.ApiResponse;
+import com.routy.routyback.dto.user.UserProfileResponse;
+import com.routy.routyback.dto.user.UserProfileUpdateRequest;
+import com.routy.routyback.service.user.IUserProfileService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.GetMapping;
-import com.routy.routyback.service.user.IUserProfileService;
-import com.routy.routyback.dto.user.UserProfileResponse;
 
 /**
  * 마이페이지 - 사용자 프로필 조회 컨트롤러
@@ -31,4 +36,30 @@ public class UserProfileController {
     public UserProfileResponse getUserProfile(@PathVariable Long userNo) {
         return userProfileService.getUserProfile(userNo);
     }
+
+    /**
+     * 사용자 프로필 수정 API
+     * PUT /api/users/{userNo}/profile
+     *
+     * @param userNo 수정할 회원 번호
+     * @param req 수정 요청 DTO
+     * @return 공통 응답 포맷 (ApiResponse)
+     * @author 김지용
+     */
+    @PutMapping("/{userNo}/profile")
+    public ResponseEntity<ApiResponse> updateUserProfile(
+        @PathVariable Long userNo,
+        @RequestBody UserProfileUpdateRequest req
+    ) {
+        boolean updated = userProfileService.updateUserProfile(userNo, req);
+
+        if (!updated) {
+            return ResponseEntity
+                .badRequest()
+                .body(ApiResponse.error(400, "프로필 수정에 실패했습니다."));
+        }
+
+        return ResponseEntity.ok(ApiResponse.success("OK"));
+    }
+
 }
