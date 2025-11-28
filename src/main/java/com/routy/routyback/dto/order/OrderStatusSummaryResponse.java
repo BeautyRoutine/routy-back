@@ -1,6 +1,7 @@
 /**
- * 주문/배송 현황 요약 응답 DTO
- * 각 주문 상태별 개수를 제공합니다.
+ * 주문 상태 요약 응답 DTO
+ * 사용자 마이페이지 상단에 보여주는 주문/배송 현황 데이터입니다.
+ * 주문 상태(1~7)별 카운트를 포함합니다.
  * @author 김지용
  */
 package com.routy.routyback.dto.order;
@@ -10,11 +11,11 @@ import lombok.Data;
 @Data
 public class OrderStatusSummaryResponse {
 
-    private int paymentComplete; // 1: 주문완료
-    private int preparing;       // 2: 준비중
-    private int shipping;        // 3: 배송중
-    private int delivered;       // 4: 배송완료
-    private int canceled;        // 5: 취소
-    private int returned;        // 6: 반품
-    private int exchanged;       // 7: 교환
+    private Integer paymentComplete; // 1: 주문 완료
+    private Integer preparing;       // 2: 준비중
+    private Integer shipping;        // 3: 배송중
+    private Integer delivered;       // 4: 배송 완료
+    private Integer canceled;        // 5: 취소
+    private Integer returned;        // 6: 반품
+    private Integer exchanged;       // 7: 교환
 }

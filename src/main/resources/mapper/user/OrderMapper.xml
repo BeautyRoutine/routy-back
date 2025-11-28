@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+    주문 관련 Mapper XML
+    주문 상태 요약 / 주문 목록 / 주문 상세 / 주문상품 목록
+    모든 주문 기능 SQL을 단일 XML로 통합 관리합니다.
+    @author 김지용
+-->
+<mapper namespace="com.routy.routyback.mapper.order.OrderMapper">
+
+    <!-- 1) 주문 상태 요약 -->
+    <select id="getOrderStatusSummary"
+        parameterType="long"
+        resultType="com.routy.routyback.dto.order.OrderStatusSummaryResponse">
+        SELECT COUNT(DECODE(ODSTATUS, 1, 1)) AS paymentComplete,
+               COUNT(DECODE(ODSTATUS, 2, 1)) AS preparing,
+               COUNT(DECODE(ODSTATUS, 3, 1)) AS shipping,
+               COUNT(DECODE(ODSTATUS, 4, 1)) AS delivered,
+               COUNT(DECODE(ODSTATUS, 5, 1)) AS canceled,
+               COUNT(DECODE(ODSTATUS, 6, 1)) AS returned,
+               COUNT(DECODE(ODSTATUS, 7, 1)) AS exchanged
+        FROM ORDERS
+        WHERE USERNO = #{userNo}
+    </select>
+
+    <!-- 2) 주문 목록 조회 -->
+    <select id="getOrderList"
+        parameterType="long"
+        resultType="com.routy.routyback.dto.order.OrderListItemResponse">
+        SELECT O.ODNO                                                      AS orderNo,
+               P.PRDNAME                                                   AS productName,
+               P.PRDIMG                                                    AS productImage,
+               (SELECT COUNT(*) FROM ORDER_ITEM OI WHERE OI.ODNO = O.ODNO) AS itemCount,
+               (O.ODPRDPRICE + O.ODDELVPRICE)                              AS totalPrice,
+               TO_CHAR(O.ODREGDATE, 'YYYY-MM-DD')                          AS orderDate,
+               O.ODSTATUS                                                  AS orderStatus
+        FROM ORDERS O
+                 JOIN ORDER_ITEM OI ON OI.ODNO = O.ODNO
+                 JOIN PRODUCT P ON P.PRDNO = OI.PRDNO
+        WHERE O.USERNO = #{userNo}
+        GROUP BY O.ODNO, P.PRDNAME, P.PRDIMG,
+                 O.ODPRDPRICE, O.ODDELVPRICE, O.ODREGDATE, O.ODSTATUS
+        ORDER BY O.ODNO DESC
+    </select>
+
+    <!-- 3) 주문 상세 조회 -->
+    <select id="getOrderDetail"
+        parameterType="long"
+        resultType="com.routy.routyback.dto.order.OrderDetailResponse">
+        SELECT O.ODNO                                        AS orderNo,
+               TO_CHAR(O.ODREGDATE, 'YYYY-MM-DD HH24:MI:SS') AS orderDate,
+               O.ODSTATUS                                    AS orderStatus,
+               (O.ODPRDPRICE + O.ODDELVPRICE)                AS totalPrice,
+               O.ODDELVPRICE                                 AS deliveryPrice
+        FROM ORDERS O
+        WHERE O.ODNO = #{odNo}
+    </select>
+
+    <!-- 3-1) 주문 상세 상품 목록 -->
+    <select id="getOrderItems"
+        parameterType="long"
+        resultType="com.routy.routyback.dto.order.OrderDetailResponse$OrderItem">
+        SELECT P.PRDNO    AS productNo,
+               P.PRDNAME  AS productName,
+               P.PRDIMG   AS productImage,
+               OI.OIQTY   AS quantity,
+               OI.OIPRICE AS price,
+               OI.OITOTAL AS total
+        FROM ORDER_ITEM OI
+                 JOIN PRODUCT P ON P.PRDNO = OI.PRDNO
+        WHERE OI.ODNO = #{odNo}
+    </select>
+
+</mapper>
