@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @RequiredArgsConstructor
-public class OrderService implements com.routy.routyback.service.order.IOrderService {
+public class OrderService implements IOrderService {
 
     private final OrderMapper orderMapper;
 
