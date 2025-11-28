@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+    주문/배송 상태 요약 XML
+    주문 상태(ODSTATUS)별 개수 집계
+    @author 김지용
+-->
+<mapper namespace="com.routy.routyback.mapper.user.OrderStatusSummaryMapper">
+
+    <select id="getOrderStatusSummary"
+        parameterType="long"
+        resultType="com.routy.routyback.dto.order.OrderStatusSummaryResponse">
+
+        SELECT COUNT(DECODE(ODSTATUS, 1, 1)) AS paymentComplete,
+               COUNT(DECODE(ODSTATUS, 2, 1)) AS preparing,
+               COUNT(DECODE(ODSTATUS, 3, 1)) AS shipping,
+               COUNT(DECODE(ODSTATUS, 4, 1)) AS delivered,
+               COUNT(DECODE(ODSTATUS, 5, 1)) AS canceled,
+               COUNT(DECODE(ODSTATUS, 6, 1)) AS returned,
+               COUNT(DECODE(ODSTATUS, 7, 1)) AS exchanged
+        FROM ORDERS
+        WHERE USERNO = #{userNo}
+        
+    </select>
+
+</mapper>
