@@ -4,6 +4,7 @@
  */
 package com.routy.routyback.dto.user;
 
+import java.util.List;
 import lombok.Data;
 
 @Data
@@ -14,7 +15,19 @@ public class UserProfileResponse {
     private Integer userLevel; // 회원레벨
     private Integer reviewCount; // 리뷰개수
     private Integer points; // 포인트
+    private String nickName; // 닉네임
+    private String profileImageUrl; // 프로필 이미지 URL
 
     // 필요 시 : 쿠폰 개수, 피부 타입 등 확장 가능
+    private String email;            // 이메일
+    private String phone;            // 연락처
+    private String address;          // 주소
+    private String zipCode;          // 우편번호
+
+    private Integer couponCount;     // 보유 쿠폰 수
+
+    private List<String> skinType;       // 피부 타입 리스트
+    private List<String> skinConcerns;   // 피부 고민 리스트
+
 
 }

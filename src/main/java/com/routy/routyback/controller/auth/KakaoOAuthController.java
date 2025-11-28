@@ -9,7 +9,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @RestController
-@RequestMapping("/auth/kakao")
+@RequestMapping("/api/auth/kakao")
 @RequiredArgsConstructor
 public class KakaoOAuthController {
 
