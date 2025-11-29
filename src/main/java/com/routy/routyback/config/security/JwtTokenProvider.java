@@ -4,90 +4,100 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
-import java.nio.charset.StandardCharsets;
 import java.security.Key;
+import java.util.Collections;
 import java.util.Date;
 
-/**
- * JWT 생성/검증 담당
- */
 @Component
 public class JwtTokenProvider {
 
-    private final Key key;
-    private final long validityInMs;
-    private final CustomUserDetailsService userDetailsService;
+    @Value("${jwt.secret}")
+    private String secretKey;
 
-    public JwtTokenProvider(
-            @Value("${jwt.secret:ThisIsJustTempSecretKeyChangeMeChangeMeChangeMe}") String secret,
-            @Value("${jwt.validity-ms:3600000}") long validityInMs,
-            CustomUserDetailsService userDetailsService
-    ) {
-        // Base64 디코딩 제거: 문자열을 그대로 키로 사용
-        byte[] keyBytes = secret.getBytes(StandardCharsets.UTF_8);
-        this.key = Keys.hmacShaKeyFor(keyBytes);
-        this.validityInMs = validityInMs;
-        this.userDetailsService = userDetailsService;
+    @Value("${jwt.expiration}")
+    private long validityInMilliseconds;
+
+    private Key key;
+
+    @PostConstruct
+    protected void init() {
+        this.key = Keys.hmacShaKeyFor(secretKey.getBytes());
     }
 
-    /**
-     * username(USERID)을 기반으로 토큰 생성
-     */
-    public String createToken(String username) {
+    // JWT 토큰 생성 - userLevel 포함! (팀원 요청사항)
+    public String createToken(String userId, Integer userLevel) {
+        Claims claims = Jwts.claims().setSubject(userId);
+        claims.put("userLevel", userLevel);  // ← userLevel claim 추가!
+
         Date now = new Date();
-        Date validity = new Date(now.getTime() + validityInMs);
+        Date validity = new Date(now.getTime() + validityInMilliseconds);
 
         return Jwts.builder()
-                .setSubject(username)
+                .setClaims(claims)
                 .setIssuedAt(now)
                 .setExpiration(validity)
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }
 
-    /**
-     * 토큰에서 Authentication 추출
-     */
+    // JWT 토큰에서 인증 정보 조회
     public Authentication getAuthentication(String token) {
-        String username = getUsername(token);
-        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-        return new UsernamePasswordAuthenticationToken(
-                userDetails,
-                "",
-                userDetails.getAuthorities()
-        );
-    }
-
-    /**
-     * 토큰에서 username(USERID) 추출
-     */
-    public String getUsername(String token) {
-        return parseClaims(token).getSubject();
-    }
-
-    /**
-     * 토큰 유효성 검증 (만료 여부만 체크)
-     */
-    public boolean validateToken(String token) {
-        try {
-            Claims claims = parseClaims(token);
-            return !claims.getExpiration().before(new Date());
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-    private Claims parseClaims(String token) {
-        return Jwts.parserBuilder()
+        Claims claims = Jwts.parserBuilder()
                 .setSigningKey(key)
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
+
+        String userId = claims.getSubject();
+        Integer userLevel = claims.get("userLevel", Integer.class);
+
+        // userLevel에 따라 권한 부여
+        String role = (userLevel != null && userLevel == 9) ? "ROLE_ADMIN" : "ROLE_USER";
+
+        return new UsernamePasswordAuthenticationToken(
+                userId,
+                "",
+                Collections.singletonList(new SimpleGrantedAuthority(role))
+        );
+    }
+
+    // 토큰에서 회원 정보 추출
+    public String getUserId(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .getSubject();
+    }
+
+    // Request의 Header에서 token 값 가져오기
+    public String resolveToken(HttpServletRequest request) {
+        String bearerToken = request.getHeader("Authorization");
+        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+            return bearerToken.substring(7);
+        }
+        return null;
+    }
+
+    // 토큰 유효성 검증
+    public boolean validateToken(String token) {
+        try {
+            Jwts.parserBuilder()
+                    .setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(token);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 }

@@ -1,10 +1,6 @@
-package com.routy.routyback.domain.user;
+package com.routy.routyback.dto.auth;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-
-public class User {
-    private Long userNo;
+public class SignupRequest {
     private String userId;
     private String userPw;
     private String userName;
@@ -15,11 +11,8 @@ public class User {
     private String userRoadAddr;
     private String userDetailAddr;
     private String userBirth;
-    private Integer userLevel;
-    private LocalDateTime userRegdate;
 
     // Getters
-    public Long getUserNo() { return userNo; }
     public String getUserId() { return userId; }
     public String getUserPw() { return userPw; }
     public String getUserName() { return userName; }
@@ -30,11 +23,8 @@ public class User {
     public String getUserRoadAddr() { return userRoadAddr; }
     public String getUserDetailAddr() { return userDetailAddr; }
     public String getUserBirth() { return userBirth; }
-    public Integer getUserLevel() { return userLevel; }
-    public LocalDateTime getUserRegdate() { return userRegdate; }
 
     // Setters
-    public void setUserNo(Long userNo) { this.userNo = userNo; }
     public void setUserId(String userId) { this.userId = userId; }
     public void setUserPw(String userPw) { this.userPw = userPw; }
     public void setUserName(String userName) { this.userName = userName; }
@@ -45,6 +35,4 @@ public class User {
     public void setUserRoadAddr(String userRoadAddr) { this.userRoadAddr = userRoadAddr; }
     public void setUserDetailAddr(String userDetailAddr) { this.userDetailAddr = userDetailAddr; }
     public void setUserBirth(String userBirth) { this.userBirth = userBirth; }
-    public void setUserLevel(Integer userLevel) { this.userLevel = userLevel; }
-    public void setUserRegdate(LocalDateTime userRegdate) { this.userRegdate = userRegdate; }
 }

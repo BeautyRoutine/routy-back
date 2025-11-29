@@ -1,13 +1,14 @@
-package com.routy.routyback.dto.user;
+package com.routy.routyback.dto.auth;
 
-// 로그인 요청 DTO
-public class UserLoginRequest {
+public class LoginRequest {
     private String userId;
     private String userPw;
 
+    // Getters
     public String getUserId() { return userId; }
-    public void setUserId(String userId) { this.userId = userId; }
-
     public String getUserPw() { return userPw; }
+
+    // Setters
+    public void setUserId(String userId) { this.userId = userId; }
     public void setUserPw(String userPw) { this.userPw = userPw; }
 }
