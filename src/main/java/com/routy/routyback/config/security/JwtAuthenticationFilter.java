@@ -4,48 +4,54 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.util.StringUtils;
+import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
-/**
- * HTTP 요청에서 JWT를 꺼내서 검증하고,
- * 성공하면 SecurityContext 에 Authentication 을 세팅하는 필터
- */
-@RequiredArgsConstructor
+@Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
 
-    @Override
-    protected void doFilterInternal(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            FilterChain filterChain
-    ) throws ServletException, IOException {
+    public JwtAuthenticationFilter(JwtTokenProvider jwtTokenProvider) {
+        this.jwtTokenProvider = jwtTokenProvider;
+    }
 
-        String token = resolveToken(request);
+    @Override
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain filterChain) throws ServletException, IOException {
+        
+        String uri = request.getRequestURI();
+
+        // 인증 불필요 엔드포인트 → 필터 통과
+        if (uri.startsWith("/api/auth") ||
+            uri.startsWith("/api/products") ||
+            uri.startsWith("/api/categories") ||
+            uri.startsWith("/api/search") ||
+            uri.startsWith("/api/ingredient") ||
+            uri.startsWith("/api/reviews") ||
+            uri.startsWith("/api/cart") ||
+            uri.startsWith("/api/dibs") ||
+            uri.startsWith("/api/orders") ||
+            uri.startsWith("/api/users") ||
+            uri.equals("/") ||
+            uri.equals("/index.html")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        // 토큰 필요한 요청 처리
+        String token = jwtTokenProvider.resolveToken(request);
 
         if (token != null && jwtTokenProvider.validateToken(token)) {
-            Authentication authentication = jwtTokenProvider.getAuthentication(token);
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+            Authentication auth = jwtTokenProvider.getAuthentication(token);
+            SecurityContextHolder.getContext().setAuthentication(auth);
         }
 
         filterChain.doFilter(request, response);
-    }
-
-    /**
-     * Authorization 헤더에서 Bearer 토큰 추출
-     */
-    private String resolveToken(HttpServletRequest request) {
-        String bearer = request.getHeader("Authorization");
-        if (StringUtils.hasText(bearer) && bearer.startsWith("Bearer ")) {
-            return bearer.substring(7);
-        }
-        return null;
     }
 }
