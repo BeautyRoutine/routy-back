@@ -5,17 +5,33 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 /**
- * USERS 테이블 접근용 MyBatis 매퍼
+ * User 관련 MyBatis Mapper 인터페이스
  */
 @Mapper
 public interface UserMapper {
 
-    // 기본 로그인: USERID 로 조회
+    /**
+     * 이메일로 회원 조회
+     */
+    User findByEmail(@Param("email") String email);
+
+    /**
+     * 회원 번호로 조회
+     */
+    User findByUserNo(@Param("userNo") Long userNo);
+
+    /**
+     * userId로 회원 조회
+     */
     User findByUserId(@Param("userId") String userId);
 
-    // 카카오 로그인: 이메일 기준으로 조회
-    User findByUserEmail(@Param("userEmail") String userEmail);
+    /**
+     * 이메일 중복 체크
+     */
+    boolean existsByEmail(@Param("email") String email);
 
-    // 신규 회원 저장(로컬/카카오 공통)
+    /**
+     * 회원 저장 (회원가입)
+     */
     int insertUser(User user);
 }

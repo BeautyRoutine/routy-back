@@ -29,11 +29,20 @@ public class ProductUserController {
     @Autowired
     IRecommendedProductService recommendedProductService;
 
-    @GetMapping("/{prdNo}") //   /api/products/123 등
-    public ProductUserDTO productDetailView(@PathVariable int prdNo) { // DTO 타입
-        ProductUserDTO dto = service.productDetailView(prdNo);  // dto에 서비스 detailview로 객체 만들어서 저장
-
-        return dto; // dto 반환(json)
+    @GetMapping("/{prdNo}")
+    public ApiResponse<ProductUserDTO> productDetailView(@PathVariable int prdNo) {
+        try {
+            ProductUserDTO dto = service.productDetailView(prdNo);
+            
+            if (dto == null) {
+                // null이면 예외처리
+                throw new IllegalArgumentException("해당 상품이 존재하지 않습니다.");
+            }
+            return ApiResponse.success(dto); // 성공 시 data에 DTO를 담아 반환
+            
+        } catch (Exception e) {
+            return ApiResponse.fromException(e); // 실패 시 에러 메시지 반환
+        }
     }
 
     @GetMapping("/list/skin_cate")
