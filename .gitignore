@@ -63,6 +63,7 @@ Wallet_*/
 *.key
 *.p12
 *.sso
+*.ppk
 
 
 # 빌드 / 의존성 캐시
@@ -72,3 +73,4 @@ Wallet_*/
 *.code-workspace
 Wallet_ROUTYDB.zip
 Wallet_ROUTYDB.zip
+secrets/
