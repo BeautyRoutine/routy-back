@@ -1,22 +1,14 @@
 package com.routy.routyback.config;
 
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+/**
+ * Web MVC 설정
+ * 
+ * CORS 설정은 SecurityConfig에서 처리하므로 여기서는 제거
+ */
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
-
-    @Override
-    public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**")
-            .allowedOrigins(
-                "http://localhost:3000",  // 사용자용
-                "http://localhost:3001"   // 관리자용
-            )
-            .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
-            .allowedHeaders("*")
-            .allowCredentials(true)
-            .maxAge(3600);
-    }
+    // CORS 설정 제거 (SecurityConfig에서 처리)
 }
