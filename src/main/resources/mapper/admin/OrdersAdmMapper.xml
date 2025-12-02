@@ -24,20 +24,22 @@
         </choose>
     </sql>
 	<select id="listAllOrders" resultType="Map">
-	SELECT o.*, u.userNo, u.userName, u.userNick, u.userId, u.userHp
-    <include refid="listAllOrdersFilter"/>
-	OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
+		SELECT o.*, u.userNo, u.userName, u.userNick, u.userId, u.userHp
+	    <include refid="listAllOrdersFilter"/>
+		OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
 	</select>
     <select id="listAllOrdersCount" resultType="int">
-    SELECT COUNT(1)
-    <include refid="listAllOrdersFilter"/>
+	    SELECT COUNT(1)
+	    <include refid="listAllOrdersFilter"/>
     </select>
     
     <select id="detailOrder">
-    SELECT o.*, u.userNo, u.userName, u.userNick, u.userId, u.userHp
-    FROM ORDERS o LEFT JOIN USERS u ON u.userNo=o.userNo
-    WHERE odNo = #{odNo}
+	    SELECT o.*, u.userNo, u.userName, u.userNick, u.userId, u.userHp
+	    FROM ORDERS o LEFT JOIN USERS u ON u.userNo=o.userNo
+	    WHERE odNo = #{odNo}
     </select>
+    
+    
     
     <sql id="listAllOrderDeliveryFilter">
         FROM DELIVERY d LEFT JOIN ORDERS o ON o.odNo=d.odNo LEFT JOIN USERS u ON u.userNo=o.userNo
@@ -65,18 +67,36 @@
         </choose>
     </sql>
 	<select id="listAllOrdersDelivery" resultType="Map">
-	SELECT d.*, u.userNo, u.userName, u.userNick, u.userId, u.userHp
-    <include refid="listAllOrderDeliveryFilter"/>
-	OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
+		SELECT d.*, u.userNo, u.userName, u.userNick, u.userId, u.userHp
+	    <include refid="listAllOrderDeliveryFilter"/>
+		OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
 	</select>
     <select id="listAllOrdersDeliveryCount" resultType="int">
-    SELECT COUNT(1)
-    <include refid="listAllOrderDeliveryFilter"/>
+	    SELECT COUNT(1)
+	    <include refid="listAllOrderDeliveryFilter"/>
     </select>
     
     <select id="detailOrderDelivery">
-    SELECT d.*, u.userNo, u.userName, u.userNick, u.userId, u.userHp
-    FROM DELIVERY d LEFT JOIN ORDERS o ON o.odNo=d.odNo LEFT JOIN USERS u ON u.userNo=o.userNo
-    WHERE d.delvNo = #{delvNo}
+	    SELECT d.*, u.userNo, u.userName, u.userNick, u.userId, u.userHp
+	    FROM DELIVERY d LEFT JOIN ORDERS o ON o.odNo=d.odNo LEFT JOIN USERS u ON u.userNo=o.userNo
+	    WHERE d.delvNo = #{delvNo}
     </select>
+    
+    <insert id="insertOrderDelivery" parameterType="com.routy.routyback.dto.DeliveryDTO">
+    	<selectKey keyProperty="delvNo" resultType="int" order="BEFORE">
+	        SELECT ISEQ$$_119801.NEXTVAL FROM dual
+	    </selectKey>
+	    INSERT INTO DELIVERY (
+            delvNo, odNo, delvCompany, delvComNum
+            , delvType, delvStatus
+            , delvGetName, delvGetHp
+            , delvGetZip, delvGetJibunAddr, delvGetRoadAddr, delvGetDetailAddr, delvGetBcCode
+        )
+        VALUES (
+        	#{delvNo}, #{odNo}, #{delvCompany}, #{delvComNum}
+            , #{delvType}, 1
+            , #{delvGetName}, #{delvGetHp}
+            , #{delvGetZip}, #{delvGetJibunAddr}, #{delvGetRoadAddr}, #{delvGetDetailAddr}, #{delvGetBcCode}
+		)
+    </insert>
 </mapper>

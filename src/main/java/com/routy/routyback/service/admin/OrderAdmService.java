@@ -17,6 +17,7 @@ import com.routy.routyback.mapper.admin.IOrderDetailAdmDAO;
 import com.routy.routyback.common.ApiResponse;
 import com.routy.routyback.common.ParamProcessor;
 import com.routy.routyback.common.category.CategoryRepository;
+import com.routy.routyback.dto.DeliveryDTO;
 import com.routy.routyback.dto.OrderDelvDTO;
 import com.routy.routyback.dto.OrderPrdDTO;
 
@@ -166,6 +167,17 @@ public class OrderAdmService implements IOrderAdmService {
 		} catch (Exception e) {
 			return ApiResponse.fromException(e);
 		}
+	}
+
+	@Override
+	public ApiResponse insertOrderDelivery(DeliveryDTO dto) {
+		dao.insertOrderDelivery(dto);
+		int delvNo = dto.getDelvNo();
+		
+		Map<String, Object> result = new java.util.HashMap<>();
+        result.put("delvNo", delvNo);
+		
+		return ApiResponse.success(result);
 	}
 
 }
