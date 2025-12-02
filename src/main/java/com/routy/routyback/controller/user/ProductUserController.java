@@ -1,6 +1,7 @@
 package com.routy.routyback.controller.user;
 
 import com.routy.routyback.common.ApiResponse;
+import com.routy.routyback.common.ParamProcessor;
 import com.routy.routyback.dto.ProductUserDTO;
 import com.routy.routyback.service.user.IProductRecentRecommendService;
 import com.routy.routyback.service.user.IProductUserService;
@@ -28,6 +29,11 @@ public class ProductUserController {
     public ProductUserDTO productDetailView(@PathVariable int prdNo) {
         return service.productDetailView(prdNo);
     }
+    @GetMapping("/list/skin_type")
+    public ApiResponse productSkinBased(@RequestParam Map<String, Object> param) {
+        return service.productSkinBased(param);
+    }
+
 
     @GetMapping("/list/skin_cate")
     public ApiResponse productAllSkinCate(@RequestParam Map<String, Object> param) {
