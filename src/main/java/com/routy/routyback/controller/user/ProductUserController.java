@@ -25,10 +25,8 @@ public class ProductUserController {
     @Qualifier("resent")
     IProductRecentRecommendService recommendService; // 하나만 사용
 
-    @GetMapping("/{prdNo}")
-    public ProductUserDTO productDetailView(@PathVariable int prdNo) {
-        return service.productDetailView(prdNo);
-    }
+
+    
     @GetMapping("/list/skin_type")
     public ApiResponse productSkinBased(@RequestParam Map<String, Object> param) {
         return service.productSkinBased(param);
@@ -52,5 +50,21 @@ public class ProductUserController {
             @RequestParam(required = false) Integer subcate
     ) {
         return recommendService.getRecommendedProducts(userNo, recent, subcate);
+    }
+    
+    @GetMapping("/{prdNo}")
+    public ApiResponse<ProductUserDTO> productDetailView(@PathVariable int prdNo) {
+        try {
+            ProductUserDTO dto = service.productDetailView(prdNo);
+            
+            if (dto == null) {
+                // null이면 예외처리
+                throw new IllegalArgumentException("해당 상품이 존재하지 않습니다.");
+            }
+            return ApiResponse.success(dto); // 성공 시 data에 DTO를 담아 반환
+            
+        } catch (Exception e) {
+            return ApiResponse.fromException(e); // 실패 시 에러 메시지 반환
+        }
     }
 }
