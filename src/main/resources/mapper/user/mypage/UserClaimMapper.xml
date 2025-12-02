@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.routy.routyback.mapper.user.mypage.UserClaimMapper">
+
+    <!-- 클레임 등록 -->
+    <insert id="insertClaim">
+        INSERT INTO ORDER_CLAIM
+        (CLNO, ODNO, USERNO, CLTYPE, CLSTATUS, CLREASON, CLREGDATE, CLUPDATEDATE)
+        VALUES (ORDER_CLAIM_SEQ.NEXTVAL,
+                #{orderId},
+                #{userNo},
+                #{type},
+                'REQUEST',
+                #{reason},
+                CURRENT_TIMESTAMP,
+                CURRENT_TIMESTAMP)
+    </insert>
+
+    <!-- 클레임 목록 조회 -->
+    <select id="selectClaims" resultType="com.routy.routyback.dto.user.mypage.UserClaimResponse">
+        SELECT CLNO      AS claimId,
+               ODNO      AS orderId,
+               CLTYPE    AS type,
+               CLSTATUS  AS status,
+               CLREASON  AS reason,
+               CLREGDATE AS createdAt
+        FROM ORDER_CLAIM
+        WHERE USERNO = #{userNo}
+        ORDER BY CLREGDATE DESC
+    </select>
+
+</mapper>
