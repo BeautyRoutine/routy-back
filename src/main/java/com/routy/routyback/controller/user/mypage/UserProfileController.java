@@ -55,12 +55,6 @@ public class UserProfileController {
     ) {
         boolean updated = userProfileService.updateUserProfile(userNo, req);
 
-        if (!updated) {
-            return ResponseEntity
-                .badRequest()
-                .body(ApiResponse.error(400, "프로필 수정에 실패했습니다."));
-        }
-
         return ResponseEntity.ok(ApiResponse.success("OK"));
     }
 
