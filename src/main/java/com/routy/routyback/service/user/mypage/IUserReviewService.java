@@ -1,9 +1,9 @@
 package com.routy.routyback.service.user.mypage;
 
+import com.routy.routyback.dto.user.mypage.UserReviewCreateRequest;
 import com.routy.routyback.dto.user.mypage.UserReviewDetailResponse;
 import com.routy.routyback.dto.user.mypage.UserReviewResponse;
 import com.routy.routyback.dto.user.mypage.UserReviewUpdateRequest;
-
 import java.util.List;
 
 /**
@@ -11,6 +11,14 @@ import java.util.List;
  * - 마이페이지에서 사용하는 리뷰 목록/상세/수정/삭제 기능 정의
  */
 public interface IUserReviewService {
+
+    /**
+     * 리뷰 등록
+     * @param userNo 작성자 회원 번호
+     * @param request 리뷰 등록 요청 데이터
+     */
+    void createReview(Long userNo, UserReviewCreateRequest request);
+
 
     /**
      * 특정 사용자의 리뷰 목록을 조회합니다.

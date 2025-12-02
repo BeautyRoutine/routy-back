@@ -55,6 +55,42 @@
         ORDER BY RIMGNO ASC
     </select>
 
+    <!-- 리뷰 등록 -->
+    <insert id="insertReview">
+        INSERT INTO REVIEW
+        (REVNO, USERNO, PRDNO, REVSTAR, REVCONTENT, REVGOOD, REVBAD, REVDATE)
+        VALUES
+        (
+        REVIEW_SEQ.NEXTVAL, -- 리뷰 PK
+        #{userNo}, -- 작성자 번호
+        #{productId}, -- 상품 번호
+        #{rating}, -- 별점
+        #{content}, -- 리뷰 내용
+        #{good}, -- 장점
+        #{bad}, -- 단점
+        CURRENT_TIMESTAMP -- 작성일
+        )
+    </insert>
+
+    <!-- 방금 등록된 리뷰 번호 조회 -->
+    <select id="selectLastInsertedReviewNo" resultType="long">
+        SELECT MAX(REVNO)
+        FROM REVIEW
+        WHERE USERNO = #{userNo}
+    </select>
+
+    <!-- 리뷰 이미지 등록 -->
+    <insert id="insertReviewImage">
+        INSERT INTO REVIEW_IMAGE
+        (RIMGNO, REVNO, IMGURL)
+        VALUES
+        (
+        REVIEW_IMAGE_SEQ.NEXTVAL, -- 이미지 PK
+        #{reviewNo}, -- 리뷰 번호 FK
+        #{imageUrl} -- 이미지 URL
+        )
+    </insert>
+
     <!-- 리뷰 수정 -->
     <update id="updateUserReview">
         UPDATE REVIEW

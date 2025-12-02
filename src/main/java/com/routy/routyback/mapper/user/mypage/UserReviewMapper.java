@@ -34,6 +34,47 @@ public interface UserReviewMapper {
     );
 
     /**
+     * 리뷰 작성 (본문/장단점/별점 저장)
+     *
+     * @param userNo   사용자 번호
+     * @param productId 상품 번호
+     * @param rating   별점
+     * @param content  본문
+     * @param good     장점
+     * @param bad      단점
+     * @return 저장된 행 수
+     */
+    int insertReview(
+        @Param("userNo") Long userNo,
+        @Param("productId") Long productId,
+        @Param("rating") int rating,
+        @Param("content") String content,
+        @Param("good") String good,
+        @Param("bad") String bad
+    );
+
+    /**
+     * 가장 최근에 등록한 리뷰 번호 조회
+     * (리뷰 이미지 등록 시 FK로 사용)
+     *
+     * @param userNo 사용자 번호
+     * @return 최근 리뷰 번호
+     */
+    Long selectLastInsertedReviewNo(@Param("userNo") Long userNo);
+
+    /**
+     * 리뷰 이미지 URL 저장
+     *
+     * @param reviewId 리뷰 번호
+     * @param imageUrl 이미지 URL
+     * @return 저장된 행 수
+     */
+    int insertReviewImage(
+        @Param("reviewId") Long reviewId,
+        @Param("imageUrl") String imageUrl
+    );
+
+    /**
      * 리뷰 이미지 URL 목록 조회
      *
      * @param reviewId 리뷰 번호

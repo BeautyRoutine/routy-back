@@ -1,14 +1,21 @@
 package com.routy.routyback.controller.user.mypage;
 
 import com.routy.routyback.common.ApiResponse;
+import com.routy.routyback.dto.user.mypage.UserReviewCreateRequest;
 import com.routy.routyback.dto.user.mypage.UserReviewDetailResponse;
 import com.routy.routyback.dto.user.mypage.UserReviewResponse;
 import com.routy.routyback.dto.user.mypage.UserReviewUpdateRequest;
 import com.routy.routyback.service.user.mypage.IUserReviewService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * 마이페이지 - 나의 리뷰 API 컨트롤러
@@ -55,6 +62,22 @@ public class UserReviewController {
         }
 
         return ApiResponse.success(detail);
+    }
+
+    /**
+     * 마이페이지 - 리뷰 관리 컨트롤러
+     * 등록(create) 기능만 추가로 구현한다.
+     */
+    @PostMapping
+    public ApiResponse<Void> createReview(
+        @PathVariable Long userId,
+        @RequestBody UserReviewCreateRequest request
+    ) {
+        // 서비스 호출해 리뷰 등록 처리
+        userReviewService.createReview(userId, request);
+
+        // 공통 응답 포맷
+        return ApiResponse.success(null);
     }
 
     /**

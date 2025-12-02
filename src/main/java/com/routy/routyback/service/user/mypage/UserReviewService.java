@@ -1,15 +1,15 @@
 package com.routy.routyback.service.user.mypage;
 
+import com.routy.routyback.dto.user.mypage.UserReviewCreateRequest;
 import com.routy.routyback.dto.user.mypage.UserReviewDetailResponse;
 import com.routy.routyback.dto.user.mypage.UserReviewResponse;
 import com.routy.routyback.dto.user.mypage.UserReviewUpdateRequest;
 import com.routy.routyback.mapper.user.mypage.UserReviewMapper;
+import java.util.Collections;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Collections;
-import java.util.List;
 
 /**
  * 나의 리뷰 서비스 구현체
@@ -21,6 +21,30 @@ public class UserReviewService implements IUserReviewService {
 
     // 나의 리뷰 관련 쿼리를 담당하는 Mapper
     private final UserReviewMapper userReviewMapper;
+
+    @Override
+    public void createReview(Long userNo, UserReviewCreateRequest req) {
+
+        // 1) 리뷰 본문/별점/장단점 저장
+        userReviewMapper.insertReview(
+            userNo,
+            req.getProductId(),
+            req.getRating(),
+            req.getContent(),
+            req.getGood(),
+            req.getBad()
+        );
+
+        // 2) 방금 작성한 리뷰 번호 조회 (REVIEW_SEQ 기반)
+        Long reviewNo = userReviewMapper.selectLastInsertedReviewNo(userNo);
+
+        // 3) 리뷰 이미지가 존재한다면 개별 insert 처리
+        if (req.getImages() != null) {
+            for (String url : req.getImages()) {
+                userReviewMapper.insertReviewImage(reviewNo, url);
+            }
+        }
+    }
 
     /**
      * 나의 리뷰 목록 조회
