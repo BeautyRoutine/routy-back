@@ -12,11 +12,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-import com.routy.routyback.mapper.admin.IOrderPrdAdmDAO;
 import com.routy.routyback.mapper.admin.IOrdersAdmDAO;
+import com.routy.routyback.mapper.admin.IOrderDetailAdmDAO;
 import com.routy.routyback.common.ApiResponse;
 import com.routy.routyback.common.ParamProcessor;
 import com.routy.routyback.common.category.CategoryRepository;
+import com.routy.routyback.dto.OrderDelvDTO;
 import com.routy.routyback.dto.OrderPrdDTO;
 
 @Service
@@ -26,8 +27,8 @@ public class OrderAdmService implements IOrderAdmService {
 	IOrdersAdmDAO dao;
 	
 	@Autowired
-	@Qualifier("IOrderPrdAdmDAO")
-	IOrderPrdAdmDAO prddao;
+	@Qualifier("IOrderDetailAdmDAO")
+	IOrderDetailAdmDAO detdao;
 	
 	@Autowired
 	CategoryRepository cateRepo;
@@ -93,7 +94,7 @@ public class OrderAdmService implements IOrderAdmService {
 	@Override
 	public ApiResponse detailPrdOrder(int odNo) {
 		try {
-			ArrayList<OrderPrdDTO> resultRow = prddao.detailPrdOrder(odNo);
+			ArrayList<OrderPrdDTO> resultRow = detdao.detailPrdOrder(odNo);
 			
 			for(OrderPrdDTO row : resultRow) {
 				int mainNo = row.getPrdMainCate();
@@ -101,6 +102,17 @@ public class OrderAdmService implements IOrderAdmService {
 				row.setMainCateStr(cateRepo.getMainCateStr(mainNo));
 				row.setSubCateStr(cateRepo.getSubCateStr(subNo));
 			}
+			
+			return ApiResponse.success(resultRow);
+		} catch (Exception e) {
+			return ApiResponse.fromException(e);
+		}
+	}
+	
+	@Override
+	public ApiResponse detailDelvOrder(int odNo) {
+		try {
+			ArrayList<OrderDelvDTO> resultRow = detdao.detailDelvOrder(odNo);
 			
 			return ApiResponse.success(resultRow);
 		} catch (Exception e) {

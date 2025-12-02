@@ -29,7 +29,14 @@ public class OrderAdmController {
     public ApiResponse detailOrder(@PathVariable int odNo) { // 주문번호 조회
     	return service.detailOrder(odNo);
     }
-
+	@GetMapping("/detail_product/{odNo}")
+	public ApiResponse detailPrdOrder(@PathVariable int odNo) { // 주문번호 제품목록 조회
+		return service.detailPrdOrder(odNo);
+	}
+	@GetMapping("/detail_delivery/{odNo}")
+	public ApiResponse detailDelvOrder(@PathVariable int odNo) { // 주문번호 택배목록 조회
+		return service.detailDelvOrder(odNo);
+	}
 	
 	
 	
