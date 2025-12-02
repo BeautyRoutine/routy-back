@@ -79,9 +79,12 @@ public class ProductService implements IProductService {
     }
 
     @Override
+    @Transactional
     public void deleteProduct(int prdNo) {
-        productMapper.productDelete(prdNo);
+        productMapper.deleteProductIngredientMapping(prdNo); // 1) 매핑 삭제
+        productMapper.productDelete(prdNo);                   // 2) 상품 삭제
     }
+
 
     @Override
     @Transactional
