@@ -4,13 +4,13 @@
  * @author 김지용
  */
 
-package com.routy.routyback.dto.user;
+package com.routy.routyback.dto.user.mypage;
 
 import lombok.Data;
 
 @Data
 public class UserProfileUpdateRequest {
-    
+
     private String userName;          // 회원이름
     private String nickName;          // 닉네임
     private String email;             // 이메일

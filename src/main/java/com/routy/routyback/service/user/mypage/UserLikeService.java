@@ -1,7 +1,7 @@
-package com.routy.routyback.service.user;
+package com.routy.routyback.service.user.mypage;
 
 import com.routy.routyback.dto.user.UserLikeResponse;
-import com.routy.routyback.mapper.user.UserLikeMapper;
+import com.routy.routyback.mapper.user.mypage.UserLikeMapper;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

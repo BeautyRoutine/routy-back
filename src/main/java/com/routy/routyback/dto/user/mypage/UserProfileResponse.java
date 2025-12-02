@@ -2,7 +2,7 @@
  * 사용자 프로필 응답 DTO
  * @author 김지용
  */
-package com.routy.routyback.dto.user;
+package com.routy.routyback.dto.user.mypage;
 
 import lombok.Data;
 
@@ -26,5 +26,5 @@ public class UserProfileResponse {
     private Integer couponCount;     // 보유 쿠폰 수
 
     private String skinType;       // 피부 타입 리스트
-    
+
 }

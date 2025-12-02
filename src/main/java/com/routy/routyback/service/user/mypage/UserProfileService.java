@@ -1,8 +1,8 @@
-package com.routy.routyback.service.user;
+package com.routy.routyback.service.user.mypage;
 
-import com.routy.routyback.dto.user.UserProfileResponse;
-import com.routy.routyback.dto.user.UserProfileUpdateRequest;
-import com.routy.routyback.mapper.user.UserProfileMapper;
+import com.routy.routyback.dto.user.mypage.UserProfileResponse;
+import com.routy.routyback.dto.user.mypage.UserProfileUpdateRequest;
+import com.routy.routyback.mapper.user.mypage.UserProfileMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

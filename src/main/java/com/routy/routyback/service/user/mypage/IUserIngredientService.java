@@ -1,6 +1,6 @@
-package com.routy.routyback.service.user;
+package com.routy.routyback.service.user.mypage;
 
-import com.routy.routyback.dto.user.IngredientPreferenceResponse;
+import com.routy.routyback.dto.user.mypage.IngredientPreferenceResponse;
 import java.util.List;
 import java.util.Map;
 

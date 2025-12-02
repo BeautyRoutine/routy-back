@@ -1,7 +1,7 @@
-package com.routy.routyback.controller.user;
+package com.routy.routyback.controller.user.mypage;
 
 import com.routy.routyback.common.ApiResponse;
-import com.routy.routyback.service.user.IUserIngredientService;
+import com.routy.routyback.service.user.mypage.IUserIngredientService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

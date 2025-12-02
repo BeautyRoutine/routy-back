@@ -9,7 +9,7 @@
     회원의 기본 정보 + 리뷰 수 + 포인트 합계 + 쿠폰 개수 + 연락처/주소 정보를 한 번에 조회합니다.
     @author 김지용
 -->
-<mapper namespace="com.routy.routyback.mapper.user.UserProfileMapper">
+<mapper namespace="com.routy.routyback.mapper.user.mypage.UserProfileMapper">
 
     <!--
         단일 회원의 프로필 요약 정보를 조회하는 쿼리입니다.
@@ -24,7 +24,7 @@
      -->
     <select id="selectUserProfile"
         parameterType="long"
-        resultType="com.routy.routyback.dto.user.UserProfileResponse">
+        resultType="com.routy.routyback.dto.user.mypage.UserProfileResponse">
 
         SELECT
         <!-- ========================= -->

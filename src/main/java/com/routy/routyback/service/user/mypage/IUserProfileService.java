@@ -1,7 +1,7 @@
-package com.routy.routyback.service.user;
+package com.routy.routyback.service.user.mypage;
 
-import com.routy.routyback.dto.user.UserProfileResponse;
-import com.routy.routyback.dto.user.UserProfileUpdateRequest;
+import com.routy.routyback.dto.user.mypage.UserProfileResponse;
+import com.routy.routyback.dto.user.mypage.UserProfileUpdateRequest;
 
 public interface IUserProfileService {
 

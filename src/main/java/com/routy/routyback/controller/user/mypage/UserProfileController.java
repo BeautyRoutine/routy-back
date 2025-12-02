@@ -1,9 +1,9 @@
-package com.routy.routyback.controller.user;
+package com.routy.routyback.controller.user.mypage;
 
 import com.routy.routyback.common.ApiResponse;
-import com.routy.routyback.dto.user.UserProfileResponse;
-import com.routy.routyback.dto.user.UserProfileUpdateRequest;
-import com.routy.routyback.service.user.IUserProfileService;
+import com.routy.routyback.dto.user.mypage.UserProfileResponse;
+import com.routy.routyback.dto.user.mypage.UserProfileUpdateRequest;
+import com.routy.routyback.service.user.mypage.IUserProfileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

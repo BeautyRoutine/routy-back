@@ -1,4 +1,4 @@
-package com.routy.routyback.service.user;
+package com.routy.routyback.service.user.mypage;
 
 import com.routy.routyback.dto.user.UserLikeResponse;
 

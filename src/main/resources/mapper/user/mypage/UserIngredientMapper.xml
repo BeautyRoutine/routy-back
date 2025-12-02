@@ -9,13 +9,13 @@
     매핑 대상: USR_ING_MAPPING, INGREDIENTS
 -->
 
-<mapper namespace="com.routy.routyback.mapper.user.UserIngredientMapper">
+<mapper namespace="com.routy.routyback.mapper.user.mypage.UserIngredientMapper">
 
     <!-- ========================================================= -->
     <!-- 1) 사용자 선호 성분 조회 (UIMAPTYPE = 1)                  -->
     <!-- ========================================================= -->
     <select id="selectFocusIngredients"
-        resultType="com.routy.routyback.dto.user.IngredientPreferenceResponse">
+        resultType="com.routy.routyback.dto.user.mypage.IngredientPreferenceResponse">
 
         SELECT
         I.INGNO AS ingredientId,     <!-- 성분 번호 -->
@@ -39,7 +39,7 @@
     <!-- 2) 사용자 기피 성분 조회 (UIMAPTYPE = 2)                  -->
     <!-- ========================================================= -->
     <select id="selectAvoidIngredients"
-        resultType="com.routy.routyback.dto.user.IngredientPreferenceResponse">
+        resultType="com.routy.routyback.dto.user.mypage.IngredientPreferenceResponse">
 
         SELECT
         I.INGNO AS ingredientId,

@@ -2,10 +2,10 @@
  * 마이페이지 - 사용자 프로필 정보를 조회하기 위한 MyBatis Mapper 인터페이스입니다. USERS, REVIEW, POINT_HISTORY 테이블을 조회해서 한 번에 프로필 요약 정보를 가져오는 역할을 합니다.
  * @author 김지용
  */
-package com.routy.routyback.mapper.user;
+package com.routy.routyback.mapper.user.mypage;
 
-import com.routy.routyback.dto.user.UserProfileResponse;
-import com.routy.routyback.dto.user.UserProfileUpdateRequest;
+import com.routy.routyback.dto.user.mypage.UserProfileResponse;
+import com.routy.routyback.dto.user.mypage.UserProfileUpdateRequest;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
