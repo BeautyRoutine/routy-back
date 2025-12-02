@@ -5,11 +5,14 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.routy.routyback.common.ApiResponse;
+import com.routy.routyback.dto.DeliveryDTO;
 import com.routy.routyback.service.admin.OrderAdmService;
 
 @RestController
@@ -49,5 +52,9 @@ public class OrderAdmController {
 	@GetMapping("/delivery/detail/{delvNo}")
 	public ApiResponse detailOrderDelivery(@PathVariable int delvNo) { // 택배번호 조회
 		return service.detailOrderDelivery(delvNo);
+	}
+	@PostMapping("/delivery")
+	public ApiResponse insertOrderDelivery(@RequestBody DeliveryDTO dto) { // 택배 접수
+		return service.insertOrderDelivery(dto);
 	}
 }
