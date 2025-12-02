@@ -29,19 +29,23 @@
     <select id="getOrderList"
         parameterType="long"
         resultType="com.routy.routyback.dto.order.OrderListItemResponse">
-        SELECT O.ODNO                                                      AS orderNo,
-               P.PRDNAME                                                   AS productName,
-               P.PRDIMG                                                    AS productImage,
-               (SELECT COUNT(*) FROM ORDER_ITEM OI WHERE OI.ODNO = O.ODNO) AS itemCount,
-               (O.ODPRDPRICE + O.ODDELVPRICE)                              AS totalPrice,
-               TO_CHAR(O.ODREGDATE, 'YYYY-MM-DD')                          AS orderDate,
-               O.ODSTATUS                                                  AS orderStatus
+        SELECT O.ODNO                             AS orderNo,
+               P.PRDNAME                          AS productName,
+               P.PRDIMG                           AS productImage,
+               (SELECT COUNT(*)
+                FROM PAY_PRODUCT_MAPPING PM
+                WHERE PM.ODNO = O.ODNO)           AS itemCount,
+               (SELECT SUM(PM.PPMAPSTOCK * PM.PPMAPPRICE)
+                FROM PAY_PRODUCT_MAPPING PM
+                WHERE PM.ODNO = O.ODNO)           AS totalPrice,
+               TO_CHAR(O.ODREGDATE, 'YYYY-MM-DD') AS orderDate,
+               O.ODSTATUS                         AS orderStatus
         FROM ORDERS O
-                 JOIN ORDER_ITEM OI ON OI.ODNO = O.ODNO
-                 JOIN PRODUCT P ON P.PRDNO = OI.PRDNO
+                 JOIN PAY_PRODUCT_MAPPING PM ON PM.ODNO = O.ODNO
+                 JOIN PRODUCT P ON P.PRDNO = PM.PRDNO
         WHERE O.USERNO = #{userNo}
         GROUP BY O.ODNO, P.PRDNAME, P.PRDIMG,
-                 O.ODPRDPRICE, O.ODDELVPRICE, O.ODREGDATE, O.ODSTATUS
+                 O.ODREGDATE, O.ODSTATUS
         ORDER BY O.ODNO DESC
     </select>
 
@@ -62,15 +66,15 @@
     <select id="getOrderItems"
         parameterType="long"
         resultType="com.routy.routyback.dto.order.OrderDetailResponse$OrderItem">
-        SELECT P.PRDNO    AS productNo,
-               P.PRDNAME  AS productName,
-               P.PRDIMG   AS productImage,
-               OI.OIQTY   AS quantity,
-               OI.OIPRICE AS price,
-               OI.OITOTAL AS total
-        FROM ORDER_ITEM OI
-                 JOIN PRODUCT P ON P.PRDNO = OI.PRDNO
-        WHERE OI.ODNO = #{odNo}
+        SELECT P.PRDNO                         AS productNo,
+               P.PRDNAME                       AS productName,
+               P.PRDIMG                        AS productImage,
+               PM.PPMAPSTOCK                   AS quantity,
+               PM.PPMAPPRICE                   AS price,
+               (PM.PPMAPSTOCK * PM.PPMAPPRICE) AS total
+        FROM PAY_PRODUCT_MAPPING PM
+                 JOIN PRODUCT P ON P.PRDNO = PM.PRDNO
+        WHERE PM.ODNO = #{odNo}
     </select>
 
 </mapper>
