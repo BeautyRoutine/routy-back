@@ -33,4 +33,10 @@ public interface UserProfileMapper {
      */
     int updateUserProfile(@Param("userNo") Long userNo,
         @Param("req") UserProfileUpdateRequest req);
+
+    // 닉네임 중복 개수 확인
+    int countNickname(@Param("nickname") String nickname);
+
+    // 회원 탈퇴(Soft Delete)
+    int softDeleteUser(@Param("userNo") Long userNo);
 }

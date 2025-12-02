@@ -21,6 +21,17 @@ public class UserProfileService implements IUserProfileService {
         return userProfileMapper.selectUserProfile(userNo);
     }
 
+    @Override
+    public boolean checkNickname(String nickname) {
+        return userProfileMapper.countNickname(nickname) == 0; // 0이면 사용 가능
+    }
+
+
+    @Override
+    public boolean deleteUser(Long userNo) {
+        return userProfileMapper.softDeleteUser(userNo) > 0;
+    }
+
     /**
      * 사용자 프로필 수정 서비스
      * 회원의 프로필 정보를 업데이트합니다.
@@ -32,4 +43,6 @@ public class UserProfileService implements IUserProfileService {
         int result = userProfileMapper.updateUserProfile(userNo, req);
         return result > 0;
     }
+
+
 }

@@ -6,11 +6,13 @@ import com.routy.routyback.dto.user.mypage.UserProfileUpdateRequest;
 import com.routy.routyback.service.user.mypage.IUserProfileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -62,4 +64,23 @@ public class UserProfileController {
         return ResponseEntity.ok(ApiResponse.success("OK"));
     }
 
+
+    // 닉네임 중복 체크 API
+    @GetMapping("/check-nickname")
+    public ApiResponse<Boolean> checkNickname(@RequestParam String nickname) {
+        return ApiResponse.success(userProfileService.checkNickname(nickname));
+    }
+
+    /**
+     * 회원 탈퇴 API
+     * DELETE /api/users/{userNo}
+     *
+     * @param userNo 탈퇴할 회원 번호
+     * @return 성공 여부 응답
+     */
+    @DeleteMapping("/{userNo}")
+    public ApiResponse<Boolean> deleteUser(@PathVariable Long userNo) {
+        boolean deleted = userProfileService.deleteUser(userNo);
+        return ApiResponse.success(deleted);
+    }
 }

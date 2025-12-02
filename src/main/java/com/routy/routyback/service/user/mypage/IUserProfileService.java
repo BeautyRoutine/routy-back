@@ -21,4 +21,21 @@ public interface IUserProfileService {
      * @return boolean 수정 성공 여부
      */
     boolean updateUserProfile(Long userNo, UserProfileUpdateRequest req);
+
+    /**
+     * 닉네임 중복 체크
+     * 주어진 닉네임이 사용 가능한지 확인합니다.
+     *
+     * @param nickname 검사할 닉네임
+     * @return true = 사용 가능, false = 이미 존재
+     */
+    boolean checkNickname(String nickname);
+
+
+    /**
+     * 회원 탈퇴(Soft Delete)
+     * @param userNo 회원 번호
+     * @return true = 성공, false = 실패
+     */
+    boolean deleteUser(Long userNo);
 }
