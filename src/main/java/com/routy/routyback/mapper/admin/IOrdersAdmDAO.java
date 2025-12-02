@@ -26,6 +26,11 @@ public interface IOrdersAdmDAO {
      * @return 주문 데이터 (Map)
      */
     Map<String, Object> detailOrder(int odNo);
+    
+    
+    
+    
+    
     /**
      * 검색 조건을 반영했을 때 조회되는 택배의 갯수 조회.
 	 * @param params

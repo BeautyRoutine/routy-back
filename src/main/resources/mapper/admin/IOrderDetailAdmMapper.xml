@@ -3,7 +3,7 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.routy.routyback.mapper.admin.IOrderPrdAdmDAO">
+<mapper namespace="com.routy.routyback.mapper.admin.IOrderDetailAdmDAO">
 
 <select id="detailPrdOrder" resultType="com.routy.routyback.dto.OrderPrdDTO">
 	SELECT *
@@ -12,4 +12,12 @@
 	WHERE pp.odNo = #{odNo}
 	ORDER BY pp.ppMapNo ASC
 </select>
+
+<select id="detailDelvOrder" resultType="com.routy.routyback.dto.OrderDelvDTO">
+	SELECT delvNo, delvComNum, delvCompany, delvType, delvStatus, delvEnddate, delvRegdate
+	FROM DELIVERY
+	WHERE odNo = #{odNo}
+	ORDER BY delvNo DESC
+</select>
+
 </mapper>
