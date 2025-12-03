@@ -77,9 +77,13 @@
 		FETCH FIRST 5 ROWS ONLY
 	</select>
 
-    <select id="selectFallbackProducts" resultType="com.routy.routyback.dto.ProductUserDTO">
+    <select id="selectFallbackProducts" resultMap="prdResult">
+        SELECT *
+        FROM (
         SELECT
-        p.*
+        p.*,
+        r.AVG_STAR AS avgRating,
+        DBMS_RANDOM.VALUE AS randomSort
         FROM PRODUCT p
         JOIN (
         SELECT
@@ -89,9 +93,9 @@
         GROUP BY PRDNO
         ) r ON p.PRDNO = r.PRDNO
         WHERE r.AVG_STAR >= 3.0
-        ORDER BY r.AVG_STAR DESC
+        )
+        ORDER BY randomSort
         FETCH FIRST #{limit} ROWS ONLY
     </select>
-
 
 </mapper>
