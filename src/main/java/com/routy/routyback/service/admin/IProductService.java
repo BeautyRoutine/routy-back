@@ -1,6 +1,7 @@
 package com.routy.routyback.service.admin;
 
 import com.routy.routyback.dto.ProductDTO;
+import com.routy.routyback.dto.ProductDetailDTO;
 
 import java.util.Map;
 
@@ -13,7 +14,7 @@ public interface IProductService {
     ProductDTO getById(int prdNo);
 
     // 등록
-    String insertProduct(ProductDTO product);
+    String insertProduct(ProductDTO prdDto, ProductDetailDTO prdDetDto);
 
     // 수정
     void updateProduct(ProductDTO product);

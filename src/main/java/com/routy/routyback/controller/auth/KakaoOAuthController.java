@@ -1,4 +1,4 @@
-package com.routy.routyback.controller.user;
+package com.routy.routyback.controller.auth;
 
 import com.routy.routyback.service.user.KakaoAuthService;
 import lombok.RequiredArgsConstructor;
