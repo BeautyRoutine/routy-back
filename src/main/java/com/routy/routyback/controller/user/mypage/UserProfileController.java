@@ -31,30 +31,30 @@ public class UserProfileController {
      * 사용자 프로필 조회 API
      * GET /api/users/{userNo}/profile
      *
-     * @param userNo 조회할 회원 번호
+     * @param userId 조회할 회원 번호
      * @return 사용자 프로필 요약 정보
      * @author 김지용
      */
-    @GetMapping("/{userNo}/profile")
-    public UserProfileResponse getUserProfile(@PathVariable Long userNo) {
-        return userProfileService.getUserProfile(userNo);
+    @GetMapping("/{userId}/profile")
+    public UserProfileResponse getUserProfile(@PathVariable String userId) {
+        return userProfileService.getUserProfile(userId);
     }
 
     /**
      * 사용자 프로필 수정 API
-     * PUT /api/users/{userNo}/profile
+     * PUT /api/users/{userId}/profile
      *
-     * @param userNo 수정할 회원 번호
+     * @param userId 수정할 회원 번호
      * @param req 수정 요청 DTO
      * @return 공통 응답 포맷 (ApiResponse)
      * @author 김지용
      */
-    @PutMapping("/{userNo}/profile")
+    @PutMapping("/{userId}/profile")
     public ResponseEntity<ApiResponse> updateUserProfile(
-        @PathVariable Long userNo,
+        @PathVariable String userId,
         @RequestBody UserProfileUpdateRequest req
     ) {
-        boolean updated = userProfileService.updateUserProfile(userNo, req);
+        boolean updated = userProfileService.updateUserProfile(userId, req);
 
         return ResponseEntity.ok(ApiResponse.success("OK"));
     }
@@ -75,15 +75,15 @@ public class UserProfileController {
      * @param newPassword 새 비밀번호
      * @return 성공 여부
      */
-    @PutMapping("/{userNo}/password")
+    @PutMapping("/{userId}/password")
     public ResponseEntity<ApiResponse> changePassword(
-        @PathVariable Long userNo,
+        @PathVariable String userId,
         @RequestBody Map<String, String> payload
     ) {
         String currentPassword = payload.get("currentPassword");
         String newPassword = payload.get("newPassword");
 
-        boolean changed = userProfileService.changePassword(userNo, currentPassword, newPassword);
+        boolean changed = userProfileService.changePassword(userId, currentPassword, newPassword);
 
         if (!changed) {
             return ResponseEntity.badRequest()
@@ -100,9 +100,20 @@ public class UserProfileController {
      * @param userNo 탈퇴할 회원 번호
      * @return 성공 여부 응답
      */
-    @DeleteMapping("/{userNo}")
-    public ApiResponse<Boolean> deleteUser(@PathVariable Long userNo) {
-        boolean deleted = userProfileService.deleteUser(userNo);
-        return ApiResponse.success(deleted);
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<ApiResponse> deleteUser(
+        @PathVariable String userId,
+        @RequestBody Map<String, String> payload
+    ) {
+        String password = payload.get("password");
+
+        boolean deleted = userProfileService.deleteUserWithPassword(userId, password);
+
+        if (!deleted) {
+            return ResponseEntity.badRequest()
+                .body(ApiResponse.error(400, "INVALID_PASSWORD: 비밀번호가 일치하지 않습니다."));
+        }
+
+        return ResponseEntity.ok(ApiResponse.success("OK"));
     }
 }

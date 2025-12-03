@@ -23,14 +23,14 @@
         를 조회합니다.
      -->
     <select id="selectUserProfile"
-        parameterType="long"
+        parameterType="string"
         resultType="com.routy.routyback.dto.user.mypage.UserProfileResponse">
 
         SELECT
         <!-- ========================= -->
         <!-- 1. 회원 기본 정보          -->
         <!-- ========================= -->
-        U.USERNO AS userNo, -- 회원 번호 (PK)
+        U.USERID AS userId, -- 회원 번호 (PK)
         U.USERNAME AS userName, -- 회원 이름
         U.USERLEVEL AS userLevel, -- 회원 등급 코드
         U.USERNICK AS nickName, -- 회원 닉네임
@@ -88,18 +88,18 @@
         FROM
         USERS U -- 회원 기본 정보 테이블
         WHERE
-        U.USERNO = #{userNo}
+        U.USERID = #{userId}
         <!--
-            #{userNo} : Java 메서드에서 전달받은 Long userNo 파라미터가 바인딩되는 자리입니다.
-            ex) userProfileMapper.selectUserProfile(1L);
+            #{userId} : Java 메서드에서 전달받은 String userId 파라미터가 바인딩되는 자리입니다.
+            ex) userProfileMapper.selectUserProfile("user123");
          -->
     </select>
 
     <!-- 단일 회원 조회 (비밀번호 변경 시 사용) -->
-    <select id="findById" parameterType="long" resultType="com.routy.routyback.domain.user.User">
+    <select id="findByUserId" parameterType="string" resultType="com.routy.routyback.domain.user.User">
         SELECT *
         FROM USERS
-        WHERE USERNO = #{userNo}
+        WHERE USERID = #{userId}
     </select>
 
 
@@ -114,7 +114,7 @@
         UPDATE USERS
         SET USERSTATUS = 0,
             USERUPDATE = SYSDATE
-        WHERE USERNO = #{userNo}
+        WHERE USERID = #{userId}
     </update>
 
     <!-- 비밀번호 변경 -->
@@ -122,7 +122,7 @@
         UPDATE USERS
         SET USERPW     = #{encodedPassword},
             USERUPDATE = SYSDATE
-        WHERE USERNO = #{userNo}
+        WHERE USERID = #{userId}
     </update>
 
     <!--
@@ -166,7 +166,7 @@
         <if test="req.profileImageUrl != null">
             , USERPROFILEIMG = #{req.profileImageUrl}
         </if>
-        WHERE USERNO = #{userNo}
+        WHERE USERID = #{userId}
     </update>
 
 </mapper>

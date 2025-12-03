@@ -16,34 +16,34 @@ public interface UserProfileMapper {
     /**
      * 특정 회원의 프로필 정보를 조회합니다.
      *
-     * @param userNo 조회할 회원 번호 (USERS.USERNO)
+     * @param userId 조회할 회원 아이디 (USERS.USERID)
      * @return UserProfileResponseDto 프로필 요약 정보
-     *         - userNo      : 회원 번호
+     *         - userId      : 회원 아이디
      *         - userName    : 회원 이름
      *         - userLevel   : 회원 등급
      *         - reviewCount : 작성한 리뷰 개수
      *         - points      : 누적 포인트 합계
      */
-    UserProfileResponse selectUserProfile(Long userNo);
+    UserProfileResponse selectUserProfile(String userId);
 
     /**
      * 사용자 프로필 정보를 수정합니다.
-     * @param userNo 수정할 회원 번호
+     * @param userId 수정할 회원 아이디
      * @param req 수정 요청 데이터
      * @return int 업데이트된 행 수
      */
-    int updateUserProfile(@Param("userNo") Long userNo,
+    int updateUserProfile(@Param("userId") String userId,
         @Param("req") UserProfileUpdateRequest req);
 
     // 닉네임 중복 개수 확인
     int countNickname(@Param("nickname") String nickname);
 
     // 비밀번호 변경
-    User findById(Long userNo);
+    User findByUserId(String userId);
 
-    int updatePassword(@Param("userNo") Long userNo,
+    int updatePassword(@Param("userId") String userId,
         @Param("encodedPassword") String encodedPassword);
 
     // 회원 탈퇴(Soft Delete)
-    int softDeleteUser(@Param("userNo") Long userNo);
+    int softDeleteUser(@Param("userId") String userId);
 }
