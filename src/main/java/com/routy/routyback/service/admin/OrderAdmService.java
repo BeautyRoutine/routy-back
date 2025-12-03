@@ -171,13 +171,47 @@ public class OrderAdmService implements IOrderAdmService {
 
 	@Override
 	public ApiResponse insertOrderDelivery(DeliveryDTO dto) {
-		dao.insertOrderDelivery(dto);
-		int delvNo = dto.getDelvNo();
+		try {
+			dao.insertOrderDelivery(dto);
+			int delvNo = dto.getDelvNo();
+			
+			Map<String, Object> result = new java.util.HashMap<>();
+	        result.put("delvNo", delvNo);
+			
+			return ApiResponse.success(result);
+		} catch (Exception e) {
+			return ApiResponse.fromException(e);
+		}
 		
-		Map<String, Object> result = new java.util.HashMap<>();
-        result.put("delvNo", delvNo);
-		
-		return ApiResponse.success(result);
+	}
+
+	@Override
+	public ApiResponse updateOrderDelivery(DeliveryDTO dto) {
+		try {
+			dao.insertOrderDelivery(dto);
+			int delvNo = dto.getDelvNo();
+			
+			Map<String, Object> result = new java.util.HashMap<>();
+	        result.put("msg", "delvNo:"+delvNo+" 택배를 수정하였습니다.");
+			
+			return ApiResponse.success(result);
+		} catch (Exception e) {
+			return ApiResponse.fromException(e);
+		}
+	}
+
+	@Override
+	public ApiResponse deleteOrderDelivery(int delvNo) {
+		try {
+			dao.deleteOrderDelivery(delvNo);
+			
+			Map<String, Object> result = new java.util.HashMap<>();
+	        result.put("msg", "delvNo:"+delvNo+" 택배를 삭제하였습니다.");
+			
+			return ApiResponse.success(result);
+		} catch (Exception e) {
+			return ApiResponse.fromException(e);
+		}
 	}
 
 }

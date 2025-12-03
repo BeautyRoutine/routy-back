@@ -61,4 +61,16 @@ public interface IOrdersAdmDAO {
      * 	택배 정보
      */
     void insertOrderDelivery(DeliveryDTO dto);
+    /**
+     * delvNo에 해당되는 택배 정보를 수정.
+     * @param dto
+     * 	택배 정보
+     */
+    void updateOrderDelivery(DeliveryDTO dto);
+    /**
+     * delvNo에 해당되는 택배 정보를 삭제.
+     * @param delvNo
+     * 	택배 번호 (int)
+     */
+    void deleteOrderDelivery(int delvNo);
 }

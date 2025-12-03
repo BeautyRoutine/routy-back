@@ -99,4 +99,28 @@
             , #{delvGetZip}, #{delvGetJibunAddr}, #{delvGetRoadAddr}, #{delvGetDetailAddr}, #{delvGetBcCode}
 		)
     </insert>
+    
+    <update id="updateOrderDelivery" parameterType="com.routy.routyback.dto.DeliveryDTO">
+    	UPDATE DELIVERY
+    	<set>
+    		<if test="delvCompany != null"> delvCompany = #{delvCompany}, </if>
+    		<if test="delvComNum != null"> delvComNum = #{delvComNum}, </if>
+	        <if test="delvType != 0"> delvType = #{delvType}, </if>
+	        <if test="delvStatus != 0"> delvStatus = #{delvStatus}, </if>
+	        <if test="delvGetName != null"> delvGetName = #{delvGetName}, </if>
+	        <if test="delvGetHp != null"> delvGetHp = #{delvGetHp}, </if>
+	        <if test="delvGetZip != 0"> delvGetZip = #{delvGetZip}, </if>
+	        <if test="delvGetJibunAddr != null"> delvGetJibunAddr = #{delvGetJibunAddr}, </if>
+	        <if test="delvGetRoadAddr != null"> delvGetRoadAddr = #{delvGetRoadAddr}, </if>
+	        <if test="delvGetDetailAddr != null"> delvGetDetailAddr = #{delvGetDetailAddr}, </if>
+	        <if test="delvGetBcCode != 0"> delvGetBcCode = #{delvGetBcCode}, </if>
+	        <if test="delvEndDate != null"> delvEndDate = #{delvEndDate}, </if>
+    	</set>
+    	WHERE delvNo = #{delvNo}
+    </update>
+    
+    <delete id="deleteOrderDelivery" parameterType="int">
+    	DELETE FROM DELIVERY WHERE delvNo = #{delvNo}
+    </delete>
+    
 </mapper>
