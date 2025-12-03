@@ -42,4 +42,7 @@ public interface ReviewMapper {
      * @return 이미지 VO 리스트
      */
     List<ReviewImageVO> findReviewImages(int revNo);
+    
+ // 별점별 개수 조회 (Key: 별점, Value: 개수)
+    List<Map<String, Object>> countRatingByStars(int prdNo);
 }

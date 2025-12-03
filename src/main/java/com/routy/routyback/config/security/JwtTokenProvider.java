@@ -16,7 +16,12 @@ import java.security.Key;
 import java.util.Collections;
 import java.util.Date;
 
+import com.routy.routyback.domain.user.User;
+import com.routy.routyback.mapper.user.UserMapper;
+import lombok.RequiredArgsConstructor;
+
 @Component
+@RequiredArgsConstructor
 public class JwtTokenProvider {
 
     @Value("${jwt.secret}")
@@ -26,6 +31,8 @@ public class JwtTokenProvider {
     private long validityInMilliseconds;
 
     private Key key;
+
+    private final UserMapper userMapper;
 
     @PostConstruct
     protected void init() {
@@ -41,42 +48,48 @@ public class JwtTokenProvider {
         Date validity = new Date(now.getTime() + validityInMilliseconds);
 
         return Jwts.builder()
-                .setClaims(claims)
-                .setIssuedAt(now)
-                .setExpiration(validity)
-                .signWith(key, SignatureAlgorithm.HS256)
-                .compact();
+            .setClaims(claims)
+            .setIssuedAt(now)
+            .setExpiration(validity)
+            .signWith(key, SignatureAlgorithm.HS256)
+            .compact();
     }
 
     // JWT 토큰에서 인증 정보 조회
     public Authentication getAuthentication(String token) {
         Claims claims = Jwts.parserBuilder()
-                .setSigningKey(key)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
+            .setSigningKey(key)
+            .build()
+            .parseClaimsJws(token)
+            .getBody();
 
         String userId = claims.getSubject();
         Integer userLevel = claims.get("userLevel", Integer.class);
+
+        // DB에서 사용자 상태 확인 (soft delete 처리)
+        User user = userMapper.findByUserId(userId);
+        if (user == null || user.getUserStatus() == null || user.getUserStatus() == 0) {
+            throw new RuntimeException("DEACTIVATED_USER");
+        }
 
         // userLevel에 따라 권한 부여
         String role = (userLevel != null && userLevel == 9) ? "ROLE_ADMIN" : "ROLE_USER";
 
         return new UsernamePasswordAuthenticationToken(
-                userId,
-                "",
-                Collections.singletonList(new SimpleGrantedAuthority(role))
+            userId,
+            "",
+            Collections.singletonList(new SimpleGrantedAuthority(role))
         );
     }
 
     // 토큰에서 회원 정보 추출
     public String getUserId(String token) {
         return Jwts.parserBuilder()
-                .setSigningKey(key)
-                .build()
-                .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
+            .setSigningKey(key)
+            .build()
+            .parseClaimsJws(token)
+            .getBody()
+            .getSubject();
     }
 
     // Request의 Header에서 token 값 가져오기
@@ -92,9 +105,9 @@ public class JwtTokenProvider {
     public boolean validateToken(String token) {
         try {
             Jwts.parserBuilder()
-                    .setSigningKey(key)
-                    .build()
-                    .parseClaimsJws(token);
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token);
             return true;
         } catch (Exception e) {
             return false;

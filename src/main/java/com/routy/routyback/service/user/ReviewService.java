@@ -41,9 +41,13 @@ public class ReviewService implements IReviewService {
 
         // vo를 dto로 변환
         List<ReviewResponse> reviewResponses = new ArrayList<>();
+        int currentUserNo = 1; //실제 로그인 되면 받아와야 함
         for (ReviewVO vo : reviewVOs) {
             vo.setImages(reviewMapper.findReviewImages(vo.getRevNo()));
             ReviewResponse dto = convertVoToResponseDto(vo); // vo를 dto로 변환
+            Integer checkLike = reviewMapper.findLikeByUserAndReview(vo.getRevNo(), currentUserNo);
+            dto.setLiked(checkLike != null);
+            dto.setFeedback(new ArrayList<>());
             reviewResponses.add(dto); // reviewResponses에 받아온 dto 넣기
         }
 
@@ -53,6 +57,20 @@ public class ReviewService implements IReviewService {
         summary.setAverageRating(avgRating != null ? Math.round(avgRating * 10.0) / 10.0 : 0.0);
         // null이면 0.0, Math.round로 소수점 반올림
 
+        //별점 분포 계산
+        List<Map<String, Object>> starCounts = reviewMapper.countRatingByStars(prdNo);
+        Map<Integer, Integer> distribution = new HashMap<>();
+        // 1~5점 0으로 초기화
+        for(int i=1; i<=5; i++) distribution.put(i, 0);
+        // DB 결과 채워넣기
+        for (Map<String, Object> map : starCounts) {
+            // BigDecimal 등의 타입 문제 방지를 위해 String 변환 후 파싱
+            int star = Integer.parseInt(String.valueOf(map.get("REVSTAR")));
+            int count = Integer.parseInt(String.valueOf(map.get("CNT")));
+            distribution.put(star, count);
+        }
+        summary.setDistribution(distribution); // DTO에 넣기
+        
         // 페이징 생성
         PaginationDto pagination = new PaginationDto(); // 객체 생성
         pagination.setPage(page); // 페이지 정보
@@ -86,8 +104,7 @@ public class ReviewService implements IReviewService {
         reviewVO.setPrdNo(prdNo);
         reviewVO.setUserNo(request.getUserNo());
         reviewVO.setRevStar(request.getRevStar());
-        reviewVO.setRevGood(request.getRevGood());
-        reviewVO.setRevBad(request.getRevBad());
+        reviewVO.setContent(request.getContent());
 
         // 2) 리뷰 저장 → REVNO 생성됨
         reviewMapper.insertReview(reviewVO);
@@ -119,8 +136,7 @@ public class ReviewService implements IReviewService {
         ReviewVO reviewVO = new ReviewVO(); // vo 준비
         reviewVO.setRevNo(revNo); // revNo 지정
         reviewVO.setRevStar(request.getRevStar());
-        reviewVO.setRevGood(request.getRevGood());
-        reviewVO.setRevBad(request.getRevBad());
+        reviewVO.setContent(request.getContent());
         // 리뷰 수정한 값을 vo에 저장
 
         reviewMapper.updateReview(reviewVO);// vo를 통해 mapper 호출해서 update 실행
@@ -175,8 +191,7 @@ public class ReviewService implements IReviewService {
         dto.setUserName(vo.getUserName());
         dto.setRevRank(vo.getRevRank());
         dto.setRevStar(vo.getRevStar());
-        dto.setRevGood(vo.getRevGood());
-        dto.setRevBad(vo.getRevBad());
+        dto.setContent(vo.getContent());
         dto.setLikeCount(vo.getLikeCount()); // vo 값들 가져다가 dto에 넣어주기
         dto.setRevTrustScore(vo.getRevTrustScore());
         dto.setRevTrustRank(vo.getRevTrustRank());

@@ -17,8 +17,7 @@
         odNo,
         revRank,
         revStar,
-        revGood,
-        revBad,
+        content,
         revDate,
         revTrustScore,
         revTrustRank,
@@ -28,7 +27,7 @@
         (
         SELECT LISTAGG(ri.RI_URL, '||') WITHIN GROUP (ORDER BY ri.RI_SORT)
         FROM REVIEW_IMAGE ri
-        WHERE ri.REV_NO = r.REV_NO
+        WHERE ri.REV_NO = r.REVNO
         ) AS imageUrls
         FROM (
         SELECT
@@ -38,8 +37,7 @@
         r.odNo,
         r.revRank,
         r.revStar,
-        r.revGood,
-        r.revBad,
+        r.content,
         r.revDate,
         r.revTrustScore,
         r.revTrustRank,
@@ -47,17 +45,17 @@
         (
         SELECT COUNT(*)
         FROM REVIEW_UPDOWN ud
-        WHERE ud.revNo = r.revNo
+        WHERE ud.REVNO = r.REVNO
         ) AS likeCount,
         (
         SELECT COUNT(*)
         FROM REVIEW_IMAGE ri
-        WHERE ri.revNo = r.revNo
+        WHERE ri.REV_NO = r.REVNO
         ) AS photoCount,
         (
         SELECT LISTAGG(ri.RI_URL, '||') WITHIN GROUP (ORDER BY ri.RI_SORT)
         FROM REVIEW_IMAGE ri
-        WHERE ri.REV_NO = r.REV_NO
+        WHERE ri.REV_NO = r.REVNO
         ) AS imageUrls
         FROM REVIEW r
         LEFT JOIN USERS u ON r.userNo = u.userNo
@@ -84,7 +82,7 @@
                 r.revTrustScore DESC, r.revDate DESC
             </otherwise>
         </choose>
-        )
+        ) r
         OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
     </select>
 
@@ -116,15 +114,13 @@
                             odNo,
                             revRank,
                             revStar,
-                            revGood,
-                            revBad)
+                            content)
         VALUES (#{userNo},
                 #{prdNo},
                 #{odNo},
                 #{revRank},
                 #{revStar},
-                #{revGood},
-                #{revBad})
+                #{content})
     </insert>
 
     <!-- 리뷰 1건 상세 조회-->
@@ -138,18 +134,17 @@
                r.odNo,
                r.revRank,
                r.revStar,
-               r.revGood,
-               r.revBad,
+               r.content,
                r.revDate,
                r.revTrustScore,
                r.revTrustRank,
                u.userName                                                       AS userName,
-               (SELECT COUNT(*) FROM REVIEW_UPDOWN ud WHERE ud.revNo = r.revNo) AS likeCount,
-               (SELECT COUNT(*) FROM REVIEW_IMAGE ri WHERE ri.revNo = r.revNo)  AS photoCount,
+               (SELECT COUNT(*) FROM REVIEW_UPDOWN ud WHERE ud.REVNO = r.REVNO) AS likeCount,
+               (SELECT COUNT(*) FROM REVIEW_IMAGE ri WHERE ri.rev_No = r.revNo)  AS photoCount,
                (SELECT LISTAGG(ri.RI_URL, '||') WITHIN
         GROUP (ORDER BY ri.RI_SORT)
         FROM REVIEW_IMAGE ri
-        WHERE ri.REV_NO = r.REV_NO) AS imageUrls
+        WHERE ri.REV_NO = r.REVNO) AS imageUrls
         FROM REVIEW r
             LEFT JOIN USERS u
         ON r.userNo = u.userNo
@@ -160,8 +155,7 @@
     <update id="updateReview" parameterType="com.routy.routyback.domain.ReviewVO">
         UPDATE REVIEW
         SET revStar = #{revStar},
-            revGood = #{revGood},
-            revBad  = #{revBad}
+            content = #{content}
         WHERE revNo = #{revNo}
     </update>
 
@@ -230,4 +224,12 @@
 
     </select>
     
+    <!-- 별점별 개수 조회 -->
+    <select id="countRatingByStars" parameterType="int" resultType="map">
+    	SELECT revStar, COUNT(*) as cnt
+    		FROM REVIEW
+    		WHERE prdNo = #{prdNo}
+    		GROUP BY revStar
+	</select>
+	
 </mapper>

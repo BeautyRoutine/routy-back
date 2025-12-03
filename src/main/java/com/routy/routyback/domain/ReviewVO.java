@@ -15,8 +15,7 @@ public class ReviewVO {
     private int prdNo;          // 상품 번호 (FK → PRODUCT)
     private int revRank;        // 작성자 랭크 (가중치용)
     private int revStar;        // 별점 (1~5)
-    private String revGood;     // 장점 내용
-    private String revBad;      // 단점 내용
+    private String content;		//리뷰 텍스트
     private LocalDate revDate;  // 작성일
 
     // 주문 / 유저 관련 정보

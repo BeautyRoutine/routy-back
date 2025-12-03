@@ -20,6 +20,9 @@ public interface UserMapper {
      */
     User findByUserNo(@Param("userNo") Long userNo);
 
+    // userId로 회원 번호 조회
+    Long findUserNoByUserId(String userId);
+
     /**
      * userId로 회원 조회
      */
