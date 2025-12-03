@@ -3,6 +3,8 @@ package com.routy.routyback.mapper.admin;
 import java.util.List;
 import java.util.Map;
 
+import com.routy.routyback.dto.DeliveryDTO;
+
 public interface IOrdersAdmDAO {
 	/**
 	 * 검색 조건을 반영했을 때 조회되는 주문의 갯수 조회.
@@ -26,6 +28,11 @@ public interface IOrdersAdmDAO {
      * @return 주문 데이터 (Map)
      */
     Map<String, Object> detailOrder(int odNo);
+    
+    
+    
+    
+    
     /**
      * 검색 조건을 반영했을 때 조회되는 택배의 갯수 조회.
 	 * @param params
@@ -48,4 +55,10 @@ public interface IOrdersAdmDAO {
      * @return 택배 데이터 (Map)
      */
     Map<String, Object> detailOrderDelivery(int delvNo);
+    /**
+     * 새로운 택배를 등록.
+     * @param dto
+     * 	택배 정보
+     */
+    void insertOrderDelivery(DeliveryDTO dto);
 }
