@@ -95,6 +95,14 @@
          -->
     </select>
 
+    <!-- 단일 회원 조회 (비밀번호 변경 시 사용) -->
+    <select id="findById" parameterType="long" resultType="com.routy.routyback.domain.user.User">
+        SELECT *
+        FROM USERS
+        WHERE USERNO = #{userNo}
+    </select>
+
+
     <!-- 닉네임 중복 확인 -->
     <select id="countNickname" resultType="int">
         SELECT COUNT(*)
@@ -109,6 +117,14 @@
         WHERE USERNO = #{userNo}
     </update>
 
+    <!-- 비밀번호 변경 -->
+    <update id="updatePassword">
+        UPDATE USERS
+        SET USERPW     = #{encodedPassword},
+            USERUPDATE = SYSDATE
+        WHERE USERNO = #{userNo}
+    </update>
+
     <!--
     사용자 프로필 정보를 수정하는 UPDATE 쿼리입니다.
     UserProfileMapper.updateUserProfile() 와 매핑됩니다.
@@ -118,20 +134,39 @@
     @author 김지용
     -->
     <update id="updateUserProfile">
-
         UPDATE USERS
-        SET USERNAME       = #{req.userName},       -- 회원 이름
-            USERNICK       = #{req.nickName},       -- 닉네임
-            USEREMAIL      = #{req.email},          -- 이메일
-            USERHP         = #{req.phone},          -- 연락처
-            USERROADADDR   = #{req.roadAddress},    -- 도로명 주소
-            USERDETAILADDR = #{req.detailAddress},  -- 상세 주소
-            USERZIP        = #{req.zipCode},        -- 우편번호
-            USERSKIN       = #{req.skinType},       -- 피부 타입
-            USERPROFILEIMG = #{req.profileImageUrl} -- 프로필 이미지 URL
-
+        SET
+        <if test="req.userName != null">
+            USERNAME = #{req.userName}
+        </if>
+        <if test="req.nickName != null">
+            , USERNICK = #{req.nickName}
+        </if>
+        <if test="req.email != null">
+            , USEREMAIL = #{req.email}
+        </if>
+        <if test="req.phone != null">
+            , USERHP = #{req.phone}
+        </if>
+        <if test="req.jibunAddress != null">
+            , USERJIBUNADDR = #{req.jibunAddress}
+        </if>
+        <if test="req.roadAddress != null">
+            , USERROADADDR = #{req.roadAddress}
+        </if>
+        <if test="req.detailAddress != null">
+            , USERDETAILADDR = #{req.detailAddress}
+        </if>
+        <if test="req.zipCode != null">
+            , USERZIP = #{req.zipCode}
+        </if>
+        <if test="req.skinType != null">
+            , USERSKIN = #{req.skinType}
+        </if>
+        <if test="req.profileImageUrl != null">
+            , USERPROFILEIMG = #{req.profileImageUrl}
+        </if>
         WHERE USERNO = #{userNo}
-
     </update>
 
 </mapper>

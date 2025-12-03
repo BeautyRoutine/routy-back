@@ -3,11 +3,11 @@
     PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.routy.routyback.mapper.user.IUserLikeMapper">
+<mapper namespace="com.routy.routyback.mapper.user.mypage.UserLikeMapper">
 
     <!-- 좋아요 목록 조회 -->
     <select id="selectUserLikeProducts"
-        resultType="com.routy.routyback.dto.user.UserLikeResponse">
+        resultType="com.routy.routyback.dto.user.mypage.UserLikeResponse">
 
         SELECT UL.ULNO                             AS likeId,
                P.PRDNO                             AS productId,

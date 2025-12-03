@@ -15,7 +15,9 @@ public class UserProfileUpdateRequest {
     private String nickName;          // 닉네임
     private String email;             // 이메일
     private String phone;             // 연락처
-    private String address;           // 주소
+    private String jibunAddress;      // 지번 주소 (USERJIBUNADDR)
+    private String roadAddress;       // 도로명 주소 (USERROADADDR)
+    private String detailAddress;     // 상세 주소 (USERDETAILADDR)
     private String zipCode;           // 우편번호
     private String skinType;          // 피부 타입 (단일 선택)
     private String profileImageUrl;   // 프로필 이미지 URL

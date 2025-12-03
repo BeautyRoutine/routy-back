@@ -4,6 +4,7 @@
  */
 package com.routy.routyback.mapper.user.mypage;
 
+import com.routy.routyback.domain.user.User;
 import com.routy.routyback.dto.user.mypage.UserProfileResponse;
 import com.routy.routyback.dto.user.mypage.UserProfileUpdateRequest;
 import org.apache.ibatis.annotations.Mapper;
@@ -36,6 +37,12 @@ public interface UserProfileMapper {
 
     // 닉네임 중복 개수 확인
     int countNickname(@Param("nickname") String nickname);
+
+    // 비밀번호 변경
+    User findById(Long userNo);
+
+    int updatePassword(@Param("userNo") Long userNo,
+        @Param("encodedPassword") String encodedPassword);
 
     // 회원 탈퇴(Soft Delete)
     int softDeleteUser(@Param("userNo") Long userNo);

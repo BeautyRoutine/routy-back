@@ -1,6 +1,6 @@
 package com.routy.routyback.service.user.mypage;
 
-import com.routy.routyback.dto.user.UserLikeResponse;
+import com.routy.routyback.dto.user.mypage.UserLikeResponse;
 import com.routy.routyback.mapper.user.mypage.UserLikeMapper;
 import java.util.List;
 import lombok.RequiredArgsConstructor;

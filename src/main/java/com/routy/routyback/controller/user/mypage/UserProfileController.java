@@ -4,6 +4,7 @@ import com.routy.routyback.common.ApiResponse;
 import com.routy.routyback.dto.user.mypage.UserProfileResponse;
 import com.routy.routyback.dto.user.mypage.UserProfileUpdateRequest;
 import com.routy.routyback.service.user.mypage.IUserProfileService;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -63,6 +64,33 @@ public class UserProfileController {
     @GetMapping("/check-nickname")
     public ApiResponse<Boolean> checkNickname(@RequestParam String nickname) {
         return ApiResponse.success(userProfileService.checkNickname(nickname));
+    }
+
+    /**
+     * 비밀번호 변경 API
+     * PUT /api/users/{userNo}/password
+     *
+     * @param userNo 사용자 번호
+     * @param currentPassword 현재 비밀번호
+     * @param newPassword 새 비밀번호
+     * @return 성공 여부
+     */
+    @PutMapping("/{userNo}/password")
+    public ResponseEntity<ApiResponse> changePassword(
+        @PathVariable Long userNo,
+        @RequestBody Map<String, String> payload
+    ) {
+        String currentPassword = payload.get("currentPassword");
+        String newPassword = payload.get("newPassword");
+
+        boolean changed = userProfileService.changePassword(userNo, currentPassword, newPassword);
+
+        if (!changed) {
+            return ResponseEntity.badRequest()
+                .body(ApiResponse.error(400, "INVALID_PASSWORD: 현재 비밀번호가 일치하지 않습니다."));
+        }
+
+        return ResponseEntity.ok(ApiResponse.success("OK"));
     }
 
     /**

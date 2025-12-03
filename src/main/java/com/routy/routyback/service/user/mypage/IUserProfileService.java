@@ -33,6 +33,15 @@ public interface IUserProfileService {
 
 
     /**
+     * 비밀번호 변경 서비스
+     * @param userNo
+     * @param currentPassword
+     * @param newPassword
+     * @return
+     */
+    boolean changePassword(Long userNo, String currentPassword, String newPassword);
+
+    /**
      * 회원 탈퇴(Soft Delete)
      * @param userNo 회원 번호
      * @return true = 성공, false = 실패
