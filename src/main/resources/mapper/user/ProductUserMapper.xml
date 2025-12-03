@@ -77,7 +77,7 @@
 		FETCH FIRST 5 ROWS ONLY
 	</select>
 
-    <select id="selectFallbackProducts" resultMap="prdResult">
+    <select id="selectFallbackProducts" resultType="com.routy.routyback.dto.ProductUserDTO">
         SELECT *
         FROM (
         SELECT
@@ -95,7 +95,7 @@
         WHERE r.AVG_STAR >= 3.0
         )
         ORDER BY randomSort
-        FETCH FIRST #{limit} ROWS ONLY
+        FETCH FIRST ${limit} ROWS ONLY
     </select>
 
 </mapper>
