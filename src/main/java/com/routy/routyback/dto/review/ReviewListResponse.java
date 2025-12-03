@@ -1,6 +1,7 @@
 package com.routy.routyback.dto.review;
 
 import java.util.List;
+import java.util.Map;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -19,6 +20,7 @@ public class ReviewListResponse {
 	    public static class SummaryDto {
 	        private int totalCount;
 	        private double averageRating;
+	        private Map<Integer, Integer> distribution;
 	    }
 
 	    @Getter

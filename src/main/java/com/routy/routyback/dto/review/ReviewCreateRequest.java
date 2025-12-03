@@ -10,8 +10,7 @@ public class ReviewCreateRequest {
     private int userNo;
     private int prdNo;
     private int revStar;
-    private String revGood;
-    private String revBad;
+    private String content;		//리뷰 텍스트
     private String revImg;  // 단일 대표 이미지
 
     // 추가된 필드 - 작성자 : 김지용
