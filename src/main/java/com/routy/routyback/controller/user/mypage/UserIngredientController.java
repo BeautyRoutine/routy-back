@@ -28,7 +28,7 @@ public class UserIngredientController {
      * @return focus/avoid 성분 목록
      */
     @GetMapping("/{userId}/ingredients")
-    public ResponseEntity<ApiResponse<?>> getUserIngredients(@PathVariable Long userId) {
+    public ResponseEntity<ApiResponse<?>> getUserIngredients(@PathVariable String userId) {
         return ResponseEntity.ok(ApiResponse.success(
             userIngredientService.getUserIngredients(userId)
         ));
@@ -41,11 +41,27 @@ public class UserIngredientController {
      */
     @PostMapping("/{userId}/ingredients")
     public ResponseEntity<ApiResponse<?>> addIngredient(
-        @PathVariable Long userId,
+        @PathVariable String userId,
         @RequestBody Map<String, Object> body
     ) {
-        Long ingredientId = Long.valueOf(body.get("ingredientId").toString());
-        String type = body.get("type").toString();
+        Object ingredientIdObj = body.get("ingredientId");
+        Object typeObj = body.get("type");
+
+        if (ingredientIdObj == null) {
+            return ResponseEntity.badRequest().body(ApiResponse.error(400, "INGREDIENT_ID_REQUIRED"));
+        }
+        if (typeObj == null) {
+            return ResponseEntity.badRequest().body(ApiResponse.error(400, "TYPE_REQUIRED"));
+        }
+
+        Long ingredientId;
+        try {
+            ingredientId = Long.parseLong(ingredientIdObj.toString());
+        } catch (NumberFormatException e) {
+            return ResponseEntity.badRequest().body(ApiResponse.error(400, "INGREDIENT_ID_INVALID"));
+        }
+
+        String type = typeObj.toString();
 
         userIngredientService.addIngredient(userId, ingredientId, type);
         return ResponseEntity.ok(ApiResponse.success(null));
@@ -59,7 +75,7 @@ public class UserIngredientController {
      */
     @DeleteMapping("/{userId}/ingredients/{ingredientId}")
     public ResponseEntity<ApiResponse<?>> removeIngredient(
-        @PathVariable Long userId,
+        @PathVariable String userId,
         @PathVariable Long ingredientId,
         @RequestParam String type
     ) {

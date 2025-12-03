@@ -1,6 +1,6 @@
 package com.routy.routyback.service.user.mypage;
 
-import com.routy.routyback.dto.user.mypage.RecentProductResponse;
+import com.routy.routyback.dto.user.RecentProductResponse;
 import java.util.List;
 
 /**
@@ -8,5 +8,5 @@ import java.util.List;
  */
 public interface IRecentProductService {
 
-    List<RecentProductResponse> getRecentProducts(Long userNo); // 최근 본 상품 목록
+    List<RecentProductResponse> getRecentProducts(String userId); // 최근 본 상품 목록
 }

@@ -39,7 +39,7 @@ public class UserReviewController {
      */
     @GetMapping
     public ApiResponse<List<UserReviewResponse>> getMyReviews(
-        @PathVariable("userId") Long userId
+        @PathVariable("userId") String userId
     ) {
         List<UserReviewResponse> reviews = userReviewService.getUserReviews(userId);
         return ApiResponse.success(reviews);
@@ -51,7 +51,7 @@ public class UserReviewController {
      */
     @GetMapping("/{reviewId}")
     public ApiResponse<?> getMyReviewDetail(
-        @PathVariable("userId") Long userId,
+        @PathVariable("userId") String userId,
         @PathVariable("reviewId") Long reviewId
     ) {
         UserReviewDetailResponse detail =
@@ -70,7 +70,7 @@ public class UserReviewController {
      */
     @PostMapping
     public ApiResponse<Void> createReview(
-        @PathVariable Long userId,
+        @PathVariable String userId,
         @RequestBody UserReviewCreateRequest request
     ) {
         // 서비스 호출해 리뷰 등록 처리
@@ -86,7 +86,7 @@ public class UserReviewController {
      */
     @PutMapping("/{reviewId}")
     public ApiResponse<?> updateMyReview(
-        @PathVariable("userId") Long userId,
+        @PathVariable("userId") String userId,
         @PathVariable("reviewId") Long reviewId,
         @RequestBody UserReviewUpdateRequest request
     ) {
@@ -105,7 +105,7 @@ public class UserReviewController {
      */
     @DeleteMapping("/{reviewId}")
     public ApiResponse<?> deleteMyReview(
-        @PathVariable("userId") Long userId,
+        @PathVariable("userId") String userId,
         @PathVariable("reviewId") Long reviewId
     ) {
         boolean success = userReviewService.deleteReview(userId, reviewId);

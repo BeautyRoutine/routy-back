@@ -22,7 +22,7 @@ public class UserLikeController {
      */
     @GetMapping("/{userId}/likes")
     public ResponseEntity<ApiResponse<?>> getUserLikes(
-        @PathVariable Long userId,
+        @PathVariable String userId,
         @RequestParam(defaultValue = "PRODUCT") String type
     ) {
         return ResponseEntity.ok(ApiResponse.success(
@@ -35,7 +35,7 @@ public class UserLikeController {
      */
     @PostMapping("/{userId}/likes/{productId}")
     public ResponseEntity<ApiResponse<?>> addLike(
-        @PathVariable Long userId,
+        @PathVariable String userId,
         @PathVariable Long productId,
         @RequestParam(defaultValue = "PRODUCT") String type
     ) {
@@ -48,7 +48,7 @@ public class UserLikeController {
      */
     @DeleteMapping("/{userId}/likes/{productId}")
     public ResponseEntity<ApiResponse<?>> removeLike(
-        @PathVariable Long userId,
+        @PathVariable String userId,
         @PathVariable Long productId,
         @RequestParam(defaultValue = "PRODUCT") String type
     ) {
@@ -61,7 +61,7 @@ public class UserLikeController {
      */
     @GetMapping("/{userId}/likes/{productId}/exists")
     public ResponseEntity<ApiResponse<?>> isLiked(
-        @PathVariable Long userId,
+        @PathVariable String userId,
         @PathVariable Long productId,
         @RequestParam(defaultValue = "PRODUCT") String type
     ) {

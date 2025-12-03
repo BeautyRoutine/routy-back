@@ -1,6 +1,6 @@
-package com.routy.routyback.mapper.user.mypage;
+package com.routy.routyback.mapper.user;
 
-import com.routy.routyback.dto.user.mypage.RecentProductResponse;
+import com.routy.routyback.dto.user.RecentProductResponse;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 

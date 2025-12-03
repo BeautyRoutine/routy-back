@@ -28,7 +28,7 @@
         TO_CHAR(U.UIMAPREGDATE, 'YYYY-MM-DD') AS addedDate         <!-- 등록일 -->
         FROM USR_ING_MAPPING U
         JOIN INGREDIENTS I ON U.INGNO = I.INGNO
-        WHERE U.USERNO = #{userNo}
+        WHERE U.USERNO = (SELECT USERNO FROM USERS WHERE USERID = #{userId})
         AND U.UIMAPTYPE = 1                     <!-- 1 = 선호 성분 -->
         ORDER BY U.UIMAPREGDATE DESC
 
@@ -52,7 +52,7 @@
         TO_CHAR(U.UIMAPREGDATE, 'YYYY-MM-DD') AS addedDate
         FROM USR_ING_MAPPING U
         JOIN INGREDIENTS I ON U.INGNO = I.INGNO
-        WHERE U.USERNO = #{userNo}
+        WHERE U.USERNO = (SELECT USERNO FROM USERS WHERE USERID = #{userId})
         AND U.UIMAPTYPE = 2                     <!-- 2 = 기피 성분 -->
         ORDER BY U.UIMAPREGDATE DESC
 
@@ -65,7 +65,10 @@
     <insert id="insertIngredient">
         INSERT INTO USR_ING_MAPPING
             (USERNO, INGNO, UIMAPTYPE, UIMAPREGDATE)
-        VALUES (#{userNo}, #{ingredientId}, #{type}, CURRENT_TIMESTAMP)
+        VALUES ((SELECT USERNO FROM USERS WHERE USERID = #{userId}),
+                #{ingredientId},
+                #{type},
+                CURRENT_TIMESTAMP)
     </insert>
 
 
@@ -75,7 +78,7 @@
     <delete id="deleteIngredient">
         DELETE
         FROM USR_ING_MAPPING
-        WHERE USERNO = #{userNo}
+        WHERE USERNO = (SELECT USERNO FROM USERS WHERE USERID = #{userId})
           AND INGNO = #{ingredientId}
           AND UIMAPTYPE = #{type}
     </delete>
@@ -87,7 +90,7 @@
     <select id="countIngredient" resultType="int">
         SELECT COUNT(*)
         FROM USR_ING_MAPPING
-        WHERE USERNO = #{userNo}
+        WHERE USERNO = (SELECT USERNO FROM USERS WHERE USERID = #{userId})
           AND INGNO = #{ingredientId}
           AND UIMAPTYPE = #{type}
     </select>

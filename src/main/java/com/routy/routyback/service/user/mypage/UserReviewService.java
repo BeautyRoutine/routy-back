@@ -21,13 +21,18 @@ public class UserReviewService implements IUserReviewService {
 
     // 나의 리뷰 관련 쿼리를 담당하는 Mapper
     private final UserReviewMapper userReviewMapper;
+    private final com.routy.routyback.mapper.user.UserMapper userMapper;
 
     @Override
-    public void createReview(Long userNo, UserReviewCreateRequest req) {
+    public void createReview(String userId, UserReviewCreateRequest req) {
+        Long resolvedUserNo = userMapper.findUserNoByUserId(userId);
+        if (resolvedUserNo == null) {
+            return;
+        }
 
         // 1) 리뷰 본문/별점/장단점 저장
         userReviewMapper.insertReview(
-            userNo,
+            resolvedUserNo,
             req.getProductId(),
             req.getRating(),
             req.getContent(),
@@ -36,7 +41,7 @@ public class UserReviewService implements IUserReviewService {
         );
 
         // 2) 방금 작성한 리뷰 번호 조회 (REVIEW_SEQ 기반)
-        Long reviewNo = userReviewMapper.selectLastInsertedReviewNo(userNo);
+        Long reviewNo = userReviewMapper.selectLastInsertedReviewNo(resolvedUserNo);
 
         // 3) 리뷰 이미지가 존재한다면 개별 insert 처리
         if (req.getImages() != null) {
@@ -50,24 +55,26 @@ public class UserReviewService implements IUserReviewService {
      * 나의 리뷰 목록 조회
      */
     @Override
-    public List<UserReviewResponse> getUserReviews(Long userNo) {
-        if (userNo == null) {
+    public List<UserReviewResponse> getUserReviews(String userId) {
+        Long resolvedUserNo = userMapper.findUserNoByUserId(userId);
+        if (resolvedUserNo == null) {
             return Collections.emptyList();
         }
-        return userReviewMapper.selectUserReviews(userNo);
+        return userReviewMapper.selectUserReviews(resolvedUserNo);
     }
 
     /**
      * 나의 리뷰 상세 조회
      */
     @Override
-    public UserReviewDetailResponse getReviewDetail(Long userNo, Long reviewId) {
-        if (userNo == null || reviewId == null) {
+    public UserReviewDetailResponse getReviewDetail(String userId, Long reviewId) {
+        Long resolvedUserNo = userMapper.findUserNoByUserId(userId);
+        if (resolvedUserNo == null || reviewId == null) {
             return null;
         }
 
         UserReviewDetailResponse detail =
-            userReviewMapper.selectUserReviewDetail(userNo, reviewId);
+            userReviewMapper.selectUserReviewDetail(resolvedUserNo, reviewId);
 
         if (detail == null) {
             return null;
@@ -85,13 +92,14 @@ public class UserReviewService implements IUserReviewService {
      */
     @Override
     @Transactional
-    public boolean updateReview(Long userNo, Long reviewId, UserReviewUpdateRequest request) {
-        if (userNo == null || reviewId == null || request == null) {
+    public boolean updateReview(String userId, Long reviewId, UserReviewUpdateRequest request) {
+        Long resolvedUserNo = userMapper.findUserNoByUserId(userId);
+        if (resolvedUserNo == null || reviewId == null || request == null) {
             return false;
         }
 
         int updated = userReviewMapper.updateUserReview(
-            userNo,
+            resolvedUserNo,
             reviewId,
             request.getRating(),
             request.getGood(),
@@ -108,8 +116,9 @@ public class UserReviewService implements IUserReviewService {
      */
     @Override
     @Transactional
-    public boolean deleteReview(Long userNo, Long reviewId) {
-        if (userNo == null || reviewId == null) {
+    public boolean deleteReview(String userId, Long reviewId) {
+        Long resolvedUserNo = userMapper.findUserNoByUserId(userId);
+        if (resolvedUserNo == null || reviewId == null) {
             return false;
         }
 
@@ -117,7 +126,7 @@ public class UserReviewService implements IUserReviewService {
         userReviewMapper.deleteReviewImages(reviewId);
 
         // 본인 리뷰만 삭제
-        int deleted = userReviewMapper.deleteUserReview(userNo, reviewId);
+        int deleted = userReviewMapper.deleteUserReview(resolvedUserNo, reviewId);
 
         return deleted > 0;
     }

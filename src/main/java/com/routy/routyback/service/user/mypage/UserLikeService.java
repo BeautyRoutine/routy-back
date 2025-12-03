@@ -17,22 +17,22 @@ public class UserLikeService implements IUserLikeService {
     private final UserLikeMapper userLikeMapper;
 
     @Override
-    public List<UserLikeResponse> getUserLikeProducts(Long userNo, String type) {
-        return userLikeMapper.selectUserLikeProducts(userNo, type);
+    public List<UserLikeResponse> getUserLikeProducts(String userId, String type) {
+        return userLikeMapper.selectUserLikeProducts(userId, type);
     }
 
     @Override
-    public int addLike(Long userNo, Long productId, String type) {
-        return userLikeMapper.insertLike(userNo, productId, type);
+    public int addLike(String userId, Long productId, String type) {
+        return userLikeMapper.insertLike(userId, productId, type);
     }
 
     @Override
-    public int removeLike(Long userNo, Long productId, String type) {
-        return userLikeMapper.deleteLike(userNo, productId, type);
+    public int removeLike(String userId, Long productId, String type) {
+        return userLikeMapper.deleteLike(userId, productId, type);
     }
 
     @Override
-    public boolean isLiked(Long userNo, Long productId, String type) {
-        return userLikeMapper.countLike(userNo, productId, type) > 0;
+    public boolean isLiked(String userId, Long productId, String type) {
+        return userLikeMapper.countLike(userId, productId, type) > 0;
     }
 }

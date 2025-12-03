@@ -6,9 +6,9 @@ import java.util.Map;
 
 public interface IUserIngredientService {
 
-    Map<String, List<IngredientPreferenceResponse>> getUserIngredients(Long userNo);
+    Map<String, List<IngredientPreferenceResponse>> getUserIngredients(String userId);
 
-    void addIngredient(Long userNo, Long ingredientId, String type);
+    void addIngredient(String userId, Long ingredientId, String type);
 
-    void removeIngredient(Long userNo, Long ingredientId, String type);
+    void removeIngredient(String userId, Long ingredientId, String type);
 }

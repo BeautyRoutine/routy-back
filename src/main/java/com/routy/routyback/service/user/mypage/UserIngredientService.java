@@ -17,13 +17,13 @@ public class UserIngredientService implements IUserIngredientService {
 
     /**
      * 사용자 선호/기피 성분 목록을 조회합니다.
-     * @param userNo 사용자 번호
+     * @param userId 사용자 번호
      * @return focus/avoid 리스트를 포함한 Map
      */
     @Override
-    public Map<String, List<IngredientPreferenceResponse>> getUserIngredients(Long userNo) {
-        List<IngredientPreferenceResponse> focus = userIngredientMapper.selectFocusIngredients(userNo);
-        List<IngredientPreferenceResponse> avoid = userIngredientMapper.selectAvoidIngredients(userNo);
+    public Map<String, List<IngredientPreferenceResponse>> getUserIngredients(String userId) {
+        List<IngredientPreferenceResponse> focus = userIngredientMapper.selectFocusIngredients(userId);
+        List<IngredientPreferenceResponse> avoid = userIngredientMapper.selectAvoidIngredients(userId);
 
         Map<String, List<IngredientPreferenceResponse>> result = new HashMap<>();
         result.put("focus", focus);
@@ -34,28 +34,28 @@ public class UserIngredientService implements IUserIngredientService {
 
     /**
      * 사용자에게 성분을 추가합니다. 타입에 따라 선호/기피로 저장합니다.
-     * @param userNo 사용자 번호
+     * @param userId 사용자 번호
      * @param ingredientId 성분 번호
      * @param type FOCUS 또는 AVOID
      */
     @Override
-    public void addIngredient(Long userNo, Long ingredientId, String type) {
+    public void addIngredient(String userId, Long ingredientId, String type) {
         int typeCode = type.equalsIgnoreCase("FOCUS") ? 1 : 2;
 
-        if (userIngredientMapper.countIngredient(userNo, ingredientId, typeCode) == 0) {
-            userIngredientMapper.insertIngredient(userNo, ingredientId, typeCode);
+        if (userIngredientMapper.countIngredient(userId, ingredientId, typeCode) == 0) {
+            userIngredientMapper.insertIngredient(userId, ingredientId, typeCode);
         }
     }
 
     /**
      * 사용자에게 등록된 성분을 삭제합니다.
-     * @param userNo 사용자 번호
+     * @param userId 사용자 번호
      * @param ingredientId 성분 번호
      * @param type FOCUS 또는 AVOID
      */
     @Override
-    public void removeIngredient(Long userNo, Long ingredientId, String type) {
+    public void removeIngredient(String userId, Long ingredientId, String type) {
         int typeCode = type.equalsIgnoreCase("FOCUS") ? 1 : 2;
-        userIngredientMapper.deleteIngredient(userNo, ingredientId, typeCode);
+        userIngredientMapper.deleteIngredient(userId, ingredientId, typeCode);
     }
 }

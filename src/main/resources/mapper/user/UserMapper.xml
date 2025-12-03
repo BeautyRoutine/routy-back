@@ -101,4 +101,12 @@
           AND USERSTATUS = 1
     </select>
 
+    <!-- userId로 userNo 조회 -->
+    <select id="findUserNoByUserId" parameterType="string" resultType="long">
+        SELECT USERNO
+        FROM USERS
+        WHERE USERID = #{userId, jdbcType=VARCHAR}
+          AND USERSTATUS = 1
+    </select>
+
 </mapper>

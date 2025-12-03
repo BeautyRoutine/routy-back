@@ -25,7 +25,7 @@ public class UserClaimController {
      */
     @PostMapping
     public ApiResponse<Void> createClaim(
-        @PathVariable Long userId,
+        @PathVariable String userId,
         @RequestBody UserClaimRequest request) {
 
         userClaimService.createClaim(userId, request);
@@ -37,7 +37,7 @@ public class UserClaimController {
      */
     @GetMapping
     public ApiResponse<List<UserClaimResponse>> getClaims(
-        @PathVariable Long userId) {
+        @PathVariable String userId) {
 
         return ApiResponse.success(userClaimService.getClaims(userId));
     }

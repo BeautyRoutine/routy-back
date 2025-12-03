@@ -1,4 +1,4 @@
-package com.routy.routyback.dto.user.mypage;
+package com.routy.routyback.dto.user;
 
 import lombok.Data;
 

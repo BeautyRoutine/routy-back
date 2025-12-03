@@ -18,7 +18,7 @@
                TO_CHAR(UL.ULREGDATE, 'YYYY-MM-DD') AS regDate
         FROM USER_LIKE UL
                  JOIN PRODUCT P ON UL.PRDNO = P.PRDNO
-        WHERE UL.USERNO = #{userNo}
+        WHERE UL.USERNO = (SELECT USERNO FROM USERS WHERE USERID = #{userId})
           AND UL.ULTYPE = #{type}
         ORDER BY UL.ULNO DESC
     </select>
@@ -26,14 +26,17 @@
     <!-- 좋아요 추가 -->
     <insert id="insertLike">
         INSERT INTO USER_LIKE (USERNO, PRDNO, ULTYPE, ULREGDATE)
-        VALUES (#{userNo}, #{productId}, #{type}, SYSDATE)
+        VALUES ((SELECT USERNO FROM USERS WHERE USERID = #{userId}),
+                #{productId},
+                #{type},
+                SYSDATE)
     </insert>
 
     <!-- 좋아요 삭제 -->
     <delete id="deleteLike">
         DELETE
         FROM USER_LIKE
-        WHERE USERNO = #{userNo}
+        WHERE USERNO = (SELECT USERNO FROM USERS WHERE USERID = #{userId})
           AND PRDNO = #{productId}
           AND ULTYPE = #{type}
     </delete>
@@ -42,7 +45,7 @@
     <select id="countLike" resultType="int">
         SELECT COUNT(*)
         FROM USER_LIKE
-        WHERE USERNO = #{userNo}
+        WHERE USERNO = (SELECT USERNO FROM USERS WHERE USERID = #{userId})
           AND PRDNO = #{productId}
           AND ULTYPE = #{type}
     </select>
