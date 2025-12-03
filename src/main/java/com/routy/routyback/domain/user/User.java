@@ -1,6 +1,5 @@
 package com.routy.routyback.domain.user;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class User {
@@ -17,8 +16,8 @@ public class User {
     private String userBirth;
     private Integer userLevel;
     private LocalDateTime userRegdate;
+    private Integer userSkin;
 
-    // Getters
     public Long getUserNo() { return userNo; }
     public String getUserId() { return userId; }
     public String getUserPw() { return userPw; }
@@ -32,8 +31,8 @@ public class User {
     public String getUserBirth() { return userBirth; }
     public Integer getUserLevel() { return userLevel; }
     public LocalDateTime getUserRegdate() { return userRegdate; }
+    public Integer getUserSkin() { return userSkin; }
 
-    // Setters
     public void setUserNo(Long userNo) { this.userNo = userNo; }
     public void setUserId(String userId) { this.userId = userId; }
     public void setUserPw(String userPw) { this.userPw = userPw; }
@@ -47,4 +46,5 @@ public class User {
     public void setUserBirth(String userBirth) { this.userBirth = userBirth; }
     public void setUserLevel(Integer userLevel) { this.userLevel = userLevel; }
     public void setUserRegdate(LocalDateTime userRegdate) { this.userRegdate = userRegdate; }
+    public void setUserSkin(Integer userSkin) { this.userSkin = userSkin; }
 }
