@@ -43,6 +43,12 @@ public class ProductUserController {
         return service.productAllSkinCommend(param);
     }
 
+    @GetMapping("/list/fallback")
+    public ApiResponse getFallbackProducts(@RequestParam int limit) {
+        return service.getFallbackProducts(limit);
+    }
+
+
     @GetMapping("/list/recent")
     public ApiResponse getRecommendedProducts(
             @RequestParam(required = false) Integer userNo,

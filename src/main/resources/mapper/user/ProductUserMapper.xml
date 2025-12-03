@@ -76,5 +76,22 @@
 		ORDER BY cnt DESC
 		FETCH FIRST 5 ROWS ONLY
 	</select>
-	
+
+    <select id="selectFallbackProducts" resultType="com.routy.routyback.dto.ProductUserDTO">
+        SELECT
+        p.*
+        FROM PRODUCT p
+        JOIN (
+        SELECT
+        PRDNO,
+        AVG(REVSTAR) AS AVG_STAR
+        FROM REVIEW
+        GROUP BY PRDNO
+        ) r ON p.PRDNO = r.PRDNO
+        WHERE r.AVG_STAR >= 3.0
+        ORDER BY r.AVG_STAR DESC
+        FETCH FIRST #{limit} ROWS ONLY
+    </select>
+
+
 </mapper>
