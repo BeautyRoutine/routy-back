@@ -1,5 +1,6 @@
 package com.routy.routyback.controller.user;
 
+import com.routy.routyback.common.ApiResponse;
 import com.routy.routyback.dto.review.ReviewCreateRequest;
 import com.routy.routyback.dto.review.ReviewLikeResponse;
 import com.routy.routyback.dto.review.ReviewListResponse;
@@ -37,18 +38,23 @@ public class ReviewController {
 
     // 리뷰 목록 조회
     @GetMapping("/products/{prdNo}/reviews")
-    public ResponseEntity<ReviewListResponse> getReviews( // ReviewListResponse 전체 응답 DTO를 반환
+    public ApiResponse<ReviewListResponse> getReviews( // ReviewListResponse 전체 응답 DTO를 반환
         @PathVariable int prdNo,  // URL 경로에서 상품 번호(prdNo)를 가져옴. 예: /products/10/reviews → prdNo=10
         @RequestParam(defaultValue = "1") int page, // 쿼리 파라미터 ?page=값, 기본값은 1페이지
         @RequestParam(defaultValue = "10") int limit, // 쿼리 파라미터 ?limit=값, 한 페이지에 보여줄 리뷰 개수, 기본값 10개
         @RequestParam(defaultValue = "recommended") String sort // 정렬 기준. 기본값은 추천순(신뢰도 기반)
     ) {
-        // 서비스 레이어에 조회 요청. 정렬/페이징 옵션까지 함께 전달
-        ReviewListResponse responseData = service.getReviewList(prdNo, page, limit, sort);
+    	try {
+    		// 서비스 레이어에 조회 요청. 정렬/페이징 옵션까지 함께 전달
+    		ReviewListResponse responseData = service.getReviewList(prdNo, page, limit, sort);
 
-        // HTTP 200 OK 상태코드와 함께 조회된 리뷰 목록/요약/페이징 정보를 반환
-        return ResponseEntity.ok(responseData);
+    		// HTTP 200 OK 상태코드와 함께 조회된 리뷰 목록/요약/페이징 정보를 반환
+    		return ApiResponse.success(responseData);
+    	}catch (Exception e) {
+    		return ApiResponse.fromException(e);
+    	}
     }
+    
 
     // 리뷰 작성
     @PostMapping("/products/{prdNo}/reviews")

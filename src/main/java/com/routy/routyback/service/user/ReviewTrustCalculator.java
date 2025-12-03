@@ -21,7 +21,7 @@ public class ReviewTrustCalculator {
         score += calculatePurchaseWeight(review.getOdNo());
 
         // 2) 텍스트 길이 점수
-        score += calculateTextWeight(review.getRevGood(), review.getRevBad());
+        score += calculateTextWeight(review.getContent());
 
         // 3) 사진 개수 점수
         score += calculatePhotoWeight(review.getPhotoCount());
@@ -42,14 +42,11 @@ public class ReviewTrustCalculator {
     /**
      * 텍스트 가중치 (good + bad 2개 합산)
      */
-    private double calculateTextWeight(String good, String bad) {
+    private double calculateTextWeight(String content) {
 
         int length = 0;
-        if (good != null) {
-            length += good.length();
-        }
-        if (bad != null) {
-            length += bad.length();
+        if (content != null) {
+            length = content.trim().length(); 
         }
 
         if (length >= 200) {
