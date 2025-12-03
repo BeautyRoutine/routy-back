@@ -1,6 +1,8 @@
 package com.routy.routyback.mapper.admin;
 
 import com.routy.routyback.dto.ProductDTO;
+import com.routy.routyback.dto.ProductDetailDTO;
+
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -16,6 +18,9 @@ public interface ProductMapper {
 
     // 상품 등록
     void productInsert(ProductDTO product);
+    
+    // 상품 디테일 정보 등록
+    void productDetailInsert(ProductDetailDTO prdDetDto);
 
     // 전체 수정
     void productUpdate(ProductDTO product);
