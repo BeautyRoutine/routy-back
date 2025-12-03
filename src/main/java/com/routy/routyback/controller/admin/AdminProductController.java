@@ -1,6 +1,7 @@
 package com.routy.routyback.controller.admin;
 
 import com.routy.routyback.dto.ProductDTO;
+import com.routy.routyback.dto.ProductInsertRequest;
 import com.routy.routyback.service.admin.IProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -45,8 +46,8 @@ public class AdminProductController {
 
     // 등록
     @PostMapping
-    public ResponseEntity<?> create(@RequestBody ProductDTO dto) {
-        String result = productService.insertProduct(dto);
+    public ResponseEntity<?> create(@RequestBody ProductInsertRequest request) {
+        String result = productService.insertProduct(request.getProduct(), request.getPrdDetail());
         return ResponseEntity.ok(result);
     }
 
