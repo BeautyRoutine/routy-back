@@ -12,6 +12,8 @@ public class ProductIngredientAnalysisDTO {
     
     // 즐겨찾는 성분
     private List<String> myFavoriteIngredients;
+    //싫어하는 성분
+    private List<String> myAvoidIngredients;
     
     // 알레르기 체크
     private List<String> allergenIngredients;

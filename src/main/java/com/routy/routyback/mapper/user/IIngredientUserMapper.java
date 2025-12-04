@@ -27,4 +27,6 @@ public interface IIngredientUserMapper {
 	List<IngredientSimpleDTO> selectIngredientsByPrdNo(int prdNo);
 	//성분 즐겨찾기 성분 비교
 	List<String> selectMatchingFavoriteIngredients(Map<String, Object> params);
+	//성분 싫어요 성분 비교
+	List<String> selectMatchingAvoidIngredients(Map<String, Object> params);
 }

@@ -42,11 +42,13 @@ public class IngredientUserService implements IIngredientUserService {
 	                result.setBadEffects(new ArrayList<>());
 	            }
 	            
-	            // 즐겨찾는 성분 확인
+	            // 즐겨찾는/싫어하는 성분 확인
 	            if  (userId != null && !userId.isEmpty() && !userId.equals("null")) {
 	                result.setMyFavoriteIngredients(mapper.selectMatchingFavoriteIngredients(params));
+	                result.setMyAvoidIngredients(mapper.selectMatchingAvoidIngredients(params));
 	            } else {
 	                result.setMyFavoriteIngredients(new ArrayList<>());
+	                result.setMyAvoidIngredients(new ArrayList<>());
 	            }
 
 	            //전체 성분 가져오기
