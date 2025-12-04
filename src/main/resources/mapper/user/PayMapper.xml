@@ -4,7 +4,7 @@
 
 <mapper namespace="com.routy.routyback.mapper.user.PayMapper">
 
-  <insert id="insertOrder" parameterType="com.routy.routyback.dto.OrdersDTO">
+  <insert id="insertOrder" parameterType="com.routy.routyback.dto.order.OrdersDTO">
     <selectKey keyProperty="odNo" resultType="int" order="BEFORE">
       SELECT SEQ_ORDERS_NO.NEXTVAL FROM DUAL
     </selectKey>
@@ -22,7 +22,7 @@
     VALUES (SEQ_PP_MAP_NO.NEXTVAL, #{odNo}, #{prdNo}, #{qty}, #{price}, SYSDATE)
   </insert>
 
-  <select id="selectOrder" resultType="com.routy.routyback.dto.OrdersDTO">
+  <select id="selectOrder" resultType="com.routy.routyback.dto.order.OrdersDTO">
     SELECT *
     FROM ORDERS
     WHERE odNo = #{odNo}

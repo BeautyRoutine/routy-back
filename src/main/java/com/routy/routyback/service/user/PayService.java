@@ -1,8 +1,8 @@
 package com.routy.routyback.service.user;
 
 import com.routy.routyback.dto.OrderSaveRequestDTO;
-import com.routy.routyback.dto.OrdersDTO;
 import com.routy.routyback.dto.PaymentConfirmRequestDTO;
+import com.routy.routyback.dto.order.OrdersDTO;
 import com.routy.routyback.mapper.user.PayMapper;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
@@ -32,7 +32,7 @@ public class PayService {
 
         // ORDERS DTO 생성
         OrdersDTO ordersDto = new OrdersDTO();
-        ordersDto.setUserNo(request.getUserNo()); // 유저 번호
+        ordersDto.setUserNo((long) request.getUserNo()); // 유저 번호
         ordersDto.setOdName(request.getReceiverName());
         ordersDto.setOdHp(request.getReceiverPhone());
         ordersDto.setOdZip(request.getZipCode() != null ? request.getZipCode() : 0);
@@ -47,7 +47,7 @@ public class PayService {
 
         // ORDERS 테이블 저장 -> odNo 생성
         payMapper.insertOrder(ordersDto);
-        int generatedOdNo = ordersDto.getOdNo();
+        long generatedOdNo = ordersDto.getOdNo();
 
         // 상품 상세 저장 (PAY_PRODUCT_MAPPING)
         // 상품 정보는 미리 박제해놔야 "뭘 결제할 건지" 알 수 있음
