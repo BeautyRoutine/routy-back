@@ -19,7 +19,19 @@ public class UserRecentProductController {
     private final IRecentProductService recentProductService;
 
     @GetMapping
-    public ApiResponse<List<RecentProductResponse>> getRecentProducts(@PathVariable String userId) {
-        return ApiResponse.success(recentProductService.getRecentProducts(userId));
+    public ApiResponse<List<RecentProductResponse>> getRecentProducts(@PathVariable("userId") String userId) {
+        Long userNo = recentProductService.getUserNoByUserId(userId);
+        return ApiResponse.success(recentProductService.getRecentProducts(userNo));
+    }
+
+    @PostMapping
+    public ApiResponse<Void> addRecentProduct(
+        @PathVariable("userId") String userId,
+        @RequestParam Long prdNo,
+        @RequestParam(value = "prdSubCate", required = true) Long prdSubCate) {
+
+        Long userNo = recentProductService.getUserNoByUserId(userId);
+        recentProductService.addRecentProduct(userNo, prdNo, prdSubCate);
+        return ApiResponse.success(null);
     }
 }
