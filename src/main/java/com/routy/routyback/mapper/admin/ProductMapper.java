@@ -30,7 +30,8 @@ public interface ProductMapper {
 
     // 삭제
     void productDelete(int prdNo);
-
+    // 상품 상세정보 삭제
+    void deleteProductDetail(int prdNo);
     // 재고 수정
     void productUpdateStock(int prdNo, int prdStock);
 
