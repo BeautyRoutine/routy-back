@@ -47,7 +47,7 @@ public class ProductService implements IProductService {
     }
 
     @Override
-    public String insertProduct(ProductDTO prdDto, ProductDetailDTO prdDetDto) {
+    public String insertProduct(ProductDTO prdDto, ProductDetailDTO prdDetDto) { //상품 추가
     	// 상품정보 등록
     	productMapper.productInsert(prdDto);
     	int prdNo = prdDto.getPrdNo();
@@ -87,6 +87,7 @@ public class ProductService implements IProductService {
     @Override
     @Transactional
     public void deleteProduct(int prdNo) {
+        productMapper.deleteProductDetail(prdNo);
         productMapper.deleteProductIngredientMapping(prdNo); // 1) 매핑 삭제
         productMapper.productDelete(prdNo);                   // 2) 상품 삭제
     }
