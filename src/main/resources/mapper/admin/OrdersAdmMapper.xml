@@ -114,7 +114,7 @@
 	        <if test="delvGetRoadAddr != null"> delvGetRoadAddr = #{delvGetRoadAddr}, </if>
 	        <if test="delvGetDetailAddr != null"> delvGetDetailAddr = #{delvGetDetailAddr}, </if>
 	        <if test="delvGetBcCode != 0"> delvGetBcCode = #{delvGetBcCode}, </if>
-	        <if test="delvEndDate != null"> delvEndDate = #{delvEndDate}, </if>
+	        <if test="delvStatus == 6"> delvEnddate = CURRENT_DATE, </if>
     	</set>
     	WHERE delvNo = #{delvNo}
     </update>

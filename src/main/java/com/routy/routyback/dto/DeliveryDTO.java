@@ -24,9 +24,9 @@ public class DeliveryDTO {
 	private String delvGetDetailAddr; //수령지 상세 주소(255)
 	private long delvGetBcCode; // 수령지 시군구코드(12)
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
-	private Date delvEndDate; // 완료일
+	private Date delvEnddate; // 완료일
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
-	private Date delvRegDate; // 접수일
+	private Date delvRegdate; // 접수일
 	
 	// OrdersAdmMapper.xml - listAllOrdersDelivery, detailOrderDelivery 사용
 	private int userNo;
