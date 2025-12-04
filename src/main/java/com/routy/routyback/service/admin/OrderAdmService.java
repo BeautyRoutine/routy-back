@@ -18,8 +18,8 @@ import com.routy.routyback.common.ApiResponse;
 import com.routy.routyback.common.ParamProcessor;
 import com.routy.routyback.common.category.CategoryRepository;
 import com.routy.routyback.dto.DeliveryDTO;
-import com.routy.routyback.dto.OrderDelvDTO;
 import com.routy.routyback.dto.OrderPrdDTO;
+import com.routy.routyback.dto.OrdersUsDTO;
 
 @Service
 public class OrderAdmService implements IOrderAdmService {
@@ -33,16 +33,6 @@ public class OrderAdmService implements IOrderAdmService {
 	
 	@Autowired
 	CategoryRepository cateRepo;
-	
-	// KST 포맷터
-    private static final DateTimeFormatter KST_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
-    		.withZone(ZoneId.of("Asia/Seoul"));
-    // 날짜 필드 목록 (필요 시 추가 가능)
-    private static final List<String> DATE_FIELDS = Arrays.asList(
-            "ODREGDATE"
-    		, "USERREGDATE", "USERUPDATE"
-    		, "DELVREGDATE", "DELVENDDATE"
-    );
 
 
 
@@ -55,15 +45,7 @@ public class OrderAdmService implements IOrderAdmService {
 			
 			int total = dao.listAllOrdersCount(params);
 
-	        List<Map<String, Object>> resultList = dao.listAllOrders(params);
-	        for (Map<String, Object> row : resultList) {
-	            for (String field : DATE_FIELDS) {
-	                Object value = row.get(field);
-	                if (value instanceof Timestamp ts) {
-	                    row.put(field, KST_FORMATTER.format(ts.toInstant()));
-	                }
-	            }
-	        }
+			ArrayList<OrdersUsDTO> resultList = dao.listAllOrders(params);
 	        
 	        Map<String, Object> result = new java.util.HashMap<>();
 	        result.put("total", total);
@@ -78,13 +60,7 @@ public class OrderAdmService implements IOrderAdmService {
 	@Override
 	public ApiResponse detailOrder(int odNo) {
 		try {
-			Map<String, Object> resultRow = dao.detailOrder(odNo);
-			for (String field : DATE_FIELDS) {
-	            Object value = resultRow.get(field);
-	            if (value instanceof Timestamp ts) {
-	            	resultRow.put(field, KST_FORMATTER.format(ts.toInstant()));
-	            }
-	        }
+			OrdersUsDTO resultRow = dao.detailOrder(odNo);
 			
 			return ApiResponse.success(resultRow);
 		} catch (Exception e) {
@@ -113,7 +89,7 @@ public class OrderAdmService implements IOrderAdmService {
 	@Override
 	public ApiResponse detailDelvOrder(int odNo) {
 		try {
-			ArrayList<OrderDelvDTO> resultRow = detdao.detailDelvOrder(odNo);
+			ArrayList<DeliveryDTO> resultRow = detdao.detailDelvOrder(odNo);
 			
 			return ApiResponse.success(resultRow);
 		} catch (Exception e) {
@@ -132,15 +108,7 @@ public class OrderAdmService implements IOrderAdmService {
 			
 			int total = dao.listAllOrdersDeliveryCount(params);
 
-	        List<Map<String, Object>> resultList = dao.listAllOrdersDelivery(params);
-	        for (Map<String, Object> row : resultList) {
-	            for (String field : DATE_FIELDS) {
-	                Object value = row.get(field);
-	                if (value instanceof Timestamp ts) {
-	                    row.put(field, KST_FORMATTER.format(ts.toInstant()));
-	                }
-	            }
-	        }
+			ArrayList<DeliveryDTO> resultList = dao.listAllOrdersDelivery(params);
 	        
 	        Map<String, Object> result = new java.util.HashMap<>();
 	        result.put("total", total);
@@ -155,13 +123,7 @@ public class OrderAdmService implements IOrderAdmService {
 	@Override
 	public ApiResponse detailOrderDelivery(int delvNo) {
 		try {
-			Map<String, Object> resultRow = dao.detailOrderDelivery(delvNo);
-			for (String field : DATE_FIELDS) {
-	            Object value = resultRow.get(field);
-	            if (value instanceof Timestamp ts) {
-	            	resultRow.put(field, KST_FORMATTER.format(ts.toInstant()));
-	            }
-	        }
+			DeliveryDTO resultRow = dao.detailOrderDelivery(delvNo);
 			
 			return ApiResponse.success(resultRow);
 		} catch (Exception e) {
@@ -188,7 +150,7 @@ public class OrderAdmService implements IOrderAdmService {
 	@Override
 	public ApiResponse updateOrderDelivery(DeliveryDTO dto) {
 		try {
-			dao.insertOrderDelivery(dto);
+			dao.updateOrderDelivery(dto);
 			int delvNo = dto.getDelvNo();
 			
 			Map<String, Object> result = new java.util.HashMap<>();

@@ -27,5 +27,12 @@ public class DeliveryDTO {
 	private Date delvEndDate; // 완료일
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
 	private Date delvRegDate; // 접수일
+	
+	// OrdersAdmMapper.xml - listAllOrdersDelivery, detailOrderDelivery 사용
+	private int userNo;
+	private String userId;
+	private String userNick;
+	private String userName;
+	private String userHp;
 
 }
