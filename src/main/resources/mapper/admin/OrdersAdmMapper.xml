@@ -76,7 +76,7 @@
 	    <include refid="listAllOrderDeliveryFilter"/>
     </select>
     
-    <select id="detailOrderDelivery" parameterType="int" resultType="com.routy.routyback.dto.DeliveryDTO">
+    <select id="detailOrderDelivery">
 	    SELECT d.*, u.userNo, u.userName, u.userNick, u.userId, u.userHp
 	    FROM DELIVERY d LEFT JOIN ORDERS o ON o.odNo=d.odNo LEFT JOIN USERS u ON u.userNo=o.userNo
 	    WHERE d.delvNo = #{delvNo}

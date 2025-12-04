@@ -61,7 +61,7 @@ public class OrderAdmController {
 	}
 	@PutMapping("/delivery/{delvNo}")
 	public ApiResponse updateOrderDelivery(@PathVariable int delvNo, @RequestBody DeliveryDTO dto) { // 택배 수정
-		dto.setDELVNO(delvNo);
+		dto.setDelvNo(delvNo);
 		return service.updateOrderDelivery(dto);
 	}
 	@DeleteMapping("/delivery/{delvNo}")
