@@ -18,6 +18,7 @@ public class User {
     private Integer userLevel;
     private LocalDateTime userRegdate;
     private Integer userStatus;
+    private Integer userSkin;  
 
     // Getters
     public Long getUserNo() {
@@ -76,6 +77,10 @@ public class User {
         return userStatus;
     }
 
+    public Integer getUserSkin() { 
+        return userSkin;
+    }
+
     // Setters
     public void setUserNo(Long userNo) {
         this.userNo = userNo;
@@ -131,5 +136,9 @@ public class User {
 
     public void setUserStatus(Integer userStatus) {
         this.userStatus = userStatus;
+    }
+
+    public void setUserSkin(Integer userSkin) { 
+        this.userSkin = userSkin;
     }
 }
