@@ -54,7 +54,7 @@ public interface IOrdersAdmDAO {
      * 	택배번호
      * @return 택배 데이터 (Map)
      */
-    Map<String, Object> detailOrderDelivery(int delvNo);
+    DeliveryDTO detailOrderDelivery(int delvNo);
     /**
      * 새로운 택배를 등록.
      * @param dto

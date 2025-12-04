@@ -155,13 +155,7 @@ public class OrderAdmService implements IOrderAdmService {
 	@Override
 	public ApiResponse detailOrderDelivery(int delvNo) {
 		try {
-			Map<String, Object> resultRow = dao.detailOrderDelivery(delvNo);
-			for (String field : DATE_FIELDS) {
-	            Object value = resultRow.get(field);
-	            if (value instanceof Timestamp ts) {
-	            	resultRow.put(field, KST_FORMATTER.format(ts.toInstant()));
-	            }
-	        }
+			DeliveryDTO resultRow = dao.detailOrderDelivery(delvNo);
 			
 			return ApiResponse.success(resultRow);
 		} catch (Exception e) {
@@ -173,7 +167,7 @@ public class OrderAdmService implements IOrderAdmService {
 	public ApiResponse insertOrderDelivery(DeliveryDTO dto) {
 		try {
 			dao.insertOrderDelivery(dto);
-			int delvNo = dto.getDelvNo();
+			int delvNo = dto.getDELVNO();
 			
 			Map<String, Object> result = new java.util.HashMap<>();
 	        result.put("delvNo", delvNo);
@@ -189,7 +183,7 @@ public class OrderAdmService implements IOrderAdmService {
 	public ApiResponse updateOrderDelivery(DeliveryDTO dto) {
 		try {
 			dao.insertOrderDelivery(dto);
-			int delvNo = dto.getDelvNo();
+			int delvNo = dto.getDELVNO();
 			
 			Map<String, Object> result = new java.util.HashMap<>();
 	        result.put("msg", "delvNo:"+delvNo+" 택배를 수정하였습니다.");
