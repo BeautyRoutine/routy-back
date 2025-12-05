@@ -13,7 +13,7 @@
 	ORDER BY pp.ppMapNo ASC
 </select>
 
-<select id="detailDelvOrder" resultType="com.routy.routyback.dto.OrderDelvDTO">
+<select id="detailDelvOrder" resultType="com.routy.routyback.dto.DeliveryDTO">
 	SELECT delvNo, delvComNum, delvCompany, delvType, delvStatus, delvEnddate, delvRegdate
 	FROM DELIVERY
 	WHERE odNo = #{odNo}

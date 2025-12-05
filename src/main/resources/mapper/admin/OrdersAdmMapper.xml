@@ -23,8 +23,8 @@
             </otherwise>
         </choose>
     </sql>
-	<select id="listAllOrders" resultType="Map">
-		SELECT o.*, u.userNo, u.userName, u.userNick, u.userId, u.userHp
+	<select id="listAllOrders" resultType="com.routy.routyback.dto.OrdersUsDTO">
+		SELECT o.*, u.userName, u.userNick, u.userId, u.userHp
 	    <include refid="listAllOrdersFilter"/>
 		OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
 	</select>
@@ -33,8 +33,8 @@
 	    <include refid="listAllOrdersFilter"/>
     </select>
     
-    <select id="detailOrder">
-	    SELECT o.*, u.userNo, u.userName, u.userNick, u.userId, u.userHp
+    <select id="detailOrder" parameterType="int" resultType="com.routy.routyback.dto.OrdersUsDTO">
+	    SELECT o.*, u.userName, u.userNick, u.userId, u.userHp
 	    FROM ORDERS o LEFT JOIN USERS u ON u.userNo=o.userNo
 	    WHERE odNo = #{odNo}
     </select>
@@ -66,7 +66,7 @@
             </otherwise>
         </choose>
     </sql>
-	<select id="listAllOrdersDelivery" resultType="Map">
+	<select id="listAllOrdersDelivery" resultType="com.routy.routyback.dto.DeliveryDTO">
 		SELECT d.*, u.userNo, u.userName, u.userNick, u.userId, u.userHp
 	    <include refid="listAllOrderDeliveryFilter"/>
 		OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
@@ -76,7 +76,7 @@
 	    <include refid="listAllOrderDeliveryFilter"/>
     </select>
     
-    <select id="detailOrderDelivery">
+    <select id="detailOrderDelivery" parameterType="int" resultType="com.routy.routyback.dto.DeliveryDTO">
 	    SELECT d.*, u.userNo, u.userName, u.userNick, u.userId, u.userHp
 	    FROM DELIVERY d LEFT JOIN ORDERS o ON o.odNo=d.odNo LEFT JOIN USERS u ON u.userNo=o.userNo
 	    WHERE d.delvNo = #{delvNo}
@@ -99,4 +99,28 @@
             , #{delvGetZip}, #{delvGetJibunAddr}, #{delvGetRoadAddr}, #{delvGetDetailAddr}, #{delvGetBcCode}
 		)
     </insert>
+    
+    <update id="updateOrderDelivery" parameterType="com.routy.routyback.dto.DeliveryDTO">
+    	UPDATE DELIVERY
+    	<set>
+    		<if test="delvCompany != null"> delvCompany = #{delvCompany}, </if>
+    		<if test="delvComNum != null"> delvComNum = #{delvComNum}, </if>
+	        <if test="delvType != 0"> delvType = #{delvType}, </if>
+	        <if test="delvStatus != 0"> delvStatus = #{delvStatus}, </if>
+	        <if test="delvGetName != null"> delvGetName = #{delvGetName}, </if>
+	        <if test="delvGetHp != null"> delvGetHp = #{delvGetHp}, </if>
+	        <if test="delvGetZip != 0"> delvGetZip = #{delvGetZip}, </if>
+	        <if test="delvGetJibunAddr != null"> delvGetJibunAddr = #{delvGetJibunAddr}, </if>
+	        <if test="delvGetRoadAddr != null"> delvGetRoadAddr = #{delvGetRoadAddr}, </if>
+	        <if test="delvGetDetailAddr != null"> delvGetDetailAddr = #{delvGetDetailAddr}, </if>
+	        <if test="delvGetBcCode != 0"> delvGetBcCode = #{delvGetBcCode}, </if>
+	        <if test="delvStatus == 6"> delvEnddate = CURRENT_DATE, </if>
+    	</set>
+    	WHERE delvNo = #{delvNo}
+    </update>
+    
+    <delete id="deleteOrderDelivery" parameterType="int">
+    	DELETE FROM DELIVERY WHERE delvNo = #{delvNo}
+    </delete>
+    
 </mapper>

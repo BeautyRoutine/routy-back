@@ -24,7 +24,7 @@ public class CategoryRepository {
         )));
         subCate.putAll(mainCate.get(11).getSub());
 
-        // 12: 메이크업
+        // 21: 메이크업
         mainCate.put(21, new Category("메이크업", Map.ofEntries(
             Map.entry(21001, "립메이크업"),
             Map.entry(21002, "베이스메이크업"),
@@ -34,7 +34,7 @@ public class CategoryRepository {
         )));
         subCate.putAll(mainCate.get(21).getSub());
 
-        // 13: 마스크팩
+        // 31: 마스크팩
         mainCate.put(31, new Category("마스크팩", Map.ofEntries(
             Map.entry(31001, "시트팩"),
             Map.entry(31002, "패드"),
@@ -43,7 +43,7 @@ public class CategoryRepository {
         )));
         subCate.putAll(mainCate.get(31).getSub());
 
-        // 21: 클렌징
+        // 41: 클렌징
         mainCate.put(41, new Category("클렌징", Map.ofEntries(
             Map.entry(41001, "클렌징폼/젤"),
             Map.entry(41002, "클렌징워터/밀크"),
@@ -53,16 +53,16 @@ public class CategoryRepository {
         )));
         subCate.putAll(mainCate.get(41).getSub());
 
-        // 22: 선케어
+        // 51: 선케어
         mainCate.put(51, new Category("선케어", Map.ofEntries(
             Map.entry(51001, "선크림"),
             Map.entry(51002, "선스틱"),
             Map.entry(51003, "선쿠션"),
-            Map.entry(51004, "선로션")
+            Map.entry(51004, "선스프레이")
         )));
         subCate.putAll(mainCate.get(51).getSub());
 
-        // 23: 맨즈케어
+        // 61: 맨즈케어
         mainCate.put(61, new Category("맨즈케어", Map.ofEntries(
             Map.entry(61001, "스킨케어"),
             Map.entry(61002, "메이크업"),
