@@ -1,7 +1,6 @@
 package com.routy.routyback.controller.user;
 
 import com.routy.routyback.common.ApiResponse;
-import com.routy.routyback.common.ParamProcessor;
 import com.routy.routyback.dto.ProductUserDTO;
 import com.routy.routyback.service.user.IProductRecentRecommendService;
 import com.routy.routyback.service.user.IProductUserService;
@@ -18,20 +17,16 @@ public class ProductUserController {
 
     @Autowired
     @Qualifier("productUserService")
-    IProductUserService service;
-
+    private IProductUserService service;
 
     @Autowired
-    @Qualifier("resent")
-    IProductRecentRecommendService recommendService; // 하나만 사용
+    @Qualifier("recent")
+    private IProductRecentRecommendService recommendService;
 
-
-    
     @GetMapping("/list/skin_type")
     public ApiResponse productSkinBased(@RequestParam Map<String, Object> param) {
         return service.productSkinBased(param);
     }
-
 
     @GetMapping("/list/skin_cate")
     public ApiResponse productAllSkinCate(@RequestParam Map<String, Object> param) {
@@ -57,20 +52,17 @@ public class ProductUserController {
     ) {
         return recommendService.getRecommendedProducts(userNo, recent, subcate);
     }
-    
+
     @GetMapping("/{prdNo}")
     public ApiResponse<ProductUserDTO> productDetailView(@PathVariable int prdNo) {
         try {
             ProductUserDTO dto = service.productDetailView(prdNo);
-            
             if (dto == null) {
-                // null이면 예외처리
                 throw new IllegalArgumentException("해당 상품이 존재하지 않습니다.");
             }
-            return ApiResponse.success(dto); // 성공 시 data에 DTO를 담아 반환
-            
+            return ApiResponse.success(dto);
         } catch (Exception e) {
-            return ApiResponse.fromException(e); // 실패 시 에러 메시지 반환
+            return ApiResponse.fromException(e);
         }
     }
 }
