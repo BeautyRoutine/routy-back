@@ -21,12 +21,35 @@
     </resultMap>
 
     <!-- 단건 조회 -->
-    <select id="productDetailView" resultMap="prdResult">
-        SELECT
-        prdNo, prdName, prdPrice, prdVolume, prdCompany,
-        prdMainCate, prdSubCate, prdImg, prdDesc
-        FROM PRODUCT
-        WHERE prdNo = #{prdNo}
+    <select id="productDetailView" resultType="com.routy.routyback.dto.ProductUserDTO">
+	 SELECT
+            p.prdNo, 
+            p.prdName,
+            p.prdPrice,
+            p.prdVolume,
+            p.prdCompany,
+            p.prdMainCate,
+            p.prdSubCate,
+            p.prdImg,
+            p.prdDesc,
+            
+            d.prdVolume_text,
+            d.prdSpec,
+            d.prdExpire,
+            d.prdUsage,
+            d.prdManuf,
+            d.prdOrigin,
+            d.prdFda,
+            d.prdIngredients,
+            d.prdCaution,
+            d.prdQuality,
+            d.prdCs_phone
+        FROM 
+            PRODUCT p
+        LEFT JOIN 
+            PRODUCT_DETAIL d ON p.prdNo = d.prdNo 
+        WHERE 
+            p.prdNo = #{prdNo}
     </select>
 
     <!-- 이미지 리스트 -->
