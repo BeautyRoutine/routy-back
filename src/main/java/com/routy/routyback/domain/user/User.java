@@ -8,6 +8,7 @@ public class User {
     private String userId;
     private String userPw;
     private String userName;
+    private String userNick;
     private String userHp;
     private String userEmail;
     private Integer userZip;
@@ -141,4 +142,12 @@ public class User {
     public void setUserSkin(Integer userSkin) { 
         this.userSkin = userSkin;
     }
+
+	public String getUserNick() {
+		return userNick;
+	}
+
+	public void setUserNick(String userNick) {
+		this.userNick = userNick;
+	}
 }
