@@ -51,6 +51,8 @@ public class SecurityConfig {
                 .requestMatchers("/api/orders/**").authenticated()
                 .requestMatchers("/api/payments/**").authenticated()
                 .requestMatchers("/api/users/**").permitAll()
+                .requestMatchers(org.springframework.http.HttpMethod.DELETE, "/api/users/*/notifications/**")
+                .permitAll()
                 .requestMatchers("/", "/index.html").permitAll()
                 .anyRequest().authenticated()
             )
