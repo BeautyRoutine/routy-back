@@ -18,4 +18,38 @@
 		INNER JOIN EFFECT e ON e.effNo=ei.effNo
 	WHERE e.effStatus = 2 AND pi.prdNo = #{prdNo} AND e.effSkin = #{userSkin}
 	</select>
+	
+	  <select id="selectIngredientsByPrdNo" resultType="com.routy.routyback.dto.user.IngredientSimpleDTO">
+        SELECT 
+            i.INGNO AS ingNo,
+            i.INGNAME AS ingName,
+            i.INGENNAME AS ingEngName,
+            i.INGALLERGEN AS ingAllergen,  <!-- DB의 NUMBER(1,0) -->
+            i.INGDANGER AS ingDanger,      <!-- DB의 NUMBER(1,0) -->
+            i.INGFUNCTIONAL AS ingFunctional
+        FROM PRD_ING_MAPPING pim
+        JOIN INGREDIENTS i ON pim.ingNo = i.ingNo
+        WHERE pim.prdNo = #{prdNo}
+        ORDER BY pim.PIMAPNO ASC  <!-- 매핑된 순서대로 정렬 -->
+    </select>
+	
+	 <select id="selectMatchingFavoriteIngredients" resultType="String">
+        SELECT i.INGNAME
+        FROM USR_ING_MAPPING uim
+        JOIN INGREDIENTS i ON uim.ingNo = i.ingNo
+        JOIN PRD_ING_MAPPING pim ON i.ingNo = pim.ingNo
+        WHERE uim.USERNO = (SELECT USERNO FROM USERS WHERE USERID = #{userId})
+          AND uim.UIMAPTYPE = 1 <!-- 선호성분 -->
+          AND pim.prdNo = #{prdNo}
+    </select>
+	
+	 <select id="selectMatchingAvoidIngredients" resultType="String">
+        SELECT i.INGNAME
+        FROM USR_ING_MAPPING uim
+        JOIN INGREDIENTS i ON uim.ingNo = i.ingNo
+        JOIN PRD_ING_MAPPING pim ON i.ingNo = pim.ingNo
+        WHERE uim.USERNO = (SELECT USERNO FROM USERS WHERE USERID = #{userId})
+          AND uim.UIMAPTYPE = 2  <!-- 기피 성분 -->
+          AND pim.prdNo = #{prdNo}
+    </select>
 </mapper>

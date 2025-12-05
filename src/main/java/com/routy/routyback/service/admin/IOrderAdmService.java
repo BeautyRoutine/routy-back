@@ -16,4 +16,6 @@ public interface IOrderAdmService {
 	ApiResponse listAllOrdersDelivery(Map<String, Object> params); // 전체 택배 조회
 	ApiResponse detailOrderDelivery(int delvNo); // 택배번호 조회
 	ApiResponse insertOrderDelivery(DeliveryDTO dto); // 택배 접수
+	ApiResponse updateOrderDelivery(DeliveryDTO dto); // 택배 수정
+	ApiResponse deleteOrderDelivery(int delvNo); // 택배 삭제
 }

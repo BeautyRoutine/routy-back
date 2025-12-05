@@ -4,8 +4,8 @@ import java.util.ArrayList;
 
 import org.apache.ibatis.annotations.Mapper;
 
-import com.routy.routyback.dto.OrderDelvDTO;
 import com.routy.routyback.dto.OrderPrdDTO;
+import com.routy.routyback.dto.DeliveryDTO;
 
 @Mapper
 public interface IOrderDetailAdmDAO {
@@ -22,6 +22,6 @@ public interface IOrderDetailAdmDAO {
 	 * 	주문번호
 	 * @return 주문 택배 목록 (ArrayList)
 	 */
-	ArrayList<OrderDelvDTO> detailDelvOrder(int odNo);
+	ArrayList<DeliveryDTO> detailDelvOrder(int odNo);
 
 }

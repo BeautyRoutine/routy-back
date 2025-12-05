@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper
-        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.routy.routyback.mapper.user.ProductRecentRecommendMapper">
 
     <select id="selectRecommendedProducts"
-            resultType="com.routy.routyback.dto.ProductRecentRecommendDTO"
-            parameterType="map">
+        resultType="com.routy.routyback.dto.ProductRecentRecommendDTO"
+        parameterType="map">
 
-        SELECT
-        PRDNO      AS prdNo,
-        PRDNAME    AS prdName,
+        SELECT DISTINCT
+        PRDNO AS prdNo,
+        PRDNAME AS prdName,
         PRDCOMPANY AS prdCompany,
-        PRDIMG     AS prdImg
+        PRDIMG AS prdImg
         FROM PRODUCT
         WHERE 1 = 1
 
@@ -36,4 +36,3 @@
     </select>
 
 </mapper>
-
