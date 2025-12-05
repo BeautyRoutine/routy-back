@@ -23,6 +23,13 @@ public class ProductUserController {
     @Qualifier("recent")
     private IProductRecentRecommendService recommendService;
 
+    // 기본 상품 리스트 조회 (필터 가능)
+    @GetMapping("/list")
+    public ApiResponse getProductList(@RequestParam Map<String, Object> params) {
+        return service.getProductList(params);
+    }
+
+
     @GetMapping("/list/skin_type")
     public ApiResponse productSkinBased(@RequestParam Map<String, Object> param) {
         return service.productSkinBased(param);
@@ -65,4 +72,11 @@ public class ProductUserController {
             return ApiResponse.fromException(e);
         }
     }
+
+    @GetMapping("/brand/list")
+    public ApiResponse getBrandList() {
+        List<String> list = service.getBrandList();
+        return ApiResponse.success(list);
+    }
+
 }

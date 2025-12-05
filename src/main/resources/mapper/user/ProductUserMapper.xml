@@ -23,8 +23,8 @@
     <!-- 단건 조회 -->
     <select id="productDetailView" resultMap="prdResult">
         SELECT
-            prdNo, prdName, prdPrice, prdVolume, prdCompany,
-            prdMainCate, prdSubCate, prdImg, prdDesc
+        prdNo, prdName, prdPrice, prdVolume, prdCompany,
+        prdMainCate, prdSubCate, prdImg, prdDesc
         FROM PRODUCT
         WHERE prdNo = #{prdNo}
     </select>
@@ -32,11 +32,11 @@
     <!-- 이미지 리스트 -->
     <select id="selectProductImageList" resultType="com.routy.routyback.domain.ProductImageVO">
         SELECT
-            PI_NO AS piNo,
-            PRD_NO AS prdNo,
-            PI_URL AS piUrl,
-            PI_TYPE AS piType,
-            PI_SORT AS piSort
+        PI_NO AS piNo,
+        PRD_NO AS prdNo,
+        PI_URL AS piUrl,
+        PI_TYPE AS piType,
+        PI_SORT AS piSort
         FROM PRODUCT_IMAGE
         WHERE PRD_NO = #{prdNo}
         ORDER BY PI_SORT ASC
@@ -45,46 +45,40 @@
     <!-- 피부타입 + 카테고리 기반 추천 -->
     <select id="productAllSkinCate" resultMap="prdResult">
         SELECT
-            p.*,
-            (SELECT AVG(REVSTAR) FROM REVIEW r WHERE r.PRDNO = p.PRDNO) AS avgRating,
-            (SELECT COUNT(*) FROM REVIEW r WHERE r.PRDNO = p.PRDNO) AS reviewCount,
-            (
-                SELECT COUNT(*)
-                FROM REVIEW r
-                INNER JOIN USERS u ON u.userNo = r.userNo
-                INNER JOIN REVIEW_FEEDBACK rf ON rf.revNo = r.revNo
-                WHERE r.prdNo = p.prdNo
-                AND rf.rfTypeCode &lt; 500
+        p.*,
+        (SELECT AVG(REVSTAR) FROM REVIEW r WHERE r.PRDNO = p.PRDNO) AS avgRating,
+        (SELECT COUNT(*) FROM REVIEW r WHERE r.PRDNO = p.PRDNO) AS reviewCount,
+        (
+        SELECT COUNT(*)
+        FROM REVIEW r
+        INNER JOIN USERS u ON u.userNo = r.userNo
+        INNER JOIN REVIEW_FEEDBACK rf ON rf.revNo = r.revNo
+        WHERE r.prdNo = p.prdNo
+        AND rf.rfTypeCode &lt; 500
 
-                <!-- 피부 타입 필터 -->
-                <if test="skin != null and skin != ''">
-                    AND u.userSkin = #{skin}
-                </if>
-
-                <!-- subcate (프런트에서 넘기는 이름 1) -->
-                <if test="subcate != null and subcate != ''">
-                    AND p.prdSubCate = #{subcate}
-                </if>
-
-                <!-- sub_cate (프런트에서 넘기는 이름 2) -->
-                <if test="sub_cate != null and sub_cate != ''">
-                    AND p.prdSubCate = #{sub_cate}
-                </if>
-            ) AS cnt
-        FROM PRODUCT p
-        WHERE 1 = 1
-
-        <!-- 메인 카테고리 필터 -->
-        <if test="maincate != null and maincate != ''">
-            AND p.prdMainCate = #{maincate}
+        <if test="skin != null and skin != ''">
+            AND u.userSkin = #{skin}
         </if>
 
-        <!-- 서브 카테고리 필터(subcate) -->
         <if test="subcate != null and subcate != ''">
             AND p.prdSubCate = #{subcate}
         </if>
 
-        <!-- 서브 카테고리 필터(sub_cate) -->
+        <if test="sub_cate != null and sub_cate != ''">
+            AND p.prdSubCate = #{sub_cate}
+        </if>
+        ) AS cnt
+        FROM PRODUCT p
+        WHERE 1 = 1
+
+        <if test="maincate != null and maincate != ''">
+            AND p.prdMainCate = #{maincate}
+        </if>
+
+        <if test="subcate != null and subcate != ''">
+            AND p.prdSubCate = #{subcate}
+        </if>
+
         <if test="sub_cate != null and sub_cate != ''">
             AND p.prdSubCate = #{sub_cate}
         </if>
@@ -107,25 +101,126 @@
     <select id="selectFallbackProducts" resultMap="prdResult">
         SELECT *
         FROM (
-            SELECT
-                p.*,
-                r.AVG_STAR AS avgRating,
-                r.review_count AS reviewCount,
-                DBMS_RANDOM.VALUE AS randomSort
-            FROM PRODUCT p
-            JOIN (
-                SELECT
-                    PRDNO,
-                    AVG(REVSTAR) AS AVG_STAR,
-                    COUNT(*) AS review_count
-                FROM REVIEW
-                GROUP BY PRDNO
-            ) r ON p.PRDNO = r.PRDNO
-            WHERE r.AVG_STAR >= 3.0
+        SELECT
+        p.*,
+        r.AVG_STAR AS avgRating,
+        r.review_count AS reviewCount,
+        DBMS_RANDOM.VALUE AS randomSort
+        FROM PRODUCT p
+        JOIN (
+        SELECT
+        PRDNO,
+        AVG(REVSTAR) AS AVG_STAR,
+        COUNT(*) AS review_count
+        FROM REVIEW
+        GROUP BY PRDNO
+        ) r ON p.PRDNO = r.PRDNO
+        WHERE r.AVG_STAR >= 3.0
         )
         ORDER BY randomSort
         FETCH FIRST #{limit} ROWS ONLY
     </select>
 
+    <!-- 상품 검색 + 가격/카테고리 필터 -->
+    <select id="searchProducts" parameterType="map"
+            resultType="com.routy.routyback.dto.ProductUserDTO">
+
+        SELECT
+        p.prdNo,
+        p.prdName,
+        p.prdPrice,
+        p.prdCompany,
+        p.prdImg,
+        p.prdMainCate,
+        p.prdSubCate
+        FROM PRODUCT p
+        WHERE 1 = 1
+
+        <if test="maincate != null and maincate != ''">
+            AND p.prdMainCate = #{maincate}
+        </if>
+
+        <if test="subcate != null and subcate != ''">
+            AND p.prdSubCate = #{subcate}
+        </if>
+
+        <if test="min_price != null and min_price != ''">
+            AND p.prdPrice >= #{min_price}
+        </if>
+
+        <if test="max_price != null and max_price != ''">
+            AND p.prdPrice &lt;= #{max_price}
+        </if>
+
+        <if test="brand != null and brand != ''">
+            AND p.prdCompany IN
+            <foreach item="b" collection="brand.split(',')" open="(" separator="," close=")">
+                #{b}
+            </foreach>
+        </if>
+
+        ORDER BY p.prdNo DESC
+    </select>
+
+    <!-- 안전 버전 통합 필터 -->
+    <select id="filterProducts" parameterType="map"
+            resultType="com.routy.routyback.dto.ProductUserDTO">
+
+        SELECT
+        p.prdNo,
+        p.prdName,
+        p.prdPrice,
+        p.prdCompany,
+        p.prdImg,
+        p.prdMainCate,
+        p.prdSubCate
+        FROM PRODUCT p
+        WHERE 1=1
+
+        <if test="maincate != null and maincate != ''">
+            AND p.prdMainCate = #{maincate}
+        </if>
+
+        <if test="subcate != null and subcate != ''">
+            AND p.prdSubCate = #{subcate}
+        </if>
+
+        <if test="min_price != null">
+            AND p.prdPrice >= #{min_price}
+        </if>
+
+        <if test="max_price != null">
+            AND p.prdPrice &lt;= #{max_price}
+        </if>
+
+        <if test="brand != null and brand != ''">
+            AND p.prdCompany IN
+            <foreach collection="brand.split(',')" item="b" open="(" separator="," close=")">
+                #{b}
+            </foreach>
+        </if>
+
+        <if test="skin != null and skin != ''">
+            AND EXISTS (
+            SELECT 1
+            FROM REVIEW r
+            JOIN USERS u ON u.userNo = r.userNo
+            WHERE r.prdNo = p.prdNo
+            AND u.userSkin = #{skin}
+            )
+        </if>
+
+        ORDER BY p.prdNo DESC
+    </select>
+
+    <select id="selectBrandList" resultType="string">
+        SELECT DISTINCT prdCompany
+        FROM PRODUCT
+        WHERE prdCompany IS NOT NULL
+        ORDER BY prdCompany
+    </select>
+
+
 </mapper>
+
 
