@@ -5,6 +5,7 @@ import com.routy.routyback.dto.CartResponseDTO.CartItemDTO;
 import com.routy.routyback.dto.CartResponseDTO.SkinAlertDTO;
 import com.routy.routyback.dto.CartResponseDTO.SummaryDTO;
 import com.routy.routyback.mapper.user.CartMapper;
+import com.routy.routyback.mapper.user.UserMapper;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,7 @@ public class CartService {
 
     // Mapper 주입
     private final CartMapper cartMapper;
+    private final UserMapper userMapper;
 
     // 장바구니 조회 (목록과 금액요약 포함)
     @Transactional(readOnly = true)
@@ -93,4 +95,10 @@ public class CartService {
         cartMapper.deleteItems(userNo, cartItemIds);
     }
 
+
+    @Transactional(readOnly = true)
+    public int getCartItemCount(String userId) {
+        Long userNo = userMapper.findUserNoByUserId(userId);
+        return cartMapper.countCartItems(userNo);
+    }
 }
