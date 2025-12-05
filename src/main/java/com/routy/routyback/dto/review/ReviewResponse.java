@@ -13,8 +13,7 @@ public class ReviewResponse {
     private String userName;
     private int revRank;
     private int revStar;
-    private String revGood;
-    private String revBad;
+    private String content;		//리뷰 텍스트
     private String revImg;
     private String revDate;
     private int likeCount;
@@ -23,4 +22,7 @@ public class ReviewResponse {
     private int photoCount;         // 리뷰 이미지 개수
     // 리뷰 이미지 URL 리스트 (정렬된 순서대로 FE에 전달)
     private List<String> images;
+    
+    private boolean isLiked;
+    private List<String> feedback;
 }

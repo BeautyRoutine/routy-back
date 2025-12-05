@@ -1,7 +1,10 @@
 package com.routy.routyback.mapper.admin;
 
-import java.util.List;
+import java.util.ArrayList;
 import java.util.Map;
+
+import com.routy.routyback.dto.DeliveryDTO;
+import com.routy.routyback.dto.OrdersUsDTO;
 
 public interface IOrdersAdmDAO {
 	/**
@@ -18,14 +21,19 @@ public interface IOrdersAdmDAO {
      * 	페이징 범위 포함(offset, limit)
      * @return 주문 데이터들 (List)
      */
-    List<Map<String, Object>> listAllOrders(Map<String, Object> params);
+    ArrayList<OrdersUsDTO> listAllOrders(Map<String, Object> params);
     /**
      * odNo에 해당되는 주문정보를 조회.
      * @param odNo
      * 	주문번호
      * @return 주문 데이터 (Map)
      */
-    Map<String, Object> detailOrder(int odNo);
+    OrdersUsDTO detailOrder(int odNo);
+    
+    
+    
+    
+    
     /**
      * 검색 조건을 반영했을 때 조회되는 택배의 갯수 조회.
 	 * @param params
@@ -40,12 +48,30 @@ public interface IOrdersAdmDAO {
      * 	페이징 범위 포함(offset, limit)
      * @return 택배 데이터들 (List)
      */
-    List<Map<String, Object>> listAllOrdersDelivery(Map<String, Object> params);
+    ArrayList<DeliveryDTO> listAllOrdersDelivery(Map<String, Object> params);
     /**
      * delvNo에 해당되는 택배정보를 조회.
      * @param delvNo
      * 	택배번호
      * @return 택배 데이터 (Map)
      */
-    Map<String, Object> detailOrderDelivery(int delvNo);
+    DeliveryDTO detailOrderDelivery(int delvNo);
+    /**
+     * 새로운 택배를 등록.
+     * @param dto
+     * 	택배 정보
+     */
+    void insertOrderDelivery(DeliveryDTO dto);
+    /**
+     * delvNo에 해당되는 택배 정보를 수정.
+     * @param dto
+     * 	택배 정보
+     */
+    void updateOrderDelivery(DeliveryDTO dto);
+    /**
+     * delvNo에 해당되는 택배 정보를 삭제.
+     * @param delvNo
+     * 	택배 번호 (int)
+     */
+    void deleteOrderDelivery(int delvNo);
 }

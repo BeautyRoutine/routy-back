@@ -20,6 +20,9 @@ public interface UserMapper {
      */
     User findByUserNo(@Param("userNo") Long userNo);
 
+    // userId로 회원 번호 조회
+    Long findUserNoByUserId(String userId);
+
     /**
      * userId로 회원 조회
      */
@@ -34,4 +37,14 @@ public interface UserMapper {
      * 회원 저장 (회원가입)
      */
     int insertUser(User user);
+
+    /**
+     * 피부 타입 저장
+     */
+    void updateSkinType(@Param("userNo") Long userNo, @Param("skinType") Integer skinType);
+
+    /**
+     * 피부 타입 조회
+     */
+    Integer selectSkinType(@Param("userNo") Long userNo);
 }

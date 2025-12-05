@@ -1,6 +1,7 @@
 package com.routy.routyback.service.admin;
 
 import com.routy.routyback.dto.ProductDTO;
+import com.routy.routyback.dto.ProductDetailDTO;
 import com.routy.routyback.mapper.admin.ProductMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -46,13 +47,18 @@ public class ProductService implements IProductService {
     }
 
     @Override
-    public String insertProduct(ProductDTO product) {
+    public String insertProduct(ProductDTO prdDto, ProductDetailDTO prdDetDto) { //상품 추가
     	// 상품정보 등록
-    	productMapper.productInsert(product);
-    	int prdNo = product.getPrdNo();
+    	productMapper.productInsert(prdDto);
+    	int prdNo = prdDto.getPrdNo();
+    	
+    	// 상품 디테일정보 등록
+    	prdDetDto.setPrdNo(prdNo);
+    	productMapper.productDetailInsert(prdDetDto);
+    	
         // 성분 자동 매핑
         // 1. 파싱
-    	String[] ingArray = product.getIngredients().split(";");
+    	String[] ingArray = prdDetDto.getPrdIngredients().split(";");
     	// 2. 매핑 실패 시 mapper로 넘길 param
     	Map<String, Object> param = new HashMap<>();
     	// 3. 찾고 매핑하고 실패 시 성분 등록 후 재시도
@@ -69,7 +75,7 @@ public class ProductService implements IProductService {
             	productMapper.mappingIngredients(prdNo, ingNo);
             }
         }
-    	// 4. 성공응답
+    	
         return "[prdNo:" + prdNo + "] 등록 성공";
     }
 
@@ -81,6 +87,7 @@ public class ProductService implements IProductService {
     @Override
     @Transactional
     public void deleteProduct(int prdNo) {
+        productMapper.deleteProductDetail(prdNo);
         productMapper.deleteProductIngredientMapping(prdNo); // 1) 매핑 삭제
         productMapper.productDelete(prdNo);                   // 2) 상품 삭제
     }

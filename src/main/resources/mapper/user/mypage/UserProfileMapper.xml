@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+    마이페이지 - 사용자 프로필 정보를 조회하는 MyBatis Mapper XML입니다.
+    UserProfileMapper.java 인터페이스와 1:1로 매핑되며,
+    USERS / REVIEW / POINT_HISTORY ( + COUPON_USER ) 테이블을 조합해서
+    회원의 기본 정보 + 리뷰 수 + 포인트 합계 + 쿠폰 개수 + 연락처/주소 정보를 한 번에 조회합니다.
+    @author 김지용
+-->
+<mapper namespace="com.routy.routyback.mapper.user.mypage.UserProfileMapper">
+
+    <!--
+        단일 회원의 프로필 요약 정보를 조회하는 쿼리입니다.
+
+        USERS 테이블을 기준으로
+        - 회원 기본 정보 (번호, 이름, 등급)
+        - 리뷰 개수 (REVIEW)
+        - 누적 포인트 합계 (POINT_HISTORY)
+        - 쿠폰 개수 (COUPON_USER)    *테이블명/컬럼명은 실제 DB 기준으로 맞춰 수정 필요
+        - 이메일 / 휴대폰 / 주소 / 우편번호 (USERS)
+        를 조회합니다.
+     -->
+    <select id="selectUserProfile"
+        parameterType="string"
+        resultType="com.routy.routyback.dto.user.mypage.UserProfileResponse">
+
+        SELECT
+        <!-- ========================= -->
+        <!-- 1. 회원 기본 정보          -->
+        <!-- ========================= -->
+        U.USERID AS userId, -- 회원 번호 (PK)
+        U.USERNAME AS userName, -- 회원 이름
+        U.USERLEVEL AS userLevel, -- 회원 등급 코드
+        U.USERNICK AS nickName, -- 회원 닉네임
+        U.USERPROFILEIMG AS profileImageUrl, -- 프로필 이미지 URL
+
+
+        <!-- ========================= -->
+        <!-- 2. 회원 연락처 / 계정 정보 -->
+        <!-- ========================= -->
+        U.USEREMAIL AS email, -- 이메일 주소
+        U.USERHP AS phone, -- 휴대폰 번호
+
+        <!--
+            주소 컬럼은 실제 DB 구조에 맞게 수정해서 사용하면 됩니다.
+            예시)
+            - 지번 주소    : USERJIBUNADDR
+            - 도로명 주소  : USERROADADDR
+            - 상세 주소    : USERDETAILADDR
+
+            아래는 "도로명 + 상세 주소"를 하나의 문자열로 합쳐서 address로 내려주는 예시입니다.
+        -->
+        (U.USERROADADDR || ' ' || U.USERDETAILADDR) AS address, -- 배송/기본 주소 (도로명 + 상세)
+        U.USERZIP AS zipCode, -- 우편번호
+
+        <!-- ========================= -->
+        <!-- 3. 리뷰 개수               -->
+        <!-- ========================= -->
+        (
+        SELECT COUNT(*)
+        FROM REVIEW R
+        WHERE R.USERNO = U.USERNO
+        ) AS reviewCount, -- 해당 회원이 작성한 리뷰 총 개수
+
+        <!-- ========================= -->
+        <!-- 4. 포인트 합계             -->
+        <!-- ========================= -->
+        (
+        SELECT NVL(SUM(PH.PHPRICE), 0)
+        FROM POINT_HISTORY PH
+        WHERE PH.USERNO = U.USERNO
+        ) AS points, -- 해당 회원의 누적 포인트 합계 (기본값 0)
+
+        <!-- ========================= -->
+        <!-- 5. 쿠폰 개수               -->
+        <!-- ========================= -->
+        (
+        SELECT COUNT(*)
+        FROM POINT_HISTORY PH2
+        WHERE PH2.USERNO = U.USERNO
+        AND PH2.POINTCPNO IS NOT NULL
+        ) AS couponCount, -- 쿠폰 관련 포인트 내역 개수 (쿠폰 발급/사용 건수)
+
+        U.USERSKIN AS skinType -- 사용자 피부 타입 (단일 선택)
+
+        FROM
+        USERS U -- 회원 기본 정보 테이블
+        WHERE
+        U.USERID = #{userId}
+        <!--
+            #{userId} : Java 메서드에서 전달받은 String userId 파라미터가 바인딩되는 자리입니다.
+            ex) userProfileMapper.selectUserProfile("user123");
+         -->
+    </select>
+
+    <!-- 단일 회원 조회 (비밀번호 변경 시 사용) -->
+    <select id="findByUserId" parameterType="string" resultType="com.routy.routyback.domain.user.User">
+        SELECT *
+        FROM USERS
+        WHERE USERID = #{userId}
+    </select>
+
+
+    <!-- 닉네임 중복 확인 -->
+    <select id="countNickname" resultType="int">
+        SELECT COUNT(*)
+        FROM USERS
+        WHERE usernick = #{nickname}
+    </select>
+
+    <update id="softDeleteUser">
+        UPDATE USERS
+        SET USERSTATUS = 0,
+            USERUPDATE = SYSDATE
+        WHERE USERID = #{userId}
+    </update>
+
+    <!-- 비밀번호 변경 -->
+    <update id="updatePassword">
+        UPDATE USERS
+        SET USERPW     = #{encodedPassword},
+            USERUPDATE = SYSDATE
+        WHERE USERID = #{userId}
+    </update>
+
+    <!--
+    사용자 프로필 정보를 수정하는 UPDATE 쿼리입니다.
+    UserProfileMapper.updateUserProfile() 와 매핑됩니다.
+    수정 가능한 필드:
+    이름, 닉네임, 이메일, 연락처, 도로명주소, 상세주소, 우편번호,
+    피부 타입, 프로필 이미지 URL
+    @author 김지용
+    -->
+    <update id="updateUserProfile">
+        UPDATE USERS
+        SET
+        <if test="req.userName != null">
+            USERNAME = #{req.userName}
+        </if>
+        <if test="req.nickName != null">
+            , USERNICK = #{req.nickName}
+        </if>
+        <if test="req.email != null">
+            , USEREMAIL = #{req.email}
+        </if>
+        <if test="req.phone != null">
+            , USERHP = #{req.phone}
+        </if>
+        <if test="req.jibunAddress != null">
+            , USERJIBUNADDR = #{req.jibunAddress}
+        </if>
+        <if test="req.roadAddress != null">
+            , USERROADADDR = #{req.roadAddress}
+        </if>
+        <if test="req.detailAddress != null">
+            , USERDETAILADDR = #{req.detailAddress}
+        </if>
+        <if test="req.zipCode != null">
+            , USERZIP = #{req.zipCode}
+        </if>
+        <if test="req.skinType != null">
+            , USERSKIN = #{req.skinType}
+        </if>
+        <if test="req.profileImageUrl != null">
+            , USERPROFILEIMG = #{req.profileImageUrl}
+        </if>
+        WHERE USERID = #{userId}
+    </update>
+
+</mapper>

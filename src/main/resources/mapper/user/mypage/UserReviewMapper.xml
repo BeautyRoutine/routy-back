@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+    UserReviewMapper.xml
+    - REVIEW, REVIEW_IMAGE, PRODUCT 테이블 사용
+-->
+
+<mapper namespace="com.routy.routyback.mapper.user.mypage.UserReviewMapper">
+
+    <!-- 나의 리뷰 목록 조회 -->
+    <select id="selectUserReviews"
+        resultType="com.routy.routyback.dto.user.mypage.UserReviewResponse">
+        SELECT
+        r.REVNO AS reviewId,
+        r.PRDNO AS productId,
+        p.PRDNAME AS productName,
+        r.REVSTAR AS rating,
+        r.CONTENT AS content,
+        TO_CHAR(r.REVDATE, 'YYYY-MM-DD') AS createdAt
+        FROM REVIEW r
+        JOIN PRODUCT p ON r.PRDNO = p.PRDNO
+        WHERE r.USERNO = #{userNo}
+        ORDER BY r.REVDATE DESC
+    </select>
+
+    <!-- 나의 리뷰 상세 조회 -->
+    <select id="selectUserReviewDetail"
+        resultType="com.routy.routyback.dto.user.mypage.UserReviewDetailResponse">
+        SELECT
+        r.REVNO AS reviewId,
+        r.PRDNO AS productId,
+        p.PRDNAME AS productName,
+        p.PRDCOMPANY AS brandName,
+        r.REVSTAR AS rating,
+        r.REVGOOD AS good,
+        r.REVBAD AS bad,
+        r.CONTENT AS content,
+        TO_CHAR(r.REVDATE,'YYYY-MM-DD HH24:MI:SS') AS createdAt,
+        r.REVRANK AS revRank,
+        r.REVTRUSTSCORE AS revTrustScore,
+        r.REVTRUSTRANK AS revTrustRank
+        FROM REVIEW r
+        JOIN PRODUCT p ON r.PRDNO = p.PRDNO
+        WHERE r.USERNO = #{userNo}
+        AND r.REVNO = #{reviewId}
+    </select>
+
+    <!-- 리뷰 이미지 목록 조회 -->
+    <select id="selectReviewImages" resultType="string">
+        SELECT RIMGURL
+        FROM REVIEW_IMAGE
+        WHERE REVNO = #{reviewId}
+        ORDER BY RIMGNO ASC
+    </select>
+
+    <!-- 리뷰 등록 -->
+    <insert id="insertReview">
+        INSERT INTO REVIEW
+        (REVNO, USERNO, PRDNO, REVSTAR, REVCONTENT, REVGOOD, REVBAD, REVDATE)
+        VALUES
+        (
+        REVIEW_SEQ.NEXTVAL, -- 리뷰 PK
+        #{userNo}, -- 작성자 번호
+        #{productId}, -- 상품 번호
+        #{rating}, -- 별점
+        #{content}, -- 리뷰 내용
+        #{good}, -- 장점
+        #{bad}, -- 단점
+        CURRENT_TIMESTAMP -- 작성일
+        )
+    </insert>
+
+    <!-- 방금 등록된 리뷰 번호 조회 -->
+    <select id="selectLastInsertedReviewNo" resultType="long">
+        SELECT MAX(REVNO)
+        FROM REVIEW
+        WHERE USERNO = #{userNo}
+    </select>
+
+    <!-- 리뷰 이미지 등록 -->
+    <insert id="insertReviewImage">
+        INSERT INTO REVIEW_IMAGE
+        (RIMGNO, REVNO, IMGURL)
+        VALUES
+        (
+        REVIEW_IMAGE_SEQ.NEXTVAL, -- 이미지 PK
+        #{reviewNo}, -- 리뷰 번호 FK
+        #{imageUrl} -- 이미지 URL
+        )
+    </insert>
+
+    <!-- 리뷰 수정 -->
+    <update id="updateUserReview">
+        UPDATE REVIEW
+        SET REVSTAR = #{rating},
+        REVGOOD = #{good},
+        REVBAD = #{bad},
+        CONTENT = #{content}
+        WHERE USERNO = #{userNo}
+        AND REVNO = #{reviewId}
+    </update>
+
+    <!-- 리뷰 이미지 전체 삭제 -->
+    <delete id="deleteReviewImages">
+        DELETE
+        FROM REVIEW_IMAGE
+        WHERE REVNO = #{reviewId}
+    </delete>
+
+    <!-- 리뷰 삭제 -->
+    <delete id="deleteUserReview">
+        DELETE
+        FROM REVIEW
+        WHERE USERNO = #{userNo}
+        AND REVNO = #{reviewId}
+    </delete>
+
+</mapper>

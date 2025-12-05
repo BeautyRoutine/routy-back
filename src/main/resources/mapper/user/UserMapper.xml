@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.routy.routyback.mapper.user.UserMapper">
 
@@ -19,59 +19,65 @@
         <result property="userBirth" column="USERBIRTH"/>
         <result property="userLevel" column="USERLEVEL"/>
         <result property="userRegdate" column="USERREGDATE"/>
+        <result property="userStatus" column="USERSTATUS"/>
+        <!-- 피부타입 추가 -->
+        <result property="userSkin" column="USERSKIN"/>
     </resultMap>
 
     <!-- 회원가입 -->
     <insert id="insertUser" parameterType="com.routy.routyback.domain.user.User">
-        INSERT INTO USERS (
-            USERNO,
-            USERID,
-            USERPW,
-            USERNAME,
-            USERHP,
-            USEREMAIL,
-            USERZIP,
-            USERJIBUNADDR,
-            USERROADADDR,
-            USERDETAILADDR,
-            USERBIRTH,
-            USERLEVEL,
-            USERREGDATE
-        ) VALUES (
-            ISEQ$$_119796.NEXTVAL,
-            #{userId, jdbcType=VARCHAR},
-            #{userPw, jdbcType=VARCHAR},
-            #{userName, jdbcType=VARCHAR},
-            #{userHp, jdbcType=VARCHAR},
-            #{userEmail, jdbcType=VARCHAR},
-            #{userZip, jdbcType=NUMERIC},
-            #{userJibunAddr, jdbcType=VARCHAR},
-            #{userRoadAddr, jdbcType=VARCHAR},
-            #{userDetailAddr, jdbcType=VARCHAR},
-            #{userBirth, jdbcType=DATE},
-            1,
-            SYSDATE
-        )
+        INSERT INTO USERS (USERNO,
+                           USERID,
+                           USERPW,
+                           USERNAME,
+                           USERNICK,
+                           USERHP,
+                           USEREMAIL,
+                           USERZIP,
+                           USERJIBUNADDR,
+                           USERROADADDR,
+                           USERDETAILADDR,
+                           USERBIRTH,
+                           USERLEVEL,
+                           USERREGDATE,
+                           USERSKIN)
+        VALUES (ISEQ$$_119796.NEXTVAL,
+                #{userId, jdbcType=VARCHAR},
+                #{userPw, jdbcType=VARCHAR},
+                #{userName, jdbcType=VARCHAR},
+                #{userNick, jdbcType=VARCHAR},
+                #{userHp, jdbcType=VARCHAR},
+                #{userEmail, jdbcType=VARCHAR},
+                #{userZip, jdbcType=NUMERIC},
+                #{userJibunAddr, jdbcType=VARCHAR},
+                #{userRoadAddr, jdbcType=VARCHAR},
+                #{userDetailAddr, jdbcType=VARCHAR},
+                #{userBirth, jdbcType=DATE},
+                1,
+                SYSDATE,
+                0)
     </insert>
 
     <!-- 이메일로 사용자 조회 -->
     <select id="findByEmail" parameterType="string" resultMap="UserResultMap">
-        SELECT 
-            USERNO,
-            USERID,
-            USERPW,
-            USERNAME,
-            USERHP,
-            USEREMAIL,
-            USERZIP,
-            USERJIBUNADDR,
-            USERROADADDR,
-            USERDETAILADDR,
-            USERBIRTH,
-            USERLEVEL,
-            USERREGDATE
+        SELECT USERNO,
+               USERID,
+               USERPW,
+               USERNAME,
+               USERHP,
+               USEREMAIL,
+               USERZIP,
+               USERJIBUNADDR,
+               USERROADADDR,
+               USERDETAILADDR,
+               USERBIRTH,
+               USERLEVEL,
+               USERREGDATE,
+               USERSTATUS,
+               USERSKIN
         FROM USERS
         WHERE USEREMAIL = #{email, jdbcType=VARCHAR}
+          AND USERSTATUS = 1
     </select>
 
     <!-- 이메일 중복 체크 -->
@@ -83,22 +89,68 @@
 
     <!-- userId로 사용자 조회 -->
     <select id="findByUserId" parameterType="string" resultMap="UserResultMap">
-        SELECT 
-            USERNO,
-            USERID,
-            USERPW,
-            USERNAME,
-            USERHP,
-            USEREMAIL,
-            USERZIP,
-            USERJIBUNADDR,
-            USERROADADDR,
-            USERDETAILADDR,
-            USERBIRTH,
-            USERLEVEL,
-            USERREGDATE
+        SELECT USERNO,
+               USERID,
+               USERPW,
+               USERNAME,
+               USERHP,
+               USEREMAIL,
+               USERZIP,
+               USERJIBUNADDR,
+               USERROADADDR,
+               USERDETAILADDR,
+               USERBIRTH,
+               USERLEVEL,
+               USERREGDATE,
+               USERSTATUS,
+               USERSKIN
         FROM USERS
         WHERE USERID = #{userId, jdbcType=VARCHAR}
+          AND USERSTATUS = 1
+    </select>
+
+    <!-- userId로 userNo 조회 -->
+    <select id="findUserNoByUserId" parameterType="string" resultType="long">
+        SELECT USERNO
+        FROM USERS
+        WHERE USERID = #{userId, jdbcType=VARCHAR}
+          AND USERSTATUS = 1
+    </select>
+
+    <!-- 회원 번호로 조회 -->
+    <select id="findByUserNo" parameterType="long" resultMap="UserResultMap">
+        SELECT USERNO,
+               USERID,
+               USERPW,
+               USERNAME,
+               USERHP,
+               USEREMAIL,
+               USERZIP,
+               USERJIBUNADDR,
+               USERROADADDR,
+               USERDETAILADDR,
+               USERBIRTH,
+               USERLEVEL,
+               USERREGDATE,
+               USERSTATUS,
+               USERSKIN
+        FROM USERS
+        WHERE USERNO = #{userNo, jdbcType=NUMERIC}
+          AND USERSTATUS = 1
+    </select>
+
+    <!-- 피부 타입 저장 -->
+    <update id="updateSkinType">
+        UPDATE USERS
+        SET USERSKIN = #{skinType, jdbcType=NUMERIC}
+        WHERE USERNO = #{userNo, jdbcType=NUMERIC}
+    </update>
+
+    <!-- 피부 타입 조회 -->
+    <select id="selectSkinType" parameterType="long" resultType="java.lang.Integer">
+        SELECT USERSKIN
+        FROM USERS
+        WHERE USERNO = #{userNo, jdbcType=NUMERIC}
     </select>
 
 </mapper>

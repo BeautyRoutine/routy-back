@@ -72,5 +72,6 @@ Wallet_*/
 /build-cache/.env
 *.code-workspace
 Wallet_ROUTYDB.zip
-Wallet_ROUTYDB.zip
 secrets/
+API_SPECS.md
+/src/main/resources/static/images/
