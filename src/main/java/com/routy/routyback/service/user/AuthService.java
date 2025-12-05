@@ -39,6 +39,8 @@ public class AuthService {
         user.setUserId(request.getUserId());
         user.setUserPw(passwordEncoder.encode(request.getUserPw()));
         user.setUserName(request.getUserName());
+        long timestamp = System.currentTimeMillis() % 100000;
+        user.setUserNick("사용자" + timestamp);
         user.setUserHp(request.getUserHp());
         user.setUserEmail(request.getUserEmail());
         
