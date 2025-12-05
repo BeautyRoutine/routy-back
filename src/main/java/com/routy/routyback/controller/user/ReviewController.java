@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * 리뷰 관련 REST API를 제공하는 컨트롤러입니다. - 상품별 리뷰 목록 조회 - 리뷰 작성 / 수정 / 삭제 - 리뷰 좋아요(추천) 토글
+ * 리뷰 관련 REST API를 제공하는 컨트롤러입니다. 상품별 리뷰 목록 조회 · 리뷰 작성 · 수정 · 삭제 · 리뷰 좋아요(추천) 토글
  * <p>
  * 화면(프론트엔드)에서 호출하는 진입점 역할을 합니다.
  */
@@ -44,17 +44,17 @@ public class ReviewController {
         @RequestParam(defaultValue = "10") int limit, // 쿼리 파라미터 ?limit=값, 한 페이지에 보여줄 리뷰 개수, 기본값 10개
         @RequestParam(defaultValue = "recommended") String sort // 정렬 기준. 기본값은 추천순(신뢰도 기반)
     ) {
-    	try {
-    		// 서비스 레이어에 조회 요청. 정렬/페이징 옵션까지 함께 전달
-    		ReviewListResponse responseData = service.getReviewList(prdNo, page, limit, sort);
+        try {
+            // 서비스 레이어에 조회 요청. 정렬/페이징 옵션까지 함께 전달
+            ReviewListResponse responseData = service.getReviewList(prdNo, page, limit, sort);
 
-    		// HTTP 200 OK 상태코드와 함께 조회된 리뷰 목록/요약/페이징 정보를 반환
-    		return ApiResponse.success(responseData);
-    	}catch (Exception e) {
-    		return ApiResponse.fromException(e);
-    	}
+            // HTTP 200 OK 상태코드와 함께 조회된 리뷰 목록/요약/페이징 정보를 반환
+            return ApiResponse.success(responseData);
+        } catch (Exception e) {
+            return ApiResponse.fromException(e);
+        }
     }
-    
+
 
     // 리뷰 작성
     @PostMapping("/products/{prdNo}/reviews")

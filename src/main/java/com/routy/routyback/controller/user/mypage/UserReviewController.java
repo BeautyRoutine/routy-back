@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * 마이페이지 - 나의 리뷰 API 컨트롤러
+ *  나의 리뷰 API 컨트롤러
  * - 목록 조회
  * - 상세 조회
  * - 수정

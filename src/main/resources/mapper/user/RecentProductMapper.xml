@@ -34,9 +34,9 @@
     <!-- 최근 본 상품 조회 (최신순 10개) -->
     <select id="getRecentViewedProducts" resultType="com.routy.routyback.dto.user.RecentProductResponse">
         SELECT
-        p.prdno AS productId,
-        p.prdname AS title,
-        p.prdimg AS image,
+        p.prdno AS prdNo,
+        p.prdname AS prdName,
+        p.prdimg AS prdImg,
         vp.vpregdate AS viewedDate
         FROM VIEWED_PRODUCT vp
         JOIN PRODUCT p ON p.prdno = vp.prdno
