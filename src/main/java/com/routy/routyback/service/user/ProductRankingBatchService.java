@@ -1,6 +1,6 @@
 package com.routy.routyback.service.user;
 
-import com.routy.routyback.mapper.user.ProductRankingBatchMapper;
+import com.routy.routyback.mapper.batch.ProductRankingBatchMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -40,5 +40,25 @@ public class ProductRankingBatchService implements IProductRankingBatchService {
         log.info("[Ranking Batch] 카테고리별 랭킹 캐시 INSERT 시작");
         productRankingBatchMapper.insertCategoryRankingCache();
         log.info("[Ranking Batch] 카테고리별 랭킹 캐시 INSERT 완료");
+    }
+
+    /**
+     * 피부 타입 기반 랭킹 캐시 갱신 로직입니다.
+     * - VIEWED_PRODUCT 로그 기반으로 skinType 그룹별 조회수 집계
+     * - skinType별 TOP10 상품 캐시에 저장
+     * - ALL(전체) 기준 TOP10 캐시도 함께 저장
+     */
+    @Override
+    public void updateSkinTypeRankingCache() {
+
+        log.info("[Ranking Batch] 피부타입 기반 랭킹 캐시 생성 시작");
+
+        // 1) 오늘자 피부타입 캐시 삭제
+        productRankingBatchMapper.deleteTodaySkinTypeCache();
+
+        // 2) 피부타입별 조회수 집계 후 캐시 INSERT
+        productRankingBatchMapper.insertSkinTypeRankingCache();
+
+        log.info("[Ranking Batch] 피부타입 기반 랭킹 캐시 생성 완료");
     }
 }

@@ -30,4 +30,51 @@
         FETCH FIRST #{limit} ROWS ONLY
     </select>
 
+    <!--
+        피부 타입 기반 검색창 전용 TOP 랭킹 조회
+        - PRODUCT_RANKING_CACHE 에 저장된 skin_type 기반 조회
+        - 검색창에서는 기본적으로 10개만 사용
+    -->
+    <select id="getRankingBySkinType"
+        resultType="com.routy.routyback.dto.user.RankingProductResponse">
+
+        SELECT
+        c.PRDNO AS prdNo,        <!-- 상품 번호 -->
+        p.PRDNAME AS prdName,      <!-- 상품명 -->
+        p.PRDPRICE AS prdPrice,     <!-- 상품 가격 -->
+        p.PRDIMG AS prdImg,       <!-- 상품 이미지 -->
+        c.SALES AS sales,        <!-- 판매량/조회수 기반 캐시 값 -->
+        c.RANK_NO AS rankNo        <!-- 순위 -->
+        FROM PRODUCT_RANKING_CACHE c
+        JOIN PRODUCT p
+        ON p.PRDNO = c.PRDNO
+        WHERE c.RANK_DATE = TRUNC(SYSDATE)  <!-- 오늘 기준 캐시 -->
+        AND c.SKIN_TYPE = #{skinType}        <!-- 피부 타입 필터 -->
+        ORDER BY c.RANK_NO
+        FETCH FIRST #{limit} ROWS ONLY
+    </select>
+
+    <!--
+        검색창 비로그인 사용자용 전체 TOP 랭킹 조회
+        - skin_type = 'ALL' 기준
+    -->
+    <select id="getRankingOverallForSearch"
+        resultType="com.routy.routyback.dto.user.RankingProductResponse">
+
+        SELECT
+        c.PRDNO AS prdNo,        <!-- 상품 번호 -->
+        p.PRDNAME AS prdName,      <!-- 상품명 -->
+        p.PRDPRICE AS prdPrice,     <!-- 상품 가격 -->
+        p.PRDIMG AS prdImg,       <!-- 상품 이미지 -->
+        c.SALES AS sales,        <!-- 판매량/조회수 캐시 값 -->
+        c.RANK_NO AS rankNo        <!-- 순위 -->
+        FROM PRODUCT_RANKING_CACHE c
+        JOIN PRODUCT p
+        ON p.PRDNO = c.PRDNO
+        WHERE c.RANK_DATE = TRUNC(SYSDATE)
+        AND c.SKIN_TYPE = 'ALL'        <!-- 전체 사용자 기준 -->
+        ORDER BY c.RANK_NO
+        FETCH FIRST #{limit} ROWS ONLY
+    </select>
+
 </mapper>

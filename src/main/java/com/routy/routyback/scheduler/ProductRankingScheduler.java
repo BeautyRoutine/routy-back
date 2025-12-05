@@ -43,6 +43,9 @@ public class ProductRankingScheduler {
         // 2) 랭킹 캐시 갱신 비즈니스 로직 호출
         productRankingBatchService.updateRankingCache();
 
+        // 2) 피부타입 기반 랭킹 캐시 갱신
+        productRankingBatchService.updateSkinTypeRankingCache();
+
         // 3) 배치 종료 로그
         log.info("[ProductRankingScheduler] 상품 랭킹 캐시 갱신 배치 종료");
     }

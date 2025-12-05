@@ -9,6 +9,14 @@ package com.routy.routyback.service.user;
 public interface IProductRankingBatchService {
 
     /**
+     * 피부 타입 기반 랭킹 캐시를 업데이트하는 배치 메서드입니다.
+     * - VIEWED_PRODUCT 로그 기반으로 skinType 그룹별 조회수 집계
+     * - skinType별 TOP10 상품 캐시에 저장
+     * - ALL(전체) 기준 TOP10 캐시도 함께 저장
+     */
+    void updateSkinTypeRankingCache();
+
+    /**
      * 전체 랭킹 캐시를 업데이트하는 주요 배치 메서드입니다.
      * - 오늘 데이터 삭제
      * - 전체 랭킹 INSERT
