@@ -17,5 +17,21 @@ public interface IProductRankingService {
      * @return 랭킹 데이터 리스트
      */
     List<RankingProductResponse> getCategoryRanking(String category, int limit);
-    
+
+    /**
+     * 피부 타입 기반 랭킹 조회 (검색창 전용)
+     *
+     * @param skinType 피부 타입 (DRY, OILY, NORMAL 등)
+     * @param limit 조회 개수 (기본 10)
+     * @return 랭킹 데이터 리스트
+     */
+    List<RankingProductResponse> getRankingBySkinType(String skinType, int limit);
+
+    /**
+     * 전체 TOP 랭킹 조회 (검색창 전용)
+     *
+     * @param limit 조회 개수 (기본 10)
+     * @return 랭킹 데이터 리스트
+     */
+    List<RankingProductResponse> getRankingOverallForSearch(int limit);
 }

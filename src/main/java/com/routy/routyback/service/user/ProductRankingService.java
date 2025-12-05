@@ -49,4 +49,41 @@ public class ProductRankingService implements IProductRankingService {
         // 캐시 테이블에서 랭킹 조회
         return productRankingMapper.getCategoryRanking(category, limit);
     }
+
+    // 밑에는 검색창 전용
+
+    /**
+     * 피부타입 기반 랭킹 조회
+     *
+     * @param skinType 유저의 피부타입(DRY, OILY, NORMAL 등)
+     * @param limit 최대 개수 (기본 10)
+     * @return RankingProductResponse 리스트
+     */
+    public List<RankingProductResponse> getRankingBySkinType(String skinType, int limit) {
+
+        // limit 기본값 처리
+        if (limit <= 0) {
+            limit = 10; // 검색창은 10개만 필요
+        }
+
+        // 캐시에서 호출
+        return productRankingMapper.getRankingBySkinType(skinType, limit);
+    }
+
+
+    /**
+     * 비로그인 사용자를 위한 전체 TOP10 조회
+     *
+     * @param limit 최대 10개
+     */
+    public List<RankingProductResponse> getRankingOverallForSearch(int limit) {
+
+        // limit 기본값 처리
+        if (limit <= 0) {
+            limit = 10;
+        }
+
+        // skinType = 'ALL' 기준 조회
+        return productRankingMapper.getRankingOverallForSearch(limit);
+    }
 }

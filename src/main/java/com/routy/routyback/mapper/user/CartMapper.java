@@ -25,4 +25,7 @@ public interface CartMapper {
     int deleteItems(@Param("userNo") Long userNo,
         @Param("cartItemIds") List<Long> cartItemIds);
 
+    // 장바구니 전체 상품 개수 조회 (헤더 숫자 표시용)
+    // userNo가 가진 CART 레코드 개수만 반환
+    int countCartItems(Long userNo);
 }

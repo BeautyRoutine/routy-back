@@ -9,7 +9,7 @@
     - insertCategoryRankingCache : 카테고리별 랭킹 저장
 -->
 
-<mapper namespace="com.routy.routyback.mapper.user.ProductRankingBatchMapper">
+<mapper namespace="com.routy.routyback.mapper.batch.ProductRankingBatchMapper">
 
     <!-- ============================================== -->
     <!-- 1) 오늘 날짜 캐시 삭제                         -->
@@ -64,6 +64,48 @@
           AND p.PRDSUBCATE &lt;&gt; '0'
         GROUP BY p.PRDSUBCATE,
                  p.PRDNO
+    </insert>
+
+    <!-- ============================================== -->
+    <!-- 4) 오늘 날짜 피부타입 캐시 삭제                -->
+    <!-- ============================================== -->
+    <delete id="deleteTodaySkinTypeCache">
+        DELETE
+        FROM PRODUCT_RANKING_CACHE
+        WHERE RANK_DATE = TRUNC(SYSDATE)
+          AND SKIN_TYPE IS NOT NULL
+    </delete>
+
+    <!-- ============================================== -->
+    <!-- 5) 피부타입 기반 랭킹 INSERT                   -->
+    <!-- ============================================== -->
+    <insert id="insertSkinTypeRankingCache">
+        INSERT INTO PRODUCT_RANKING_CACHE (RANK_DATE,
+                                           CATEGORY,
+                                           PRDNO,
+                                           SALES,
+                                           RANK_NO,
+                                           SKIN_TYPE,
+                                           CREATED_AT)
+        SELECT TRUNC(SYSDATE) AS RANK_DATE,
+               skinType       AS CATEGORY, -- 피부타입 코드와 동일하게 저장하여 PK 충돌 방지
+               prdNo,
+               viewCount      AS SALES,
+               rankNo,
+               skinType,
+               SYSDATE        AS CREATED_AT
+        FROM (SELECT u.USERSKIN AS skinType,
+                     v.PRDNO    AS prdNo,
+                     COUNT(*)   AS viewCount,
+                     RANK() OVER (
+                         PARTITION BY u.USERSKIN
+                         ORDER BY COUNT(*) DESC
+                         )      AS rankNo
+              FROM VIEWED_PRODUCT v
+                       JOIN USERS u ON u.USERNO = v.USERNO
+              WHERE v.VPREGDATE >= SYSDATE - 7
+              GROUP BY u.USERSKIN, v.PRDNO)
+        WHERE rankNo &lt;= 10 -- 피부타입별 TOP10만 저장
     </insert>
 
 </mapper>

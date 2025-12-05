@@ -6,6 +6,7 @@ import com.routy.routyback.dto.CartResponseDTO;
 import com.routy.routyback.mapper.user.UserMapper;
 import com.routy.routyback.service.user.CartService;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -109,13 +110,15 @@ public class CartController {
         return ResponseEntity.ok(ApiResponse.success(null));
     }
 
-    /**
-     * 5. 장바구니 개수 조회 (에러 방지용 더미) 기존: GET /users/{userId}/cart/count 변경: GET /cart/count (URL 구조 단순화
-     * 추천)
-     */
-    @GetMapping("/cart/count")
-    public ResponseEntity<Integer> getCartCount() {
-        // 필요하다면 getAuthenticatedUserNo()를 호출해 실제 개수를 셀 수도 있음
-        return ResponseEntity.ok(0);
+
+    // 장바구니 아이템 개수 조회 API
+    @GetMapping("/users/{userId}/cart/count")
+    public ResponseEntity<ApiResponse<Object>> getCartCount(
+        @PathVariable String userId
+    ) {
+        int count = cartService.getCartItemCount(userId);
+        return ResponseEntity.ok(
+            ApiResponse.success(Map.of("count", count))
+        );
     }
 }

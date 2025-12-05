@@ -22,4 +22,22 @@ public interface ProductRankingMapper {
         @Param("category") String category,
         @Param("limit") int limit
     );
+
+    /**
+     * 피부 타입 기반 랭킹 조회 (검색창 전용)
+     * @param skinType 유저 피부 타입
+     * @param limit 최대 조회 개수
+     */
+    List<RankingProductResponse> getRankingBySkinType(
+        @Param("skinType") String skinType,
+        @Param("limit") int limit
+    );
+
+    /**
+     * 전체 기준 TOP 랭킹 조회 (검색창 전용)
+     * @param limit 최대 조회 개수
+     */
+    List<RankingProductResponse> getRankingOverallForSearch(
+        @Param("limit") int limit
+    );
 }
