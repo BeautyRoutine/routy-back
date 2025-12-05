@@ -28,4 +28,8 @@ public class ProductUserDTO {
 	private String prdDesc;
 	private int cnt;
 
+    // 추천을 위한 부분.
+    private Double avgRating;
+    private Integer reviewCount;
+
 }
