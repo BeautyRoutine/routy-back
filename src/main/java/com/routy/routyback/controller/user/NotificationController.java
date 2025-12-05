@@ -60,8 +60,9 @@ public class NotificationController {
     }
 
     /**
+     * 특정 알림 하나만 읽음 처리
      * [POST] /api/users/{userId}/notifications/{notiId}/read
-     * - 특정 알림 하나만 읽음 처리
+     * -
      */
     @PostMapping("/{notiId}/read")
     public ApiResponse<Void> readOne(
