@@ -1,6 +1,7 @@
 package com.routy.routyback.service.user;
 
 
+import java.util.List;
 import java.util.Map;
 
 import com.routy.routyback.common.ApiResponse;
@@ -13,4 +14,6 @@ public interface IProductUserService {
 	ApiResponse productAllSkinCommend(Map<String, Object> params); // 당신을 위한 맞춤 추천
     ApiResponse productPopular(Map<String, Object> params);
     ApiResponse productSkinBased(Map<String, Object> params);
+    ApiResponse getFallbackProducts(int limit);
+
 }
