@@ -146,10 +146,21 @@ public class ProductUserService implements IProductUserService {
             return ApiResponse.fromException(e);
         }
     }
+    @Override
     public ApiResponse getFallbackProducts(int limit) {
         List<ProductUserDTO> list = productUserMapper.selectFallbackProducts(limit);
         return ApiResponse.success(list);
     }
+    @Override
+    public ApiResponse filterProducts(Map<String, Object> param) {
+        try {
+            List<ProductUserDTO> list = productUserMapper.filterProducts(param);
+            return ApiResponse.success(list);
+        } catch (Exception e) {
+            return ApiResponse.fromException(e);
+        }
+    }
+
 
 
 }
