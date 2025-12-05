@@ -1,5 +1,6 @@
 package com.routy.routyback.config.security;
 
+import java.util.Arrays;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -12,8 +13,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
-import java.util.Arrays;
 
 @Configuration
 @EnableWebSecurity
@@ -37,7 +36,7 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .formLogin(form -> form.disable())
             .httpBasic(basic -> basic.disable())
-            .sessionManagement(session -> 
+            .sessionManagement(session ->
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             )
             .authorizeHttpRequests(auth -> auth
@@ -47,15 +46,16 @@ public class SecurityConfig {
                 .requestMatchers("/api/search/**").permitAll()
                 .requestMatchers("/api/ingredient/**").permitAll()
                 .requestMatchers("/api/reviews/**").permitAll()
-                .requestMatchers("/api/cart/**").permitAll()
+                .requestMatchers("/api/cart/**").authenticated()
                 .requestMatchers("/api/dibs/**").permitAll()
-                .requestMatchers("/api/orders/**").permitAll()
+                .requestMatchers("/api/orders/**").authenticated()
+                .requestMatchers("/api/payments/**").authenticated()
                 .requestMatchers("/api/users/**").permitAll()
                 .requestMatchers("/", "/index.html").permitAll()
-                .anyRequest().permitAll()
+                .anyRequest().authenticated()
             )
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-        
+
         return http.build();
     }
 
@@ -63,7 +63,8 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
+        configuration.setAllowedMethods(
+            Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);
         configuration.setMaxAge(3600L);
