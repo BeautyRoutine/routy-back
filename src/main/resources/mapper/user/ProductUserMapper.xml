@@ -39,34 +39,47 @@
         ORDER BY 
             PI_SORT ASC
     </select>
-	
-	<select id="productAllSkinCate" resultType="com.routy.routyback.dto.ProductUserDTO">
-		SELECT
-			p.*
-			, (
-				select count(*)
-				from REVIEW r
-					inner join USERS u on u.userNo=r.userNo
-					inner join REVIEW_FEEDBACK rf on rf.revNo=r.revNo
-				where r.prdNo=p.prdNo and rf.rfTypeCode &lt; 500
-					<if test="skin != null and skin != ''">
-			            AND u.userSkin = #{skin}
-			        </if>
-			        <if test="sub_cate != null and sub_cate != ''">
-			            AND p.prdSubCate = #{sub_cate}
-			        </if>
-			) cnt
-		FROM 
-			PRODUCT p
-		WHERE 1 = 1 
-			<if test="sub_cate != null and sub_cate != ''">
-	            AND p.prdSubCate = #{sub_cate}
-	        </if>
-		ORDER BY cnt DESC
-		FETCH FIRST #{limit} ROWS ONLY
-	</select>
-	
-	<select id="productCateViewed" resultType="int">
+
+    <select id="productAllSkinCate" resultType="com.routy.routyback.dto.ProductUserDTO">
+        SELECT
+        p.*,
+        (
+        SELECT COUNT(*)
+        FROM REVIEW r
+        INNER JOIN USERS u ON u.userNo = r.userNo
+        INNER JOIN REVIEW_FEEDBACK rf ON rf.revNo = r.revNo
+        WHERE r.prdNo = p.prdNo
+        AND rf.rfTypeCode &lt; 500
+
+
+        <!-- skin 필터 -->
+        <if test="skin != null and skin != ''">
+            AND u.userSkin = #{skin}
+        </if>
+
+        <!-- subcate 필터 (리뷰 카운트 부분에도 적용) -->
+        <if test="subcate != null and subcate != ''">
+            AND p.prdSubCate = #{subcate}
+        </if>
+        ) AS cnt
+        FROM PRODUCT p
+        WHERE 1 = 1
+
+        <!-- 메인 카테고리 -->
+        <if test="maincate != null and maincate != ''">
+            AND p.prdMainCate = #{maincate}
+        </if>
+
+        <!-- 서브 카테고리 -->
+        <if test="subcate != null and subcate != ''">
+            AND p.prdSubCate = #{subcate}
+        </if>
+
+        ORDER BY cnt DESC
+        FETCH FIRST #{limit} ROWS ONLY
+    </select>
+
+    <select id="productCateViewed" resultType="int">
 		SELECT
 			prdSubCate, count(*) cnt
 		FROM
