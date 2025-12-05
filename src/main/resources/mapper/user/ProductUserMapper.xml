@@ -213,6 +213,14 @@
         ORDER BY p.prdNo DESC
     </select>
 
+    <select id="selectBrandList" resultType="string">
+        SELECT DISTINCT prdCompany
+        FROM PRODUCT
+        WHERE prdCompany IS NOT NULL
+        ORDER BY prdCompany
+    </select>
+
+
 </mapper>
 
 

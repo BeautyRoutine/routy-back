@@ -39,6 +39,7 @@ public interface ProductUserMapper {
 
     List<ProductUserDTO> searchProducts(Map<String, Object> params);
     List<ProductUserDTO> filterProducts(Map<String, Object> param);
+    List<String> selectBrandList();
 
 
 }

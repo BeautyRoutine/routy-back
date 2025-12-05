@@ -72,4 +72,11 @@ public class ProductUserController {
             return ApiResponse.fromException(e);
         }
     }
+
+    @GetMapping("/brand/list")
+    public ApiResponse getBrandList() {
+        List<String> list = service.getBrandList();
+        return ApiResponse.success(list);
+    }
+
 }

@@ -17,6 +17,7 @@ public interface IProductUserService {
     ApiResponse getFallbackProducts(int limit);
     ApiResponse getProductList(Map<String, Object> params);
     ApiResponse filterProducts(Map<String, Object> param);
+    List<String> getBrandList();
 
 
 }

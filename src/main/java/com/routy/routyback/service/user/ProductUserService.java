@@ -161,6 +161,12 @@ public class ProductUserService implements IProductUserService {
         }
     }
 
+    @Override
+    public List<String> getBrandList() {
+        return productUserMapper.selectBrandList();
+    }
+
+
 
 
 }
