@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+    PRODUCT_RANKING_CACHE 캐시 갱신용 매퍼 XML
+    - deleteTodayCache : 오늘 날짜 데이터 삭제
+    - insertOverallRankingCache : 전체 랭킹 저장
+    - insertCategoryRankingCache : 카테고리별 랭킹 저장
+-->
+
+<mapper namespace="com.routy.routyback.mapper.user.ProductRankingBatchMapper">
+
+    <!-- ============================================== -->
+    <!-- 1) 오늘 날짜 캐시 삭제                         -->
+    <!-- ============================================== -->
+    <delete id="deleteTodayCache">
+        DELETE
+        FROM PRODUCT_RANKING_CACHE
+        WHERE RANK_DATE = TRUNC(SYSDATE)
+    </delete>
+
+    <!-- ============================================== -->
+    <!-- 2) 전체 랭킹 INSERT (카테고리 NULL)            -->
+    <!-- ============================================== -->
+    <insert id="insertOverallRankingCache">
+        INSERT INTO PRODUCT_RANKING_CACHE (RANK_DATE,
+                                           CATEGORY,
+                                           PRDNO,
+                                           SALES,
+                                           RANK_NO)
+        SELECT TRUNC(SYSDATE)                                         AS RANK_DATE, -- 오늘 날짜
+               '0'                                                    AS CATEGORY,  -- 전체 랭킹(카테고리 없음) → NOT NULL 충족
+               p.PRDNO                                                AS PRDNO,     -- 상품 번호
+               NVL(SUM(pp.PPMAPSTOCK), 0)                             AS SALES,     -- 총 판매량
+               RANK() OVER (ORDER BY NVL(SUM(pp.PPMAPSTOCK), 0) DESC) AS RANK_NO
+        FROM PRODUCT p
+                 LEFT JOIN PAY_PRODUCT_MAPPING pp
+                           ON p.PRDNO = pp.PRDNO
+        GROUP BY p.PRDNO
+    </insert>
+
+    <!-- ============================================== -->
+    <!-- 3) 카테고리별 랭킹 INSERT                       -->
+    <!-- ============================================== -->
+    <insert id="insertCategoryRankingCache">
+        INSERT INTO PRODUCT_RANKING_CACHE (RANK_DATE,
+                                           CATEGORY,
+                                           PRDNO,
+                                           SALES,
+                                           RANK_NO)
+        SELECT TRUNC(SYSDATE)             AS RANK_DATE,
+               p.PRDSUBCATE               AS CATEGORY,
+               p.PRDNO                    AS PRDNO,
+               NVL(SUM(pp.PPMAPSTOCK), 0) AS SALES,
+               RANK() OVER (
+                   PARTITION BY p.PRDSUBCATE
+                   ORDER BY NVL(SUM(pp.PPMAPSTOCK), 0) DESC
+                   )                      AS RANK_NO
+        FROM PRODUCT p
+                 LEFT JOIN PAY_PRODUCT_MAPPING pp
+                           ON p.PRDNO = pp.PRDNO
+        WHERE TRIM(p.PRDSUBCATE) IS NOT NULL
+          AND p.PRDSUBCATE &lt;&gt; '0'
+        GROUP BY p.PRDSUBCATE,
+                 p.PRDNO
+    </insert>
+
+</mapper>
