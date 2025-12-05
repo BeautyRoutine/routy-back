@@ -4,12 +4,11 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-
-import java.io.IOException;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -22,9 +21,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain filterChain) throws ServletException, IOException {
-        
+        HttpServletResponse response,
+        FilterChain filterChain) throws ServletException, IOException {
+
         String uri = request.getRequestURI();
 
         // 인증 불필요 엔드포인트 → 필터 통과
@@ -34,9 +33,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             uri.startsWith("/api/search") ||
             uri.startsWith("/api/ingredient") ||
             uri.startsWith("/api/reviews") ||
-            uri.startsWith("/api/cart") ||
             uri.startsWith("/api/dibs") ||
-            uri.startsWith("/api/orders") ||
             uri.startsWith("/api/users") ||
             uri.equals("/") ||
             uri.equals("/index.html")) {

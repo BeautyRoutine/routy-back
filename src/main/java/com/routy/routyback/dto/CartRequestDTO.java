@@ -10,6 +10,7 @@ public class CartRequestDTO {
     @Setter
     public static class AddItem {
 
+        private String userId;
         private Long productId;
         private int quantity;
     }
@@ -18,6 +19,7 @@ public class CartRequestDTO {
     @Setter
     public static class UpdateItem {
 
+        private String userId;
         private Integer quantity;
     }
 
@@ -25,6 +27,7 @@ public class CartRequestDTO {
     @Setter
     public static class DeleteItems {
 
+        private String userId;
         private List<Long> cartItemIds;
     }
 }

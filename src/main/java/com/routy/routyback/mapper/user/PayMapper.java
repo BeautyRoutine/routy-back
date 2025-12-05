@@ -15,4 +15,9 @@ public interface PayMapper {
     OrdersDTO selectOrder(@Param("odNo") Long odNo);
 
     void insertPaySuccess(Map<String, Object> payMap);
+
+    void deleteCartItemsByOrder(Map<String, Object> map);
+
+    Integer countPayByOdNo(@Param("odNo") Long odNo);
+
 }

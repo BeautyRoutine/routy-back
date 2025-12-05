@@ -5,7 +5,7 @@
 <mapper namespace="com.routy.routyback.mapper.user.PayMapper">
 
   <insert id="insertOrder" parameterType="com.routy.routyback.dto.order.OrdersDTO">
-    <selectKey keyProperty="odNo" resultType="int" order="BEFORE">
+    <selectKey keyProperty="odNo" resultType="long" order="BEFORE">
       SELECT SEQ_ORDERS_NO.NEXTVAL FROM DUAL
     </selectKey>
     INSERT INTO ORDERS (
@@ -49,5 +49,20 @@
     SYSDATE
     )
   </insert>
+
+  <delete id="deleteCartItemsByOrder" parameterType="map">
+    DELETE
+    FROM CART
+    WHERE userNo = #{userNo}
+      AND prdNo IN (SELECT prdNo
+                    FROM PAY_PRODUCT_MAPPING
+                    WHERE odNo = #{odNo})
+  </delete>
+
+  <select id="countPayByOdNo" resultType="int">
+    SELECT COUNT(*)
+    FROM PAY
+    WHERE odNO = #{odNo}
+  </select>
 
 </mapper>

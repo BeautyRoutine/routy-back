@@ -2,10 +2,12 @@ package com.routy.routyback.controller.user;
 
 import com.routy.routyback.dto.OrderSaveRequestDTO;
 import com.routy.routyback.dto.PaymentConfirmRequestDTO;
+import com.routy.routyback.mapper.user.UserMapper;
 import com.routy.routyback.service.user.PayService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,16 +16,37 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/payments")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:3000")
 public class PayController {
 
     private final PayService payService;
+    private final UserMapper userMapper;
+
+    private Long getAuthenticatedUserNo() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || authentication.getName() == null || "anonymousUser".equals(
+            authentication.getName())) {
+            throw new RuntimeException("로그인 인증 정보가 없습니다.");
+        }
+
+        String currentUserId = authentication.getName();
+
+        Long userNo = userMapper.findUserNoByUserId(currentUserId);
+
+        if (userNo == null) {
+            throw new RuntimeException("존재하지 않는 사용자입니다: " + currentUserId);
+        }
+        return userNo;
+    }
 
     // 1. 주문 생성 API
     @PostMapping("/order")
     public ResponseEntity<Long> createOrder(@RequestBody OrderSaveRequestDTO request) {
-        // 주문 저장 후, 생성된 '주문번호(odNo)'를 리턴
-        Long odNo = payService.createOrder(request);
+        // 토큰에서 userNo를 안전하게 가져옴 (인증)
+        Long authenticatedUserNo = getAuthenticatedUserNo();
+
+        // 주문 저장 시, 검증된 userNo를 Service로 전달
+        Long odNo = payService.createOrder(authenticatedUserNo, request);
         return ResponseEntity.ok(odNo);
     }
 
