@@ -67,6 +67,13 @@ public class ProductUserService implements IProductUserService {
     }
 
     @Override
+    public ApiResponse getProductList(Map<String, Object> params) {
+        List<ProductUserDTO> list = productUserMapper.searchProducts(params);
+        return ApiResponse.success(list);
+    }
+
+
+    @Override
     public ApiResponse productAllSkinCate(Map<String, Object> params) { // 피부타입별 추천 제품목록
         try {
             params.put("limit", ParamProcessor.parseInt(params.get("limit"), 1));

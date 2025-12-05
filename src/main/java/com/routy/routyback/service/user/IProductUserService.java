@@ -15,5 +15,6 @@ public interface IProductUserService {
     ApiResponse productPopular(Map<String, Object> params);
     ApiResponse productSkinBased(Map<String, Object> params);
     ApiResponse getFallbackProducts(int limit);
+    ApiResponse getProductList(Map<String, Object> params);
 
 }

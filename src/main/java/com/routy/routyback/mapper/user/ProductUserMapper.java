@@ -37,4 +37,6 @@ public interface ProductUserMapper {
      */
     List<ProductUserDTO> selectFallbackProducts(int limit);
 
+    List<ProductUserDTO> searchProducts(Map<String, Object> params);
+
 }
