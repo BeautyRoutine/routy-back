@@ -139,5 +139,10 @@ public class ProductUserService implements IProductUserService {
             return ApiResponse.fromException(e);
         }
     }
+    public ApiResponse getFallbackProducts(int limit) {
+        List<ProductUserDTO> list = productUserMapper.selectFallbackProducts(limit);
+        return ApiResponse.success(list);
+    }
+
 
 }

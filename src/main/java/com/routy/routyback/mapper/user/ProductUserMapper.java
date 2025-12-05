@@ -31,7 +31,10 @@ public interface ProductUserMapper {
 	 * @return 카테고리 (List)
 	 */
 	List<Integer> productCateViewed(Map<String, Object> params);
-
-	
+    /**
+     * 비슷한 스킨 타입 추천 - 스킨타입 없을시 대체 추천
+     *
+     */
+    List<ProductUserDTO> selectFallbackProducts(int limit);
 
 }
