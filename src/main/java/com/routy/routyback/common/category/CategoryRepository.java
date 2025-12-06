@@ -18,9 +18,7 @@ public class CategoryRepository {
             Map.entry(11002, "에센스/세럼/앰플"),
             Map.entry(11003, "크림"),
             Map.entry(11004, "로션"),
-            Map.entry(11005, "미스트/오일"),
-            Map.entry(11006, "스킨케어세트"),
-            Map.entry(11007, "스킨케어 디바이스")
+            Map.entry(11005, "미스트/오일")
         )));
         subCate.putAll(mainCate.get(11).getSub());
 
