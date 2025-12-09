@@ -28,7 +28,7 @@ public class ReviewService implements IReviewService {
     ReviewTrustCalculator reviewTrustCalculator;
 
     @Override
-    public ReviewListResponse getReviewList(int prdNo, int page, int limit, String sort) {
+    public ReviewListResponse getReviewList(int prdNo, int page, int limit, String sort, int userNo) {
         // 맵 구성
         Map<String, Object> params = new HashMap<>();
         params.put("prdNo", prdNo);
@@ -43,11 +43,10 @@ public class ReviewService implements IReviewService {
 
         // vo를 dto로 변환
         List<ReviewResponse> reviewResponses = new ArrayList<>();
-        int currentUserNo = 1; //실제 로그인 되면 받아와야 함
         for (ReviewVO vo : reviewVOs) {
             vo.setImages(reviewMapper.findReviewImages(vo.getRevNo()));
             ReviewResponse dto = convertVoToResponseDto(vo); // vo를 dto로 변환
-            Integer checkLike = reviewMapper.findLikeByUserAndReview(vo.getRevNo(), currentUserNo);
+            Integer checkLike = reviewMapper.findLikeByUserAndReview(vo.getRevNo(), userNo);
             dto.setLiked(checkLike != null);
             dto.setFeedback(new ArrayList<>());
             reviewResponses.add(dto); // reviewResponses에 받아온 dto 넣기

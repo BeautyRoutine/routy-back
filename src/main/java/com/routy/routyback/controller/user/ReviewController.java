@@ -42,11 +42,13 @@ public class ReviewController {
         @PathVariable int prdNo,  // URL 경로에서 상품 번호(prdNo)를 가져옴. 예: /products/10/reviews → prdNo=10
         @RequestParam(defaultValue = "1") int page, // 쿼리 파라미터 ?page=값, 기본값은 1페이지
         @RequestParam(defaultValue = "10") int limit, // 쿼리 파라미터 ?limit=값, 한 페이지에 보여줄 리뷰 개수, 기본값 10개
-        @RequestParam(defaultValue = "recommended") String sort // 정렬 기준. 기본값은 추천순(신뢰도 기반)
+        @RequestParam(defaultValue = "recommended") String sort, // 정렬 기준. 기본값은 추천순(신뢰도 기반)
+        @RequestParam(required = false) Integer userNo
     ) {
         try {
+        	  int currentUser = (userNo == null) ? 0 : userNo;
             // 서비스 레이어에 조회 요청. 정렬/페이징 옵션까지 함께 전달
-            ReviewListResponse responseData = service.getReviewList(prdNo, page, limit, sort);
+            ReviewListResponse responseData = service.getReviewList(prdNo, page, limit, sort, currentUser);
 
             // HTTP 200 OK 상태코드와 함께 조회된 리뷰 목록/요약/페이징 정보를 반환
             return ApiResponse.success(responseData);
@@ -95,16 +97,19 @@ public class ReviewController {
     // 리뷰 좋아요(추천) 토글
     @PostMapping("/reviews/{revNo}/like")
     public ResponseEntity<ReviewLikeResponse> toggleLike(
-        @PathVariable int revNo // 좋아요를 토글할 대상 리뷰 번호
+        @PathVariable int revNo, // 좋아요를 토글할 대상 리뷰 번호
+        @RequestParam(required = false) Integer userNo  //프론트에서 파라미터로 보낸 userNo 
     ) {
-        // TODO: 나중에 로그인 기능이 붙으면 실제 로그인된 사용자 번호를 주입받도록 수정해야 함
-        int userNo = 1; // 임시 고정 사용자 번호. 현재는 로그인 기능이 없기 때문에 하드코딩
 
+    	  int currentUser = (userNo == null) ? 0 : userNo;
+    	  if (currentUser == 0) {
+              return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+          }
         // 서비스에 좋아요 토글 요청
         // - 이미 좋아요를 눌렀으면 좋아요 취소
         // - 안 눌렀으면 새로 좋아요 추가
         // 처리 후 현재 좋아요 개수와 함께 응답 DTO 반환
-        ReviewLikeResponse response = service.toggleLike(revNo, userNo);
+        ReviewLikeResponse response = service.toggleLike(revNo, currentUser);
 
         // HTTP 200 OK와 함께 현재 좋아요 정보(리뷰 번호, 좋아요 수)를 반환
         return ResponseEntity.ok(response);
