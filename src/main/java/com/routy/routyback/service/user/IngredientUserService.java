@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import com.routy.routyback.common.ApiResponse;
+import com.routy.routyback.dto.IngredientPrdEffDTO;
 import com.routy.routyback.dto.user.IngredientSimpleDTO;
 import com.routy.routyback.dto.user.ProductIngredientAnalysisDTO;
 import com.routy.routyback.mapper.user.IIngredientUserMapper;
@@ -30,12 +31,12 @@ public class IngredientUserService implements IIngredientUserService {
 
 	            if (userSkin != null && !userSkin.isEmpty() && !userSkin.equals("null")) {
 	            // 피부타입 분석 
-	            List<Map<String, Object>> goodMap = mapper.effectGoodPrdSkin(params);
-	            List<Map<String, Object>> badMap = mapper.effectBadPrdSkin(params);
+	            List<IngredientPrdEffDTO> goodMap = mapper.effectGoodPrdSkin(params);
+	            List<IngredientPrdEffDTO> badMap = mapper.effectBadPrdSkin(params);
 	            
 	            // Map에서 이름만 뽑아서 리스트로 변환
-	            result.setGoodEffects(goodMap.stream().map(m -> (String)m.get("EFFNAME")).distinct().toList());
-	            result.setBadEffects(badMap.stream().map(m -> (String)m.get("EFFNAME")).distinct().toList());
+	            result.setGoodEffects(goodMap.stream().map(m -> (String)m.getEffName()).distinct().toList());
+	            result.setBadEffects(badMap.stream().map(m -> (String)m.getEffName()).distinct().toList());
 	            } else {
 	                // 피부타입이 없으면 빈 리스트 처리 (DB 에러 방지)
 	                result.setGoodEffects(new ArrayList<>());
@@ -85,8 +86,8 @@ public class IngredientUserService implements IIngredientUserService {
 	 @Override
 		public ApiResponse effectAllPrdSkin(Map<String, Object> params) {
 			try {
-				List<Map<String, Object>> good = mapper.effectGoodPrdSkin(params);
-				List<Map<String, Object>> bad = mapper.effectBadPrdSkin(params);
+				List<IngredientPrdEffDTO> good = mapper.effectGoodPrdSkin(params);
+				List<IngredientPrdEffDTO> bad = mapper.effectBadPrdSkin(params);
 				
 				Map<String, Object> result = new java.util.HashMap<>();
 				result.put("good", good);
