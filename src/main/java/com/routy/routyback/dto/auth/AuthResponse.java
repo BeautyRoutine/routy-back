@@ -8,6 +8,7 @@ public class AuthResponse {
     private String userName;
     private Integer userLevel;
     private Integer userSkin;
+    private Long userNo;
 
     // 생성자
     public AuthResponse(String token, User user) {
@@ -16,6 +17,7 @@ public class AuthResponse {
         this.userName = user.getUserName();
         this.userLevel = user.getUserLevel();
         this.userSkin = user.getUserSkin();
+        this.userNo = user.getUserNo(); 
     }
 
     // Getters
@@ -24,6 +26,7 @@ public class AuthResponse {
     public String getUserName() { return userName; }
     public Integer getUserLevel() { return userLevel; }
     public Integer getUserSkin() { return userSkin; }
+    public Long getUserNo() { return userNo; }
 
     // Setters
     public void setToken(String token) { this.token = token; }
@@ -31,4 +34,9 @@ public class AuthResponse {
     public void setUserName(String userName) { this.userName = userName; }
     public void setUserLevel(Integer userLevel) { this.userLevel = userLevel; }
     public void setUserSkin(Integer userSkin) { this.userSkin = userSkin; }
+
+	public void setUserNo(Long userNo) {
+		this.userNo = userNo;
+	}
+
 }
