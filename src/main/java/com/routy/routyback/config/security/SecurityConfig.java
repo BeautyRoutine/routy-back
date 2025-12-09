@@ -58,10 +58,10 @@ public class SecurityConfig {
                 .requestMatchers("/api/cart/**").authenticated()
                 .requestMatchers("/api/orders/**").authenticated()
                 .requestMatchers("/api/payments/**").authenticated()
+                
+                // 특정 메서드 허용
                 .requestMatchers("/api/users/**").permitAll()
                 .requestMatchers("/api/admin/**").permitAll()
-
-                // 특정 메서드 허용
                 .requestMatchers(org.springframework.http.HttpMethod.DELETE, "/api/users/*/notifications/**")
                 .permitAll()
 
