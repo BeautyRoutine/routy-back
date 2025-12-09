@@ -4,19 +4,25 @@
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.routy.routyback.mapper.user.IIngredientUserMapper">
-	<select id="effectGoodPrdSkin" resultType="Map">
-	SELECT e.*
+	<select id="effectGoodPrdSkin" resultType="com.routy.routyback.dto.IngredientPrdEffDTO">
+	SELECT e.effName, e.effSkin, e.effStatus, e.effAim, TO_CHAR(i.ingName) ingName
 	FROM PRD_ING_MAPPING pi
 		INNER JOIN EFF_ING_MAPPING ei ON ei.ingNo=pi.ingNo
 		INNER JOIN EFFECT e ON e.effNo=ei.effNo
+		INNER JOIN INGREDIENTS i on i.ingNo=ei.ingNo
 	WHERE e.effStatus = 1 AND pi.prdNo = #{prdNo} AND e.effSkin = #{userSkin}
+	GROUP BY e.effName, e.effSkin, e.effStatus, e.effAim, TO_CHAR(i.ingName)
+	ORDER BY e.effName
 	</select>
-	<select id="effectBadPrdSkin" resultType="Map">
-	SELECT e.*
+	<select id="effectBadPrdSkin" resultType="com.routy.routyback.dto.IngredientPrdEffDTO">
+	SELECT e.effName, e.effSkin, e.effStatus, e.effAim, TO_CHAR(i.ingName) ingName
 	FROM PRD_ING_MAPPING pi
 		INNER JOIN EFF_ING_MAPPING ei ON ei.ingNo=pi.ingNo
 		INNER JOIN EFFECT e ON e.effNo=ei.effNo
+		INNER JOIN INGREDIENTS i on i.ingNo=ei.ingNo
 	WHERE e.effStatus = 2 AND pi.prdNo = #{prdNo} AND e.effSkin = #{userSkin}
+	GROUP BY e.effName, e.effSkin, e.effStatus, e.effAim, TO_CHAR(i.ingName)
+	ORDER BY e.effName
 	</select>
 	
 	  <select id="selectIngredientsByPrdNo" resultType="com.routy.routyback.dto.user.IngredientSimpleDTO">
