@@ -17,8 +17,8 @@
 	        p.PRDNAME AS prdName,		<!-- 상품명 -->
 	        p.PRDPRICE AS prdPrice,		<!-- 상품 가격 -->
 	        p.PRDIMG AS prdImg,			<!-- 상품 이미지 파일명 -->
-	        c.SALES AS sales,			<!-- 캐시된 판매량 -->
-	        c.RANK_NO AS rankNo,		<!-- 캐시된 순위 -->
+	        MAX(c.SALES) AS sales,			<!-- 캐시된 판매량 -->
+	        MIN(c.RANK_NO) AS rankNo,		<!-- 캐시된 순위 -->
 			SUM(CASE WHEN r.userSkin = 1 THEN 1 ELSE 0 END) AS skin1_cnt,	<!-- 피부타입별 긍정평 갯수 -->
 			SUM(CASE WHEN r.userSkin = 2 THEN 1 ELSE 0 END) AS skin2_cnt,
 			SUM(CASE WHEN r.userSkin = 3 THEN 1 ELSE 0 END) AS skin3_cnt
@@ -30,19 +30,19 @@
         <if test="category != null and category != '0'">
             AND c.CATEGORY LIKE CONCAT(#{category}, '%')	<!-- 중분류 코드(예: 41)로 소분류 전체 매칭 -->
         </if>
-        GROUP BY c.PRDNO, p.PRDNAME, p.PRDPRICE, p.PRDIMG, c.SALES, c.RANK_NO
+        GROUP BY c.PRDNO, p.PRDNAME, p.PRDPRICE, p.PRDIMG
         <choose>
         	<when test="skin == 1">
-        		ORDER BY skin1_cnt DESC, c.RANK_NO ASC
+        		ORDER BY skin1_cnt DESC, rankNo ASC
         	</when>
         	<when test="skin == 2">
-        		ORDER BY skin2_cnt DESC, c.RANK_NO ASC
+        		ORDER BY skin2_cnt DESC, rankNo ASC
         	</when>
         	<when test="skin == 3">
-        		ORDER BY skin3_cnt DESC, c.RANK_NO ASC
+        		ORDER BY skin3_cnt DESC, rankNo ASC
         	</when>
             <otherwise>
-                ORDER BY c.RANK_NO ASC		<!-- 캐시된 순위 기준 정렬 -->
+                ORDER BY rankNo ASC		<!-- 캐시된 순위 기준 정렬 -->
             </otherwise>
         </choose>
         FETCH FIRST #{limit} ROWS ONLY
