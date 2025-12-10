@@ -16,7 +16,7 @@ public interface IProductRankingService {
      * @param limit 조회 개수 (기본 20)
      * @return 랭킹 데이터 리스트
      */
-    List<RankingProductResponse> getCategoryRanking(String category, int limit);
+    List<RankingProductResponse> getCategoryRanking(String category, Integer skin, int limit);
 
     /**
      * 피부 타입 기반 랭킹 조회 (검색창 전용)

@@ -28,4 +28,9 @@ public class RankingProductResponse {
 
     /** 캐시에서 계산된 순위 (CACHE.RANK_NO) */
     private Integer rankNo;
+    
+    /** 피부타입별 긍정반응 갯수 */
+    private Integer skin1_cnt;
+    private Integer skin2_cnt;
+    private Integer skin3_cnt;
 }

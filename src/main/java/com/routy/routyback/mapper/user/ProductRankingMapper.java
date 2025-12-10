@@ -20,6 +20,7 @@ public interface ProductRankingMapper {
      */
     List<RankingProductResponse> getCategoryRanking(
         @Param("category") String category,
+        @Param("skin") Integer skin,
         @Param("limit") int limit
     );
 
