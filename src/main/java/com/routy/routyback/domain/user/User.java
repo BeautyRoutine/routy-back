@@ -19,7 +19,9 @@ public class User {
     private Integer userLevel;
     private LocalDateTime userRegdate;
     private Integer userStatus;
-    private Integer userSkin;  
+    private Integer userSkin;
+    private String phoneVerified;           // 추가
+    private LocalDateTime phoneVerifiedAt;  // 추가
 
     // Getters
     public Long getUserNo() {
@@ -36,6 +38,10 @@ public class User {
 
     public String getUserName() {
         return userName;
+    }
+
+    public String getUserNick() {
+        return userNick;
     }
 
     public String getUserHp() {
@@ -78,8 +84,16 @@ public class User {
         return userStatus;
     }
 
-    public Integer getUserSkin() { 
+    public Integer getUserSkin() {
         return userSkin;
+    }
+
+    public String getPhoneVerified() {
+        return phoneVerified;
+    }
+
+    public LocalDateTime getPhoneVerifiedAt() {
+        return phoneVerifiedAt;
     }
 
     // Setters
@@ -97,6 +111,10 @@ public class User {
 
     public void setUserName(String userName) {
         this.userName = userName;
+    }
+
+    public void setUserNick(String userNick) {
+        this.userNick = userNick;
     }
 
     public void setUserHp(String userHp) {
@@ -139,15 +157,15 @@ public class User {
         this.userStatus = userStatus;
     }
 
-    public void setUserSkin(Integer userSkin) { 
+    public void setUserSkin(Integer userSkin) {
         this.userSkin = userSkin;
     }
 
-	public String getUserNick() {
-		return userNick;
-	}
+    public void setPhoneVerified(String phoneVerified) {
+        this.phoneVerified = phoneVerified;
+    }
 
-	public void setUserNick(String userNick) {
-		this.userNick = userNick;
-	}
+    public void setPhoneVerifiedAt(LocalDateTime phoneVerifiedAt) {
+        this.phoneVerifiedAt = phoneVerifiedAt;
+    }
 }
