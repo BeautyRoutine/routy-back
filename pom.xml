@@ -127,6 +127,19 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- SMS (솔라피) -->
+        <dependency>
+        <groupId>net.nurigo</groupId>
+        <artifactId>sdk</artifactId>
+        <version>4.3.0</version>
+        </dependency>
+
+        <!-- Redis -->
+        <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
+
     </dependencies>
 
     <!-- ========================================================= -->
