@@ -11,4 +11,5 @@ public class RecentProductResponse {
     private Long prdNo;     // 상품 번호
     private String prdName;       // 상품명
     private String prdImg;       // 대표 이미지 URL
+    private Long prdSubCate;
 }
