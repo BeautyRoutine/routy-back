@@ -11,6 +11,9 @@ public class SignupRequest {
     private String userRoadAddr;
     private String userDetailAddr;
     private String userBirth;
+    
+    // SMS 인증 여부
+    private boolean phoneVerified;
 
     // Getters
     public String getUserId() { return userId; }
@@ -23,6 +26,7 @@ public class SignupRequest {
     public String getUserRoadAddr() { return userRoadAddr; }
     public String getUserDetailAddr() { return userDetailAddr; }
     public String getUserBirth() { return userBirth; }
+    public boolean isPhoneVerified() { return phoneVerified; }
 
     // Setters
     public void setUserId(String userId) { this.userId = userId; }
@@ -35,4 +39,5 @@ public class SignupRequest {
     public void setUserRoadAddr(String userRoadAddr) { this.userRoadAddr = userRoadAddr; }
     public void setUserDetailAddr(String userDetailAddr) { this.userDetailAddr = userDetailAddr; }
     public void setUserBirth(String userBirth) { this.userBirth = userBirth; }
+    public void setPhoneVerified(boolean phoneVerified) { this.phoneVerified = phoneVerified; }
 }

@@ -39,10 +39,10 @@ public class JwtTokenProvider {
         this.key = Keys.hmacShaKeyFor(secretKey.getBytes());
     }
 
-    // JWT 토큰 생성 - userLevel 포함! (팀원 요청사항)
+    // JWT 토큰 생성 - userLevel 포함
     public String createToken(String userId, Integer userLevel) {
         Claims claims = Jwts.claims().setSubject(userId);
-        claims.put("userLevel", userLevel);  // ← userLevel claim 추가!
+        claims.put("userLevel", userLevel);
 
         Date now = new Date();
         Date validity = new Date(now.getTime() + validityInMilliseconds);
@@ -66,9 +66,14 @@ public class JwtTokenProvider {
         String userId = claims.getSubject();
         Integer userLevel = claims.get("userLevel", Integer.class);
 
-        // DB에서 사용자 상태 확인 (soft delete 처리)
+        // DB에서 사용자 상태 확인 (탈퇴 회원 체크)
         User user = userMapper.findByUserId(userId);
-        if (user == null || user.getUserStatus() == null || user.getUserStatus() == 0) {
+        if (user == null) {
+            throw new RuntimeException("USER_NOT_FOUND");
+        }
+
+        // USERSTATUS가 0이면 탈퇴한 회원
+        if (user.getUserStatus() != null && user.getUserStatus() == 0) {
             throw new RuntimeException("DEACTIVATED_USER");
         }
 

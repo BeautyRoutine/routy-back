@@ -28,6 +28,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         // 인증 불필요 엔드포인트 → 필터 통과
         if (uri.startsWith("/api/auth") ||
+            uri.startsWith("/auth") ||  // ← 카카오 OAuth 경로 추가!
             uri.startsWith("/api/products") ||
             uri.startsWith("/api/categories") ||
             uri.startsWith("/api/search") ||
