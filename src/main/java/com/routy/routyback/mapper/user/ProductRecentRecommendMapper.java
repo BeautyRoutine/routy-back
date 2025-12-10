@@ -9,10 +9,10 @@ import java.util.List;
 @Mapper
 public interface ProductRecentRecommendMapper {
 
-    // 최신 subcate 조회
+    // 가장 최근 본 소카테고리 1개
     Integer findLatestSubcate(@Param("userNo") Integer userNo);
 
-    // 추천 상품 조회
+    // 최근 본 카테고리 기반 추천 4개
     List<ProductRecentRecommendDTO> recommendByLatestSubcate(
             @Param("userNo") Integer userNo,
             @Param("subcate") Integer subcate
