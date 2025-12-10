@@ -44,7 +44,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/auth/**").permitAll()  // ← 카카오 로그인 경로 추가!
                 .requestMatchers("/api/sms/**").permitAll() // ← SMS 인증 경로 추가!
-                
+
                 // 공개 API - 모두 허용
                 .requestMatchers("/api/products/**").permitAll()
                 .requestMatchers("/api/categories/**").permitAll()
@@ -53,21 +53,21 @@ public class SecurityConfig {
                 .requestMatchers("/api/reviews/**").permitAll()
                 .requestMatchers("/api/dibs/**").permitAll()
                 .requestMatchers("/api/users/**").permitAll()
-                
+
                 // 인증 필요 API
                 .requestMatchers("/api/cart/**").authenticated()
                 .requestMatchers("/api/orders/**").authenticated()
                 .requestMatchers("/api/payments/**").authenticated()
                 .requestMatchers("/api/users/**").permitAll()
                 .requestMatchers("/api/admin/**").permitAll()
-                
+
                 // 특정 메서드 허용
                 .requestMatchers(org.springframework.http.HttpMethod.DELETE, "/api/users/*/notifications/**")
                 .permitAll()
-                
+
                 // 기본 페이지
                 .requestMatchers("/", "/index.html").permitAll()
-                
+
                 // 나머지는 인증 필요
                 .anyRequest().authenticated()
             )
