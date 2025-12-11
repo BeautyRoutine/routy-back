@@ -1,6 +1,6 @@
 package com.routy.routyback.mapper.user;
 
-import com.routy.routyback.domain.auth.RefreshToken;
+import com.routy.routyback.domain.user.RefreshToken;
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper
