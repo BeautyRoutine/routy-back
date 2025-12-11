@@ -17,6 +17,12 @@
     )
   </insert>
 
+  <update id="updateOrderStatusToComplete" parameterType="long">
+    UPDATE ORDERS
+    SET odStatus = 2
+    WHERE odNo = #{odNo}
+  </update>
+
   <insert id="insertPayProduct" parameterType="map">
     INSERT INTO PAY_PRODUCT_MAPPING (ppMapNo, odNo, prdNo, ppMapStock, ppMapPrice, ppMapRegdate)
     VALUES (SEQ_PP_MAP_NO.NEXTVAL, #{odNo}, #{prdNo}, #{qty}, #{price}, SYSDATE)
