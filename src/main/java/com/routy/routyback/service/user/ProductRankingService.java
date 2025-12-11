@@ -34,7 +34,7 @@ public class ProductRankingService implements IProductRankingService {
      * @return RankingProductResponse 리스트 (캐시 기반)
      */
     @Override
-    public List<RankingProductResponse> getCategoryRanking(String category, int limit) {
+    public List<RankingProductResponse> getCategoryRanking(String category, Integer skin, int limit) {
 
         // limit 기본값 처리
         if (limit <= 0) {
@@ -45,9 +45,13 @@ public class ProductRankingService implements IProductRankingService {
         if (category == null || category.equals("0") || category.isBlank()) {
             category = null;
         }
+        // skin이 비어있으면 null로 통일하여 전체 캐시 조회
+        if (skin == null || skin <= 0) {
+        	skin = null;
+        }
 
         // 캐시 테이블에서 랭킹 조회
-        return productRankingMapper.getCategoryRanking(category, limit);
+        return productRankingMapper.getCategoryRanking(category, skin, limit);
     }
 
     // 밑에는 검색창 전용

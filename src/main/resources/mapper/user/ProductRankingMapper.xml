@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.routy.routyback.mapper.user.ProductRankingMapper">
 
@@ -13,20 +13,38 @@
         resultType="com.routy.routyback.dto.user.RankingProductResponse">
 
         SELECT
-        c.PRDNO AS prdNo,          <!-- 캐시된 상품 번호 -->
-        p.PRDNAME AS prdName,        <!-- 상품명 -->
-        p.PRDPRICE AS prdPrice,       <!-- 상품 가격 -->
-        p.PRDIMG AS prdImg,         <!-- 상품 이미지 파일명 -->
-        c.SALES AS sales,          <!-- 캐시된 판매량 -->
-        c.RANK_NO AS rankNo          <!-- 캐시된 순위 -->
+	        c.PRDNO AS prdNo,			<!-- 캐시된 상품 번호 -->
+	        p.PRDNAME AS prdName,		<!-- 상품명 -->
+	        p.PRDPRICE AS prdPrice,		<!-- 상품 가격 -->
+	        p.PRDIMG AS prdImg,			<!-- 상품 이미지 파일명 -->
+	        MAX(c.SALES) AS sales,			<!-- 캐시된 판매량 -->
+	        MIN(c.RANK_NO) AS rankNo,		<!-- 캐시된 순위 -->
+			SUM(CASE WHEN r.userSkin = 1 THEN 1 ELSE 0 END) AS skin1_cnt,	<!-- 피부타입별 긍정평 갯수 -->
+			SUM(CASE WHEN r.userSkin = 2 THEN 1 ELSE 0 END) AS skin2_cnt,
+			SUM(CASE WHEN r.userSkin = 3 THEN 1 ELSE 0 END) AS skin3_cnt
         FROM PRODUCT_RANKING_CACHE c
-        JOIN PRODUCT p
-        ON p.PRDNO = c.PRDNO            <!-- 상품 상세 정보 Join -->
-        WHERE c.RANK_DATE = TRUNC(SYSDATE)  <!-- 오늘 날짜 캐시만 조회 -->
+	        INNER JOIN PRODUCT p ON p.PRDNO = c.PRDNO		<!-- 상품 상세 정보 Join -->
+	        LEFT JOIN REVIEW r ON r.PRDNO = p.PRDNO
+	        LEFT JOIN REVIEW_FEEDBACK rf ON rf.REVNO = r.REVNO AND rf.rfTypeCode &lt; 500
+        WHERE c.RANK_DATE = TRUNC(SYSDATE)					<!-- 오늘 날짜 캐시만 조회 -->
         <if test="category != null and category != '0'">
-            AND c.CATEGORY LIKE CONCAT(#{category}, '%')   <!-- 중분류 코드(예: 41)로 소분류 전체 매칭 -->
+            AND c.CATEGORY LIKE CONCAT(#{category}, '%')	<!-- 중분류 코드(예: 41)로 소분류 전체 매칭 -->
         </if>
-        ORDER BY c.RANK_NO                  <!-- 캐시된 순위 기준 정렬 -->
+        GROUP BY c.PRDNO, p.PRDNAME, p.PRDPRICE, p.PRDIMG
+        <choose>
+        	<when test="skin == 1">
+        		ORDER BY skin1_cnt DESC, rankNo ASC
+        	</when>
+        	<when test="skin == 2">
+        		ORDER BY skin2_cnt DESC, rankNo ASC
+        	</when>
+        	<when test="skin == 3">
+        		ORDER BY skin3_cnt DESC, rankNo ASC
+        	</when>
+            <otherwise>
+                ORDER BY rankNo ASC		<!-- 캐시된 순위 기준 정렬 -->
+            </otherwise>
+        </choose>
         FETCH FIRST #{limit} ROWS ONLY
     </select>
 
