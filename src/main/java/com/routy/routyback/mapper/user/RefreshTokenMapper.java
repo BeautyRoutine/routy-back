@@ -1,28 +1,14 @@
 package com.routy.routyback.mapper.user;
 
-import com.routy.routyback.domain.user.RefreshToken;
-import org.apache.ibatis.annotations.*;
+import com.routy.routyback.domain.auth.RefreshToken;
+import org.apache.ibatis.annotations.Mapper;
 
 @Mapper
 public interface RefreshTokenMapper {
 
-    @Insert("""
-        INSERT INTO REFRESH_TOKEN (user_id, refresh_token, expires_at)
-        VALUES (#{userId}, #{refreshToken}, #{expiresAt})
-    """)
-    void insert(RefreshToken token);
+    void saveRefreshToken(RefreshToken token);
 
-    @Update("""
-        UPDATE REFRESH_TOKEN
-        SET refresh_token = #{refreshToken},
-            expires_at = #{expiresAt}
-        WHERE user_id = #{userId}
-    """)
-    void update(RefreshToken token);
+    RefreshToken getRefreshToken(String userId);
 
-    @Select("SELECT * FROM REFRESH_TOKEN WHERE user_id = #{userId}")
-    RefreshToken findByUserId(String userId);
-
-    @Delete("DELETE FROM REFRESH_TOKEN WHERE user_id = #{userId}")
-    void delete(String userId);
+    void deleteRefreshToken(String userId);
 }
