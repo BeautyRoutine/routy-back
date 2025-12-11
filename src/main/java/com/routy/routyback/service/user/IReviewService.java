@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface IReviewService {
 
-    ReviewListResponse getReviewList(int prdNo, int page, int limit, String sort); // 리뷰 목록 조회
+    ReviewListResponse getReviewList(int prdNo, int page, int limit, String sort, int userNo); // 리뷰 목록 조회
 
     ReviewResponse createReview(int prdNo, ReviewCreateRequest request); // 리뷰 저장
 

@@ -25,4 +25,8 @@ public class ReviewResponse {
     
     private boolean isLiked;
     private List<String> feedback;
+    
+  //필드 추가 - 유저 피부톤, 피부타입
+    private Integer userSkin;
+    private Integer userColor;
 }

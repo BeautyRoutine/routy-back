@@ -32,6 +32,7 @@
             i.INGENNAME AS ingEngName,
             i.INGALLERGEN AS ingAllergen,  <!-- DB의 NUMBER(1,0) -->
             i.INGDANGER AS ingDanger,      <!-- DB의 NUMBER(1,0) -->
+            i.INGDESC AS ingDesc,
             i.INGFUNCTIONAL AS ingFunctional
         FROM PRD_ING_MAPPING pim
         JOIN INGREDIENTS i ON pim.ingNo = i.ingNo

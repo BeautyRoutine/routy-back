@@ -32,4 +32,15 @@ public class ProductUserDTO {
     private Double avgRating;
     private Integer reviewCount;
 
+    private String prdVolume_text; // 용량 텍스트
+    private String prdSpec;        // 주요 사양
+    private String prdExpire;      // 사용기한
+    private String prdUsage;       // 사용방법
+    private String prdManuf;       // 제조사
+    private String prdOrigin;      // 원산지
+    private String prdFda;         // 식약처 심사 여부
+    private String prdIngredients; // 전성분(텍스트)
+    private String prdCaution;     // 주의사항
+    private String prdQuality;     // 품질보증기준
+    private String prdCs_phone;    // AS 전화번호
 }

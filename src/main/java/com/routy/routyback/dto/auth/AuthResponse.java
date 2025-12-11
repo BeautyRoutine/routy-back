@@ -35,4 +35,5 @@ public class AuthResponse {
     public void setUserName(String userName) { this.userName = userName; }
     public void setUserLevel(Integer userLevel) { this.userLevel = userLevel; }
     public void setUserSkin(Integer userSkin) { this.userSkin = userSkin; }
+
 }

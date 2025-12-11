@@ -15,8 +15,10 @@ import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service("reviewService")
+@Transactional
 public class ReviewService implements IReviewService {
 
     @Autowired
@@ -26,7 +28,7 @@ public class ReviewService implements IReviewService {
     ReviewTrustCalculator reviewTrustCalculator;
 
     @Override
-    public ReviewListResponse getReviewList(int prdNo, int page, int limit, String sort) {
+    public ReviewListResponse getReviewList(int prdNo, int page, int limit, String sort, int userNo) {
         // 맵 구성
         Map<String, Object> params = new HashMap<>();
         params.put("prdNo", prdNo);
@@ -41,11 +43,10 @@ public class ReviewService implements IReviewService {
 
         // vo를 dto로 변환
         List<ReviewResponse> reviewResponses = new ArrayList<>();
-        int currentUserNo = 1; //실제 로그인 되면 받아와야 함
         for (ReviewVO vo : reviewVOs) {
             vo.setImages(reviewMapper.findReviewImages(vo.getRevNo()));
             ReviewResponse dto = convertVoToResponseDto(vo); // vo를 dto로 변환
-            Integer checkLike = reviewMapper.findLikeByUserAndReview(vo.getRevNo(), currentUserNo);
+            Integer checkLike = reviewMapper.findLikeByUserAndReview(vo.getRevNo(), userNo);
             dto.setLiked(checkLike != null);
             dto.setFeedback(new ArrayList<>());
             reviewResponses.add(dto); // reviewResponses에 받아온 dto 넣기
@@ -98,13 +99,20 @@ public class ReviewService implements IReviewService {
      */
     @Override
     public ReviewResponse createReview(int prdNo, ReviewCreateRequest request) {
-
+    	// odNo가 0이면 null로 변경
+    	if (request.getOdNo() != null && request.getOdNo() == 0) {
+            request.setOdNo(null);
+        }
+    	
         // 1) VO 생성 및 기본값 세팅
         ReviewVO reviewVO = new ReviewVO();
         reviewVO.setPrdNo(prdNo);
         reviewVO.setUserNo(request.getUserNo());
         reviewVO.setRevStar(request.getRevStar());
         reviewVO.setContent(request.getContent());
+        reviewVO.setOdNo(request.getOdNo());
+        reviewVO.setUserSkin(request.getUserSkin());
+        reviewVO.setUserColor(request.getUserColor());
 
         // 2) 리뷰 저장 → REVNO 생성됨
         reviewMapper.insertReview(reviewVO);
@@ -196,6 +204,8 @@ public class ReviewService implements IReviewService {
         dto.setRevTrustScore(vo.getRevTrustScore());
         dto.setRevTrustRank(vo.getRevTrustRank());
         dto.setPhotoCount(vo.getPhotoCount());
+        dto.setUserSkin(vo.getUserSkin());
+        dto.setUserColor(vo.getUserColor());
 
         // 이미지 리스트를 DTO에 매핑
         if (vo.getImages() != null) {
