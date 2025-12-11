@@ -40,10 +40,11 @@ public class ProductRankingController {
     @GetMapping("/ranking")
     public ApiResponse<List<RankingProductResponse>> getCategoryRanking(
             @RequestParam(required = false) String category,
+            @RequestParam(required = false) Integer skin,
             @RequestParam(defaultValue = "20") int limit) {
 
         // 1) 서비스에서 캐시 기반 랭킹 조회
-        List<RankingProductResponse> list = productRankingService.getCategoryRanking(category, limit);
+        List<RankingProductResponse> list = productRankingService.getCategoryRanking(category, skin, limit);
 
         // 3) API 응답 래핑 후 반환
         return ApiResponse.success(list);
