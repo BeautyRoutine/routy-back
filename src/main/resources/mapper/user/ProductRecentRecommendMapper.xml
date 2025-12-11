@@ -44,8 +44,8 @@
         <!-- 사용자 기피/알레르기 성분 제외 -->
         AND NOT EXISTS (
         SELECT 1
-        FROM PIMAP PI
-        JOIN UIMAP UI ON UI.INGNO = PI.INGNO
+        FROM PRD_ING_MAPPING PI
+        JOIN USR_ING_MAPPING UI ON UI.INGNO = PI.INGNO
         WHERE PI.PRDNO = P.PRDNO
         AND UI.USERNO = #{userNo}
         AND UI.UIMAPTYPE IN (2, 3)
@@ -59,4 +59,3 @@
     </select>
 
 </mapper>
-
