@@ -16,5 +16,9 @@ public class ReviewCreateRequest {
     // 추가된 필드 - 작성자 : 김지용
     private Integer odNo; // 구매 인증용 주문 번호 ( 없으면 NULL )
     private int photoCount; // 첨부된 사진의 갯수 (0~5)
+    
+  //필드 추가 - 유저 피부톤, 피부타입
+    private Integer userSkin;
+    private Integer userColor;
 
 }

@@ -21,6 +21,8 @@
         revDate,
         revTrustScore,
         revTrustRank,
+        userSkin,
+    	userColor,
         userName,
         likeCount,
         photoCount,
@@ -41,6 +43,8 @@
         r.revDate,
         r.revTrustScore,
         r.revTrustRank,
+        r.userSkin,
+    	r.userColor,
         u.userName,
         (
         SELECT COUNT(*)
@@ -107,20 +111,25 @@
     <insert id="insertReview"
         parameterType="com.routy.routyback.domain.ReviewVO"
         useGeneratedKeys="true"
-        keyProperty="revNo">
+        keyProperty="revNo"
+        keyColumn="REVNO">
 
         INSERT INTO REVIEW (userNo,
                             prdNo,
                             odNo,
                             revRank,
                             revStar,
-                            content)
+                            content,
+        					userSkin,
+        					userColor)
         VALUES (#{userNo},
                 #{prdNo},
-                #{odNo},
+                #{odNo, jdbcType=INTEGER},
                 #{revRank},
                 #{revStar},
-                #{content})
+                #{content},
+        		#{userSkin},
+        		#{userColor})
     </insert>
 
     <!-- 리뷰 1건 상세 조회-->
@@ -138,6 +147,8 @@
                r.revDate,
                r.revTrustScore,
                r.revTrustRank,
+               r.userSkin,
+			   r.userColor,
                u.userName                                                       AS userName,
                (SELECT COUNT(*) FROM REVIEW_UPDOWN ud WHERE ud.REVNO = r.REVNO) AS likeCount,
                (SELECT COUNT(*) FROM REVIEW_IMAGE ri WHERE ri.rev_No = r.revNo)  AS photoCount,
