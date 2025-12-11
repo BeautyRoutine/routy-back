@@ -99,13 +99,20 @@ public class ReviewService implements IReviewService {
      */
     @Override
     public ReviewResponse createReview(int prdNo, ReviewCreateRequest request) {
-
+    	// odNo가 0이면 null로 변경
+    	if (request.getOdNo() != null && request.getOdNo() == 0) {
+            request.setOdNo(null);
+        }
+    	
         // 1) VO 생성 및 기본값 세팅
         ReviewVO reviewVO = new ReviewVO();
         reviewVO.setPrdNo(prdNo);
         reviewVO.setUserNo(request.getUserNo());
         reviewVO.setRevStar(request.getRevStar());
         reviewVO.setContent(request.getContent());
+        reviewVO.setOdNo(request.getOdNo());
+        reviewVO.setUserSkin(request.getUserSkin());
+        reviewVO.setUserColor(request.getUserColor());
 
         // 2) 리뷰 저장 → REVNO 생성됨
         reviewMapper.insertReview(reviewVO);
@@ -197,6 +204,8 @@ public class ReviewService implements IReviewService {
         dto.setRevTrustScore(vo.getRevTrustScore());
         dto.setRevTrustRank(vo.getRevTrustRank());
         dto.setPhotoCount(vo.getPhotoCount());
+        dto.setUserSkin(vo.getUserSkin());
+        dto.setUserColor(vo.getUserColor());
 
         // 이미지 리스트를 DTO에 매핑
         if (vo.getImages() != null) {

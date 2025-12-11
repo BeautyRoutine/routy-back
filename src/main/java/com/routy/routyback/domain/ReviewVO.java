@@ -32,4 +32,8 @@ public class ReviewVO {
     // 신뢰도 점수 / 등급
     private Double revTrustScore;   // 리뷰 신뢰도 점수
     private String revTrustRank;    // 리뷰 신뢰도 티어 코드 (예: TIER_PREMIUM 등)
+    
+    //필드 추가 - 유저 피부톤, 피부타입
+    private Integer userSkin;
+    private Integer userColor;
 }
