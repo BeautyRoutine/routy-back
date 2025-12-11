@@ -37,6 +37,7 @@
         p.prdno AS prdNo,
         p.prdname AS prdName,
         p.prdimg AS prdImg,
+        vp.prdsubcate AS prdSubCate,
         vp.vpregdate AS viewedDate
         FROM VIEWED_PRODUCT vp
         JOIN PRODUCT p ON p.prdno = vp.prdno

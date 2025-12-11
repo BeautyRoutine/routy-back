@@ -54,10 +54,10 @@ public class ProductUserController {
     @GetMapping("/list/recent")
     public ApiResponse getRecommendedProducts(
             @RequestParam(required = false) Integer userNo,
-            @RequestParam(required = false) List<Integer> recent,
-            @RequestParam(required = false) Integer subcate
+            @RequestParam(required = false) Integer subcate,
+            @RequestParam(required = false) String userId
     ) {
-        return recommendService.getRecommendedProducts(userNo, recent, subcate);
+        return recommendService.getRecommendedProducts(userNo, subcate, userId);
     }
 
     @GetMapping("/{prdNo}")

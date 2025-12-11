@@ -1,38 +1,61 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper
-    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.routy.routyback.mapper.user.ProductRecentRecommendMapper">
 
-    <select id="selectRecommendedProducts"
-        resultType="com.routy.routyback.dto.ProductRecentRecommendDTO"
-        parameterType="map">
+    <!-- 1) 가장 최근 본 상품의 소카테고리 조회 -->
+    <select id="findLatestSubcate" resultType="int">
+        SELECT PRDSUBCATE
+        FROM VIEWED_PRODUCT
+        WHERE USERNO = #{userNo}
+        ORDER BY VPREGDATE DESC
+            FETCH FIRST 1 ROW ONLY
+    </select>
 
-        SELECT DISTINCT
-        PRDNO AS prdNo,
-        PRDNAME AS prdName,
-        PRDCOMPANY AS prdCompany,
-        PRDIMG AS prdImg
-        FROM PRODUCT
+    <!-- 2) 최근 본 카테고리 기반 추천 상품 조회 -->
+    <select id="recommendByLatestSubcate"
+            resultType="com.routy.routyback.dto.ProductRecentRecommendDTO"
+            parameterType="map">
+
+        SELECT
+        P.PRDNO       AS prdNo,
+        P.PRDNAME     AS prdName,
+        P.PRDCOMPANY  AS prdCompany,
+        P.PRDIMG      AS prdImg,
+        NVL(R.REVIEWCOUNT, 0) AS reviewCount,
+        NVL(R.AVGRATING, 0)  AS avgRating
+        FROM PRODUCT P
+
+        <!-- 리뷰 통계 JOIN -->
+        LEFT JOIN (
+        SELECT
+        PRDNO,
+        COUNT(*) AS reviewCount,
+        AVG(REVSTAR) AS avgRating
+        FROM REVIEW
+        GROUP BY PRDNO
+        ) R ON R.PRDNO = P.PRDNO
+
         WHERE 1 = 1
+        AND P.PRDSUBCATE = #{subcate}
 
-        <!-- 최근 본 상품 ID 리스트 -->
-        <if test="recent != null and recent.size > 0">
-            AND PRDNO IN
-            <foreach item="no" collection="recent" open="(" separator="," close=")">
-                #{no}
-            </foreach>
-        </if>
+        <!-- 사용자 기피/알레르기 성분 제외 -->
+        AND NOT EXISTS (
+        SELECT 1
+        FROM PRD_ING_MAPPING PI
+        JOIN USR_ING_MAPPING UI ON UI.INGNO = PI.INGNO
+        WHERE PI.PRDNO = P.PRDNO
+        AND UI.USERNO = #{userNo}
+        AND UI.UIMAPTYPE IN (2, 3)
+        )
 
-        <!-- 소카테고리 필터 -->
-        <if test="subcate != null">
-            AND PRDSUBCATE = #{subcate}
-        </if>
+        ORDER BY
+        NVL(R.REVIEWCOUNT, 0) DESC,
+        NVL(R.AVGRATING, 0) DESC
 
-        ORDER BY PRDNO DESC
         FETCH FIRST 4 ROWS ONLY
-
     </select>
 
 </mapper>
