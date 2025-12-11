@@ -1,4 +1,5 @@
-package com.routy.routyback.domain.user;
+import com.routy.routyback.domain.user.RefreshToken;
+
 
 
 public class RefreshToken {
