@@ -5,10 +5,6 @@ import org.apache.ibatis.annotations.Mapper;
 
 @Mapper
 public interface RefreshTokenMapper {
-
-    void saveRefreshToken(RefreshToken token);
-
-    RefreshToken getRefreshToken(String userId);
-
-    void deleteRefreshToken(String userId);
+    void saveRefreshToken(RefreshToken ref);
+    RefreshToken findByUserId(String userId);
 }

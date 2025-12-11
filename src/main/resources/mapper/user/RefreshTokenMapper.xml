@@ -1,30 +1,26 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.routy.routyback.mapper.user.RefreshTokenMapper">
 
     <insert id="saveRefreshToken">
-        MERGE INTO REFRESH_TOKEN rt
-        USING (SELECT #{userId} AS userId, #{refreshToken} AS refreshToken FROM dual) input
-        ON (rt.USERID = input.userId)
+        MERGE INTO REFRESH_TOKEN t
+        USING (SELECT #{userId} AS userId, #{refreshToken} AS refreshToken FROM dual) src
+        ON (t.USER_ID = src.userId)
         WHEN MATCHED THEN
-            UPDATE SET rt.REFRESH_TOKEN = input.refreshToken
+            UPDATE SET t.REFRESH_TOKEN = src.refreshToken
         WHEN NOT MATCHED THEN
-            INSERT (USERID, REFRESH_TOKEN)
-            VALUES (input.userId, input.refreshToken)
+            INSERT (USER_ID, REFRESH_TOKEN)
+            VALUES (src.userId, src.refreshToken)
     </insert>
 
-    <select id="getRefreshToken" resultType="com.routy.routyback.domain.auth.RefreshToken">
-        SELECT USERID AS userId,
+    <select id="findByUserId" resultType="com.routy.routyback.domain.auth.RefreshToken">
+        SELECT USER_ID AS userId,
                REFRESH_TOKEN AS refreshToken
         FROM REFRESH_TOKEN
-        WHERE USERID = #{userId}
+        WHERE USER_ID = #{userId}
     </select>
-
-    <delete id="deleteRefreshToken">
-        DELETE FROM REFRESH_TOKEN WHERE USERID = #{userId}
-    </delete>
 
 </mapper>
