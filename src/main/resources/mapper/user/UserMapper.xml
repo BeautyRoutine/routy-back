@@ -120,7 +120,7 @@
                PHONE_VERIFIED,
                PHONE_VERIFIED_AT
         FROM USERS
-        WHERE USERID = #{userId, jdbcType=VARCHAR}
+        WHERE TRIM(LOWER(USERID)) = TRIM(LOWER(#{userId, jdbcType=VARCHAR}))
           AND (USERSTATUS IS NULL OR USERSTATUS != 0)
     </select>
 
@@ -128,7 +128,7 @@
     <select id="findUserNoByUserId" parameterType="string" resultType="long">
         SELECT USERNO
         FROM USERS
-        WHERE USERID = #{userId, jdbcType=VARCHAR}
+        WHERE TRIM(LOWER(USERID)) = TRIM(LOWER(#{userId, jdbcType=VARCHAR}))
           AND (USERSTATUS IS NULL OR USERSTATUS != 0)
     </select>
 

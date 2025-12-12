@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.routy.routyback.mapper.user.MyUsedProductMapper">
+
+    <!-- ============================================== -->
+    <!--  MY_USED_PRODUCT 테이블 조회 / 추가 / 삭제 Mapper -->
+    <!-- ============================================== -->
+
+    <!-- 사용 중인 제품 번호(PRDNO) 리스트 조회 -->
+    <select id="selectUsedProducts" resultType="long">
+        SELECT PRDNO
+        FROM (SELECT PRDNO, MAX(REGDATE) AS REGDATE
+              FROM MY_USED_PRODUCT
+              WHERE USERNO = #{userNo}
+              GROUP BY PRDNO)
+        ORDER BY REGDATE DESC
+    </select>
+
+    <!-- 제품 사용 중 체크 (INSERT) -->
+    <insert id="insertUsedProduct">
+        INSERT INTO MY_USED_PRODUCT (USERNO, PRDNO)
+        VALUES (#{userNo}, #{prdNo})
+    </insert>
+
+    <!-- 제품 사용 중 해제 (DELETE) -->
+    <delete id="deleteUsedProduct">
+        DELETE
+        FROM MY_USED_PRODUCT
+        WHERE USERNO = #{userNo}
+          AND PRDNO = #{prdNo}
+    </delete>
+</mapper>
