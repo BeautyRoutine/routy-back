@@ -42,6 +42,9 @@ public class KakaoAuthService {
     @Value("${kakao.user-info-uri}")
     private String userInfoUri;
 
+    @Value("${frontend.url}")
+    private String frontendUrl;
+
     private final UserMapper userMapper;
     private final JwtTokenProvider jwtTokenProvider;
     private final RestTemplate restTemplate = new RestTemplate();
@@ -68,24 +71,24 @@ public class KakaoAuthService {
             System.out.println("userSkin: " + user.getUserSkin());
             System.out.println("needsSkinProfile: " + needsSkinProfile);
 
-            String frontendUrl = UriComponentsBuilder.fromHttpUrl("http://localhost:3000/kakao/callback")
+            String redirectUrl = UriComponentsBuilder.fromHttpUrl(frontendUrl + "/kakao/callback")
                     .queryParam("token", jwtToken)
                     .queryParam("userId", user.getUserId())
-                    .queryParam("userName", URLEncoder.encode(user.getUserName(), StandardCharsets.UTF_8))
+                    .queryParam("userName", URLEncoder.encode(user.getUserName() != null ? user.getUserName() : "", StandardCharsets.UTF_8))
                     .queryParam("userLevel", user.getUserLevel())
                     .queryParam("userSkin", user.getUserSkin() != null ? user.getUserSkin() : 0)
                     .queryParam("isNewUser", false)
                     .queryParam("needsSkinProfile", needsSkinProfile)
                     .toUriString();
-            System.out.println("리다이렉트 URL: " + frontendUrl);
+            System.out.println("리다이렉트 URL: " + redirectUrl);
 
-            response.sendRedirect(frontendUrl);
+            response.sendRedirect(redirectUrl);
 
         } catch (Exception e) {
-            System.err.println("ì¹´ì¹´ì˜¤ ë¡œê·¸ì¸ ì‹¤íŒ¨: " + e.getMessage());
+            System.err.println("카카오 로그인 실패: " + e.getMessage());
             e.printStackTrace();
-            response.sendRedirect("http://localhost:3000/login?error=" + 
-                URLEncoder.encode("ì¹´ì¹´ì˜¤ ë¡œê·¸ì¸ì— ì‹¤íŒ¨í–ˆìŠµë‹ˆë‹¤", StandardCharsets.UTF_8));
+            response.sendRedirect(frontendUrl + "/login?error=" + 
+                URLEncoder.encode("카카오 로그인에 실패했습니다", StandardCharsets.UTF_8));
         }
     }
 
@@ -109,7 +112,7 @@ public class KakaoAuthService {
             JsonNode rootNode = objectMapper.readTree(response.getBody());
             return rootNode.path("access_token").asText();
         } catch (Exception e) {
-            throw new RuntimeException("ì•¡ì„¸ìŠ¤ í† í° ë°œê¸‰ ì‹¤íŒ¨: " + e.getMessage());
+            throw new RuntimeException("액세스 토큰 발급 실패: " + e.getMessage());
         }
     }
 
@@ -139,7 +142,7 @@ public class KakaoAuthService {
 
             return new KakaoUserInfo(kakaoId, email, nickname);
         } catch (Exception e) {
-            throw new RuntimeException("ì‚¬ìš©ìž ì •ë³´ ì¡°íšŒ ì‹¤íŒ¨: " + e.getMessage());
+            throw new RuntimeException("사용자 정보 조회 실패: " + e.getMessage());
         }
     }
 
@@ -161,12 +164,12 @@ public class KakaoAuthService {
         newUser.setUserHp("01000000000");
         
         newUser.setUserZip(0);
-        newUser.setUserJibunAddr("ë¯¸ìž…ë ¥");
-        newUser.setUserRoadAddr("ë¯¸ìž…ë ¥");
-        newUser.setUserDetailAddr("ë¯¸ìž…ë ¥");
+        newUser.setUserJibunAddr("미입력");
+        newUser.setUserRoadAddr("미입력");
+        newUser.setUserDetailAddr("미입력");
         
         newUser.setUserSkin(0);
-        newUser.setPhoneVerified("N");  // ì¹´ì¹´ì˜¤ ë¡œê·¸ì¸ì€ SMS ì¸ì¦ ë¶ˆí•„ìš”
+        newUser.setPhoneVerified("N");  // 카카오 로그인은 SMS 인증 불필요
 
         userMapper.insertUser(newUser);
 
