@@ -10,13 +10,20 @@ import com.routy.routyback.dto.review.ReviewListResponse.SummaryDto;
 import com.routy.routyback.dto.review.ReviewResponse;
 import com.routy.routyback.dto.review.ReviewUpdateRequest;
 import com.routy.routyback.mapper.user.ReviewMapper;
+
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service("reviewService")
 @Transactional
@@ -27,6 +34,9 @@ public class ReviewService implements IReviewService {
 
     @Autowired
     ReviewTrustCalculator reviewTrustCalculator;
+    
+    @Value("${file.upload-dir}")
+    private String uploadDir;
 
     @Override
     public ReviewListResponse getReviewList(int prdNo, int page, int limit, String sort, int userNo) {
@@ -99,7 +109,7 @@ public class ReviewService implements IReviewService {
      * @return responseDTO
      */
     @Override
-    public ReviewResponse createReview(int prdNo, ReviewCreateRequest request) {
+    public ReviewResponse createReview(int prdNo, ReviewCreateRequest request, List<MultipartFile> files) {
     	// odNo가 0이면 null로 변경
     	if (request.getOdNo() != null && request.getOdNo() == 0) {
             request.setOdNo(null);
@@ -119,15 +129,20 @@ public class ReviewService implements IReviewService {
         reviewMapper.insertReview(reviewVO);
 
         // 2-1)리뷰 이미지 리스트 추가
-        List<String> urls = request.getRevImages();
-        if (urls != null && !urls.isEmpty()) {
-            for (int i = 0; i < urls.size(); i++) {
-                ReviewImageVO imageVO = new ReviewImageVO();
-                imageVO.setRevNo(reviewVO.getRevNo()); // 방금 생성된 리뷰 번호
-                imageVO.setRiUrl(urls.get(i));         // 이미지 URL
-                imageVO.setRiSort(i + 1);              // 순서 (1부터 시작)
+        if (files != null && !files.isEmpty()) {
+            int sort = 1;  //정렬 1부터
+            for (MultipartFile file : files) {
+                // saveFile 메서드 호출로 "images/review/난수.jpg" 반환
+                String dbPath = saveFile(file); 
                 
-                reviewMapper.insertReviewImage(imageVO); // DB 저장
+                // 경로가 잘 나왔으면 DB에 저장
+                if (dbPath != null) {
+                    ReviewImageVO imageVO = new ReviewImageVO();
+                    imageVO.setRevNo(reviewVO.getRevNo());
+                    imageVO.setRiUrl(dbPath); // 받아온 경로 그대로
+                    imageVO.setRiSort(sort++);
+                    reviewMapper.insertReviewImage(imageVO);
+                }
             }
         }
         
@@ -154,7 +169,7 @@ public class ReviewService implements IReviewService {
     }
 
     @Override
-    public ReviewResponse updateReview(int revNo, ReviewUpdateRequest request) {
+    public ReviewResponse updateReview(int revNo, ReviewUpdateRequest request, List<MultipartFile> newFiles) {
         ReviewVO reviewVO = new ReviewVO(); // vo 준비
         reviewVO.setRevNo(revNo); // revNo 지정
         reviewVO.setRevStar(request.getRevStar());
@@ -163,32 +178,64 @@ public class ReviewService implements IReviewService {
 
         reviewMapper.updateReview(reviewVO);// vo를 통해 mapper 호출해서 update 실행
         
-        //이미지 교체
-        List<String> newImages = request.getRevImages();
-        // 프론트에서 이미지 리스트를 보내면
-        if (newImages != null) {
-            //이미지 전부 삭제
+        //이미지리스트가 null이 아니거나, 새 파일이 오면, 즉 수정사항이 있을때만 프론트에서 revIamges를 보냄
+        boolean isImageChanged = (request.getRevImages() != null) || (newFiles != null && !newFiles.isEmpty());
+
+        if (isImageChanged) {
+            // 이미지 변경이 감지되었을 때 기존 매핑 삭제
             reviewMapper.deleteReviewImages(revNo);
 
-            // 새 이미지 리스트가 비어있지 않다면 새로 등록
-            if (!newImages.isEmpty()) {
-                for (int i = 0; i < newImages.size(); i++) {
+            int sort = 1; //정렬은 1부터
+
+            //기존 이미지 다시 넣기
+            if (request.getRevImages() != null) {
+                for (String oldUrl : request.getRevImages()) {
                     ReviewImageVO imageVO = new ReviewImageVO();
                     imageVO.setRevNo(revNo);
-                    imageVO.setRiUrl(newImages.get(i));
-                    imageVO.setRiSort(i + 1); // 1번부터 순서 매기기
-                    
+                    imageVO.setRiUrl(oldUrl);
+                    imageVO.setRiSort(sort++);
                     reviewMapper.insertReviewImage(imageVO);
                 }
             }
+
+            // 새 파일 추가하기
+            if (newFiles != null) {
+                for (MultipartFile file : newFiles) {
+                    String newPath = saveFile(file); // 파일 저장
+                    if (newPath != null) {
+                        ReviewImageVO imageVO = new ReviewImageVO();
+                        imageVO.setRevNo(revNo);
+                        imageVO.setRiUrl(newPath);
+                        imageVO.setRiSort(sort++);
+                        reviewMapper.insertReviewImage(imageVO);
+                    }
+                }
+            }
         }
+
+            //신뢰도 점수 재계산 (텍스트 길이 & 사진 개수 반영)
+            // DB에서 최신 상태의 리뷰 정보를 다시 조회
+            
+            // 이때 SQL로  photoCount,content 체크
+            ReviewVO updatedVO = reviewMapper.findReview(revNo);
+            updatedVO.setImages(reviewMapper.findReviewImages(revNo)); // 이미지 리스트 세팅
+
+            // 리뷰 신뢰도 재계산
+            double score = reviewTrustCalculator.calculateTrustScore(updatedVO);
+            
+            //등급 산정
+            boolean isVerified = updatedVO.getOdNo() != null; // 구매 여부 판단
+            String rank = reviewTrustCalculator.calculateTrustRank(score, isVerified);
+
+            updatedVO.setRevTrustScore(score);
+            updatedVO.setRevTrustRank(rank);
+            reviewMapper.updateReviewTrustScore(updatedVO);
+
+            // 4. 최종 결과 반환
+            return convertVoToResponseDto(updatedVO);
         
-
-        ReviewVO updatedReviewVO = reviewMapper.findReview(revNo);// 방금 만든 리뷰 다시 조회
-        updatedReviewVO.setImages(reviewMapper.findReviewImages(updatedReviewVO.getRevNo()));
-
-        return convertVoToResponseDto(updatedReviewVO); // 바로 반환
     }
+    
 
     @Override
     public void deleteReview(int revNo) {
@@ -259,4 +306,31 @@ public class ReviewService implements IReviewService {
         return dto;
     }
 
+    private String saveFile(MultipartFile file) {
+        if (file.isEmpty()) return null;
+
+        // 폴더 확인 및 생성
+        // 설정 파일에서 읽어온 C:/BeautyRoutine/.../public/images/review/ 경로 사용중
+        File dir = new File(uploadDir);
+        if (!dir.exists()) {
+            dir.mkdirs(); // 폴더가 없으면 생성
+        }
+
+        //파일명 중복 방지 (UUID)
+        String originalFileName = file.getOriginalFilename();
+        String extension = originalFileName.substring(originalFileName.lastIndexOf(".")); //확장자 빼내기
+        String savedFileName = UUID.randomUUID().toString() + extension; 
+
+        //실제 저장 (백엔드가 프론트 폴더로 파일 전송)
+        try {
+            // C:/BeautyRoutine/.../public/images/review/난수.jpg
+            file.transferTo(new File(uploadDir + savedFileName));
+        } catch (IOException e) {
+            throw new RuntimeException("이미지 저장 실패: 경로를 확인하세요 -> " + uploadDir, e);
+        }
+
+        // DB에 저장할 '파일명' 반환
+        return "images/review/" + savedFileName;
+    }
+    
 }
