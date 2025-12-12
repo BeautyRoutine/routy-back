@@ -28,11 +28,6 @@ public class WeatherService {
     @Value("${weather.api.url}")
     private String weatherApiUrl;
 
-    // One Call (UV 지수용) 기본 URL – properties 에 추가해두면 좋음
-    // weather.onecall.url=https://api.openweathermap.org/data/2.5/onecall
-    @Value("${weather.onecall.url:https://api.openweathermap.org/data/2.5/onecall}")
-    private String oneCallApiUrl;
-
     // OpenWeather 호출용 RestTemplate (타임아웃 설정 포함)
     private static final RestTemplate restTemplate;
 
@@ -50,6 +45,11 @@ public class WeatherService {
      * @return WeatherResponse (온도, 습도, 풍속, UV, 계절 등)
      */
     public WeatherResponse getTodayWeatherByCity(String city) {
+
+        // 도시가 null 또는 빈 값이면 기본값 Seoul 사용
+        if (city == null || city.isBlank()) {
+            city = "Seoul";
+        }
 
         // 도시 이름을 URL 에 안전하게 넣기 위해 인코딩
         String encodedCity = URLEncoder.encode(city, StandardCharsets.UTF_8);
@@ -91,26 +91,8 @@ public class WeatherService {
         double lat = extractNumber(coord, "lat");
         double lon = extractNumber(coord, "lon");
 
-        // 4. 위도/경도로 One Call API 를 호출해서 UV Index 가져오기
-        String oneCallUrl = UriComponentsBuilder.fromHttpUrl(oneCallApiUrl)
-            .queryParam("lat", lat)              // 위도
-            .queryParam("lon", lon)              // 경도
-            .queryParam("appid", apiKey)         // API Key
-            .queryParam("exclude", "minutely,hourly,daily,alerts") // 필요한 건 current 만
-            .build()
-            .toString();
-
-        Map<String, Object> oneCallRaw = restTemplate.getForObject(oneCallUrl, Map.class);
-
+        // 무료 플랜에서는 UV Index 제공 불가 → 기본값 0.0
         double uvIndex = 0.0;
-        if (oneCallRaw != null) {
-            // current 객체 안의 uvi 값
-            Map<String, Object> current =
-                oneCallRaw.get("current") instanceof Map ? (Map<String, Object>) oneCallRaw.get("current") : null;
-            if (current != null && current.get("uvi") != null) {
-                uvIndex = extractNumber(current, "uvi");
-            }
-        }
 
         // 5. 계절 및 곧 계절이 바뀔지 여부 계산 (한국 기준 간단 로직)
         Season season = resolveSeason();
