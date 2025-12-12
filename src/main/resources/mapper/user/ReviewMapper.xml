@@ -262,4 +262,17 @@
     		GROUP BY revStar
 	</select>
 	
+	
+	<!-- 리뷰 피드백 삭제 -->
+	<delete id="deleteReviewFeedback" parameterType="int">
+        DELETE FROM REVIEW_FEEDBACK
+        WHERE REVNO = #{revNo}
+    </delete>
+    
+    <!-- 리뷰 좋아요 전체 삭제 -->
+    <delete id="deleteReviewUpdown" parameterType="int">
+        DELETE FROM REVIEW_UPDOWN
+        WHERE REVNO = #{revNo}
+    </delete>
+    
 </mapper>

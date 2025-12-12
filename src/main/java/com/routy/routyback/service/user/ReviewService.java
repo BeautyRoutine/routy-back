@@ -239,6 +239,10 @@ public class ReviewService implements IReviewService {
 
     @Override
     public void deleteReview(int revNo) {
+    	reviewMapper.deleteReviewImages(revNo); //이미지 삭제
+    	reviewMapper.deleteReviewUpdown(revNo); //좋아요 삭제
+    	reviewMapper.deleteReviewFeedback(revNo); //피드백 삭제
+    	
         reviewMapper.deleteReview(revNo); // delete 실행
 
     }
