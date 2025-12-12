@@ -14,7 +14,7 @@
             AND o.odRegdate >= #{od_start_day}
         </if>
         <if test="od_end_day  != null and od_end_day  != ''">
-            AND o.odRegdate &lt;= #{od_end_day }
+            AND o.odRegdate &lt; TO_DATE(#{od_end_day}, 'YYYY-MM-DD') + 1
         </if>
 
         <choose>
@@ -51,13 +51,13 @@
             AND d.delvRegdate >= #{delv_s_start_day}
         </if>
         <if test="delv_s_end_day  != null and delv_s_end_day  != ''">
-            AND d.delvRegdate &lt;= #{delv_s_end_day}
+            AND d.delvRegdate &lt; TO_DATE(#{delv_s_end_day}, 'YYYY-MM-DD') + 1
         </if>
         <if test="delv_e_start_day != null and delv_e_start_day != ''">
             AND d.delvEnddate >= #{delv_e_start_day}
         </if>
         <if test="delv_e_end_day  != null and delv_e_end_day  != ''">
-            AND d.delvEnddate &lt;= #{delv_e_end_day}
+            AND d.delvEnddate &lt; TO_DATE(#{delv_e_end_day}, 'YYYY-MM-DD') + 1
         </if>
 
         <choose>
