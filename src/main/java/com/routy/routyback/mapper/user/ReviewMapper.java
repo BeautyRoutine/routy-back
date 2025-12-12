@@ -57,4 +57,15 @@ public interface ReviewMapper {
     
     //리뷰의 좋아요 싫어요 내역 전체 삭제
     void deleteReviewUpdown(int revNo);
+    
+    
+    //리뷰 피드백 조회
+    List<String> findReviewFeedback(int revNo);
+    
+    
+    //리뷰 피드백 저장
+    void insertReviewFeedback(@Param("revNo") int revNo, @Param("rfTypeCode") int rfTypeCode);
+    
+    
+    
 }

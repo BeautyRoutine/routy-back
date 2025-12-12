@@ -59,7 +59,8 @@ public class ReviewService implements IReviewService {
             ReviewResponse dto = convertVoToResponseDto(vo); // vo를 dto로 변환
             Integer checkLike = reviewMapper.findLikeByUserAndReview(vo.getRevNo(), userNo);
             dto.setLiked(checkLike != null);
-            dto.setFeedback(new ArrayList<>());
+            List<String> feedbacks = reviewMapper.findReviewFeedback(vo.getRevNo()); //반응 받아오기
+            dto.setFeedback(feedbacks);
             reviewResponses.add(dto); // reviewResponses에 받아온 dto 넣기
         }
 
@@ -146,6 +147,15 @@ public class ReviewService implements IReviewService {
             }
         }
         
+        // 2-2) 피드백 추가
+        List<Integer> codes = request.getFeedback(); // 프론트에서 보낸 [101, 501 등]
+        if (codes != null && !codes.isEmpty()) {
+            for (Integer code : codes) {
+                // 반복문 돌면서 DB에 하나씩 꽂아줍니다.
+                reviewMapper.insertReviewFeedback(reviewVO.getRevNo(), code);
+            }
+        }
+        
         // 3) 생성된 리뷰 재조회 (odNo, userName, photoCount 포함)
         ReviewVO created = reviewMapper.findReview(reviewVO.getRevNo());
         created.setImages(reviewMapper.findReviewImages(created.getRevNo()));
@@ -165,7 +175,10 @@ public class ReviewService implements IReviewService {
         reviewMapper.updateReviewTrustScore(created);
 
         // 8) Response DTO 변환 후 반환
-        return convertVoToResponseDto(created);
+        ReviewResponse response =convertVoToResponseDto(created);
+        response.setFeedback(reviewMapper.findReviewFeedback(created.getRevNo()));
+         
+         return response;
     }
 
     @Override
@@ -213,6 +226,26 @@ public class ReviewService implements IReviewService {
             }
         }
 
+        //피드백 수정
+        List<Integer> newFeedbacks = request.getFeedback(); // [101, 501]
+
+        // 피드백 리스트가 null이 아니면 (빈 배열 [] 이라도 왔으면 수정으로 간주)
+        if (newFeedbacks != null) {
+            
+            //기존 태그 싹 삭제 (Mapper에 만들어둔 거)
+            reviewMapper.deleteReviewFeedback(revNo);
+
+            // 새 태그 등록
+            // 빈 배열이면 삭제만 되고 끝남 (태그 다 지운 경우)
+            if (!newFeedbacks.isEmpty()) {
+                for (Integer code : newFeedbacks) {
+                    // Mapper에 만들어둔 insert (revNo, code)
+                    reviewMapper.insertReviewFeedback(revNo, code);
+                }
+            }
+        }
+        
+        
             //신뢰도 점수 재계산 (텍스트 길이 & 사진 개수 반영)
             // DB에서 최신 상태의 리뷰 정보를 다시 조회
             
@@ -232,7 +265,10 @@ public class ReviewService implements IReviewService {
             reviewMapper.updateReviewTrustScore(updatedVO);
 
             // 4. 최종 결과 반환
-            return convertVoToResponseDto(updatedVO);
+            ReviewResponse response =convertVoToResponseDto(updatedVO);
+            response.setFeedback(reviewMapper.findReviewFeedback(revNo));
+             
+             return response;
         
     }
     

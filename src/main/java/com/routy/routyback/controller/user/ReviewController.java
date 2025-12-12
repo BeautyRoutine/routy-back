@@ -22,6 +22,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.multipart.MultipartFile;
+
 /**
  * 리뷰 관련 REST API를 제공하는 컨트롤러입니다. 상품별 리뷰 목록 조회 · 리뷰 작성 · 수정 · 삭제 · 리뷰 좋아요(추천) 토글
  * <p>
@@ -59,24 +62,26 @@ public class ReviewController {
 
 
     // 리뷰 작성
-    @PostMapping("/products/{prdNo}/reviews")
+    @PostMapping(value = "/products/{prdNo}/reviews", consumes = {"multipart/form-data"})
     public ResponseEntity<ReviewResponse> createReview(  // 성공 시 생성된 단일 리뷰 정보(ReviewResponse)를 반환
         @PathVariable int prdNo, // 어떤 상품에 대한 리뷰인지 식별하기 위한 상품 번호
-        @RequestBody ReviewCreateRequest request) { // JSON 요청 바디를 ReviewCreateRequest DTO로 매핑해서 받음
+        @RequestPart("data") ReviewCreateRequest request, //json 데이터를 data로 받기
+        @RequestPart(value = "files", required = false) List<MultipartFile> files) { // 파일 리스트는 "files"라는 이름으로 받음
         // 서비스에 리뷰 생성 요청. 서비스 내부에서 신뢰도 점수 계산, DB 저장까지 처리
-        ReviewResponse createReview = service.createReview(prdNo, request);
+        ReviewResponse createReview = service.createReview(prdNo, request, files);
 
         // HTTP 201 Created 상태코드와 함께 생성된 리뷰 정보를 응답 바디에 담아 반환
         return ResponseEntity.status(HttpStatus.CREATED).body(createReview);
     }
 
     // 리뷰 수정
-    @PutMapping("/reviews/{revNo}")
+    @PutMapping(value = "/reviews/{revNo}", consumes = {"multipart/form-data"})
     public ResponseEntity<ReviewResponse> updateReview(
         @PathVariable int revNo, // 어떤 리뷰를 수정할지 식별하기 위한 리뷰 번호
-        @RequestBody ReviewUpdateRequest request) { // 수정할 내용(별점, 내용, 이미지 등)을 담은 DTO
+        @RequestPart("data") ReviewUpdateRequest request, //수정할 json data
+        @RequestPart(value = "files", required = false) List<MultipartFile> files) { // 수정할 내용(별점, 내용, 이미지 등)을 담은 DTO
         // 서비스에 수정 요청. 내부에서 DB update 후 수정된 내용을 다시 조회해 DTO로 변환
-        ReviewResponse updateReview = service.updateReview(revNo, request);
+        ReviewResponse updateReview = service.updateReview(revNo, request, files);
 
         // HTTP 200 OK와 함께 수정된 리뷰 정보를 반환
         return ResponseEntity.ok(updateReview);

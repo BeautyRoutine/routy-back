@@ -24,4 +24,6 @@ public class ReviewCreateRequest {
     private Integer userColor;
 
     private List<String> revImages;
+    
+    private List<Integer> feedback;
 }
