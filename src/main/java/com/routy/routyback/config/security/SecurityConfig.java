@@ -52,7 +52,8 @@ public class SecurityConfig {
                 .requestMatchers("/api/ingredient/**").permitAll()
                 .requestMatchers("/api/reviews/**").permitAll()
                 .requestMatchers("/api/dibs/**").permitAll()
-                .requestMatchers("/api/users/**").permitAll()
+
+                .requestMatchers("/api/weather/**").permitAll()
 
                 // 인증 필요 API
                 .requestMatchers("/api/cart/**").authenticated()
