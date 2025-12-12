@@ -12,7 +12,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/sms")
-@CrossOrigin(origins = "http://localhost:3000")
 public class SmsController {
 
     private final SmsService smsService;
