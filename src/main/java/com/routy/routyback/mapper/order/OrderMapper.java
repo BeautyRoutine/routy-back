@@ -22,7 +22,9 @@ public interface OrderMapper {
     /**
      * 주문 목록 조회
      */
-    List<OrderListItemResponse> getOrderList(@Param("userId") String userId);
+    List<OrderListItemResponse> getOrderList(@Param("userId") String userId
+								    		, @Param("startDate") String startDate
+											, @Param("endDate") String endDate);
 
     /**
      * 주문 상세 조회
@@ -33,4 +35,17 @@ public interface OrderMapper {
      * 주문 상세 내 상품 목록 조회
      */
     List<OrderDetailResponse.OrderItem> getOrderItems(@Param("odNo") Long odNo);
+    
+    /**
+     * 교환 & 반품 접수
+     */
+    void postOrderClaims(OrderClaimsDTO dto);
+    
+    /**
+     * 주문 상태 변경
+     */
+    void putOrders(OrderClaimsDTO dto);
+    
+    
+    
 }

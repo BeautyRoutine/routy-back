@@ -28,7 +28,6 @@
 
     <!-- 2) 주문 목록 조회 -->
     <select id="getOrderList"
-        parameterType="string"
         resultType="com.routy.routyback.dto.order.OrderListItemResponse">
         SELECT O.ODNO												AS orderNo,
         	   P.PRDNO												AS productNo,
@@ -56,6 +55,12 @@
              INNER JOIN PRODUCT P ON P.PRDNO = PM.PRDNO
              INNER JOIN USERS U ON U.userNo=O.userNo
         WHERE U.USERID = #{userId} AND O.ODSTATUS > 1
+        <if test="startDate != null and startDate != ''">
+            AND O.odRegdate >= #{startDate}
+        </if>
+        <if test="endDate != null and endDate != ''">
+            AND O.odRegdate &lt; TO_DATE(#{endDate}, 'YYYY-MM-DD') + 1
+        </if>
         ORDER BY orderNo DESC, ppMapNo ASC
     </select>
 
@@ -87,4 +92,24 @@
         WHERE PM.ODNO = #{odNo}
     </select>
 
+	<!-- 4) 교환 & 반품 접수 -->
+	<insert id="postOrderClaims" parameterType="com.routy.routyback.dto.order.OrderClaimsDTO">
+		<selectKey keyProperty="qnaNo" resultType="int" order="BEFORE">
+	        SELECT ISEQ$$_119989.NEXTVAL FROM dual
+	    </selectKey>
+	    INSERT INTO QNA (
+	    	qnaNo, userNo, odNo
+	    	, qnaType, qnaQ
+	    )
+	    VALUES (
+	    	#{qnaNo, jdbcType=INTEGER}, #{userNo, jdbcType=INTEGER}, #{odNo, jdbcType=INTEGER}
+	    	, #{qnaType, jdbcType=INTEGER}, #{qnaQ, jdbcType=CLOB}
+	    )
+	</insert>
+	
+	<update id="putOrders" parameterType="com.routy.routyback.dto.order.OrderClaimsDTO">
+		UPDATE ORDERS
+		SET odStatus = #{odStatus}
+		WHERE odNo = #{odNo}
+	</update>
 </mapper>
