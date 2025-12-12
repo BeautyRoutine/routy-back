@@ -17,12 +17,12 @@ public interface OrderMapper {
     /**
      * 주문 상태 요약 조회
      */
-    OrderStatusSummaryResponse getOrderStatusSummary(@Param("userNo") Long userNo);
+    OrderStatusSummaryResponse getOrderStatusSummary(@Param("userId") String userId);
 
     /**
      * 주문 목록 조회
      */
-    List<OrderListItemResponse> getOrderList(@Param("userNo") Long userNo);
+    List<OrderListItemResponse> getOrderList(@Param("userId") String userId);
 
     /**
      * 주문 상세 조회

@@ -26,8 +26,8 @@ public class OrderService implements IOrderService {
      * @return 주문 상태 요약 응답 DTO
      */
     @Override
-    public OrderStatusSummaryResponse getSummary(Long userNo) {
-        return orderMapper.getOrderStatusSummary(userNo);
+    public OrderStatusSummaryResponse getSummary(String userId) {
+        return orderMapper.getOrderStatusSummary(userId);
     }
 
     /**
@@ -37,8 +37,8 @@ public class OrderService implements IOrderService {
      * @return 주문 목록 응답 DTO 리스트
      */
     @Override
-    public List<OrderListItemResponse> getList(Long userNo) {
-        return orderMapper.getOrderList(userNo);
+    public List<OrderListItemResponse> getList(String userId) {
+        return orderMapper.getOrderList(userId);
     }
 
     /**

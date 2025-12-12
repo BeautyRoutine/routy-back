@@ -6,7 +6,7 @@
 <mapper namespace="com.routy.routyback.mapper.admin.IOrdersAdmDAO">
     <sql id="listAllOrdersFilter">
         FROM ORDERS o LEFT JOIN USERS u ON u.userNo=o.userNo
-        WHERE 1=1
+        WHERE ODSTATUS > 1
         <if test="mem_name != null and mem_name != ''">
             AND u.userName LIKE #{mem_name}
         </if>
