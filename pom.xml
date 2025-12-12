@@ -13,6 +13,7 @@
         <relativePath/>
     </parent>
 
+    <packaging>war</packaging>
     <groupId>com.routy</groupId>
     <artifactId>routy-back</artifactId>
     <version>0.0.1-SNAPSHOT</version>
