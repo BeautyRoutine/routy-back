@@ -63,11 +63,13 @@ public class SecurityConfig {
                 .requestMatchers("/api/cart/**").authenticated()
                 .requestMatchers("/api/orders/**").authenticated()
                 .requestMatchers("/api/payments/**").authenticated()
+                .requestMatchers("/api/likes/**").authenticated()
 
                 // 특정 메서드 허용
                 .requestMatchers("/api/users/**").permitAll()
                 .requestMatchers("/api/admin/**").permitAll()
-                .requestMatchers(org.springframework.http.HttpMethod.DELETE, "/api/users/*/notifications/**")
+                .requestMatchers(org.springframework.http.HttpMethod.DELETE,
+                    "/api/users/*/notifications/**")
                 .permitAll()
 
                 // 기본 페이지
