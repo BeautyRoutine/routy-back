@@ -35,7 +35,7 @@
             <artifactId>spring-boot-starter-tomcat</artifactId>
             <scope>provided</scope>
         </dependency>
-        
+
         <!-- Spring Web -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -74,12 +74,14 @@
             <artifactId>oraclepki</artifactId>
             <version>21.9.0.0</version>
         </dependency>
+
         <dependency>
             <groupId>com.oracle.database.security</groupId>
             <artifactId>osdt_core</artifactId>
             <version>21.9.0.0</version>
         </dependency>
         <dependency>
+
             <groupId>com.oracle.database.security</groupId>
             <artifactId>osdt_cert</artifactId>
             <version>21.9.0.0</version>
@@ -189,5 +191,6 @@
 
         </plugins>
     </build>
+
 
 </project>
