@@ -23,17 +23,17 @@ public class OrderController {
     /**
      * 주문 상태 요약 조회
      */
-    @GetMapping("/{userNo}/status-summary")
-    public ResponseEntity<ApiResponse> summary(@PathVariable Long userNo) {
-        return ResponseEntity.ok(ApiResponse.success(orderService.getSummary(userNo)));
+    @GetMapping("/{userId}/status-summary")
+    public ResponseEntity<ApiResponse> summary(@PathVariable String userId) {
+        return ResponseEntity.ok(ApiResponse.success(orderService.getSummary(userId)));
     }
 
     /**
      * 주문 목록 조회
      */
-    @GetMapping("/{userNo}")
-    public ResponseEntity<ApiResponse> list(@PathVariable Long userNo) {
-        return ResponseEntity.ok(ApiResponse.success(orderService.getList(userNo)));
+    @GetMapping("/{userId}")
+    public ResponseEntity<ApiResponse> list(@PathVariable String userId) {
+        return ResponseEntity.ok(ApiResponse.success(orderService.getList(userId)));
     }
 
     /**

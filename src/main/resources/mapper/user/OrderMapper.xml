@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <!--
     주문 관련 Mapper XML
@@ -12,41 +12,51 @@
 
     <!-- 1) 주문 상태 요약 -->
     <select id="getOrderStatusSummary"
-        parameterType="long"
+        parameterType="string"
         resultType="com.routy.routyback.dto.order.OrderStatusSummaryResponse">
-        SELECT COUNT(DECODE(ODSTATUS, 1, 1)) AS paymentComplete,
-               COUNT(DECODE(ODSTATUS, 2, 1)) AS preparing,
-               COUNT(DECODE(ODSTATUS, 3, 1)) AS shipping,
-               COUNT(DECODE(ODSTATUS, 4, 1)) AS delivered,
-               COUNT(DECODE(ODSTATUS, 5, 1)) AS canceled,
-               COUNT(DECODE(ODSTATUS, 6, 1)) AS returned,
-               COUNT(DECODE(ODSTATUS, 7, 1)) AS exchanged
-        FROM ORDERS
-        WHERE USERNO = #{userNo}
+        SELECT COUNT(DECODE(ODSTATUS, 2, 1)) AS paymentComplete,
+               COUNT(DECODE(ODSTATUS, 3, 1)) AS preparing,
+               COUNT(DECODE(ODSTATUS, 4, 1)) AS shipping,
+               COUNT(DECODE(ODSTATUS, 5, 1)) AS delivered,
+               COUNT(DECODE(ODSTATUS, 6, 1)) AS canceled,
+               COUNT(DECODE(ODSTATUS, 7, 1)) AS returned,
+               COUNT(DECODE(ODSTATUS, 8, 1)) AS exchanged
+        FROM ORDERS o
+        	INNER JOIN USERS u ON u.userNo=o.userNo
+        WHERE u.userId= #{userId}
     </select>
 
     <!-- 2) 주문 목록 조회 -->
     <select id="getOrderList"
-        parameterType="long"
+        parameterType="string"
         resultType="com.routy.routyback.dto.order.OrderListItemResponse">
-        SELECT O.ODNO                             AS orderNo,
-               P.PRDNAME                          AS productName,
-               P.PRDIMG                           AS productImage,
+        SELECT O.ODNO												AS orderNo,
+        	   P.PRDNO												AS productNo,
+               P.PRDNAME											AS productName,
+               P.PRDIMG												AS productImage,
+               PM.PPMAPNO											AS ppMapNo,
+               PM.PPMAPSTOCK										AS prodcutStock,
+               PM.PPMAPPRICE										AS productPrice,
                (SELECT COUNT(*)
-                FROM PAY_PRODUCT_MAPPING PM
-                WHERE PM.ODNO = O.ODNO)           AS itemCount,
-               (SELECT SUM(PM.PPMAPSTOCK * PM.PPMAPPRICE)
-                FROM PAY_PRODUCT_MAPPING PM
-                WHERE PM.ODNO = O.ODNO)           AS totalPrice,
-               TO_CHAR(O.ODREGDATE, 'YYYY-MM-DD') AS orderDate,
-               O.ODSTATUS                         AS orderStatus
+               FROM REVIEW R
+               WHERE R.PRDNO=PM.PRDNO AND R.USERNO=U.USERNO)		AS reviewCnt,
+               (SELECT COUNT(*)
+               FROM QNA QA
+               WHERE QA.ODNO=O.ODNO AND QA.USERNO=U.USERNO
+                     AND QA.QNATYPE=5 AND QA.QNASTATUS IN (1, 2))	AS returnCnt,
+               (SELECT COUNT(*)
+               FROM QNA QA
+               WHERE QA.ODNO=O.ODNO AND QA.USERNO=U.USERNO
+                     AND QA.QNATYPE=6 AND QA.QNASTATUS IN (1, 2))	AS swapCnt,
+               TO_CHAR(O.ODREGDATE, 'YYYY-MM-DD')					AS orderDate,
+               O.ODSTATUS											AS orderStatus
+               
         FROM ORDERS O
-                 JOIN PAY_PRODUCT_MAPPING PM ON PM.ODNO = O.ODNO
-                 JOIN PRODUCT P ON P.PRDNO = PM.PRDNO
-        WHERE O.USERNO = #{userNo}
-        GROUP BY O.ODNO, P.PRDNAME, P.PRDIMG,
-                 O.ODREGDATE, O.ODSTATUS
-        ORDER BY O.ODNO DESC
+             INNER JOIN PAY_PRODUCT_MAPPING PM ON PM.ODNO = O.ODNO
+             INNER JOIN PRODUCT P ON P.PRDNO = PM.PRDNO
+             INNER JOIN USERS U ON U.userNo=O.userNo
+        WHERE U.USERID = #{userId} AND O.ODSTATUS > 1
+        ORDER BY orderNo DESC, ppMapNo ASC
     </select>
 
     <!-- 3) 주문 상세 조회 -->
