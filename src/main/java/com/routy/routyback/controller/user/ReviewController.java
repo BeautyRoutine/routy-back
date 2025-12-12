@@ -63,40 +63,46 @@ public class ReviewController {
 
     // 리뷰 작성
     @PostMapping(value = "/products/{prdNo}/reviews", consumes = {"multipart/form-data"})
-    public ResponseEntity<ReviewResponse> createReview(  // 성공 시 생성된 단일 리뷰 정보(ReviewResponse)를 반환
+    public ApiResponse<ReviewResponse> createReview(  // 성공 시 생성된 단일 리뷰 정보(ReviewResponse)를 반환
         @PathVariable int prdNo, // 어떤 상품에 대한 리뷰인지 식별하기 위한 상품 번호
         @RequestPart("data") ReviewCreateRequest request, //json 데이터를 data로 받기
         @RequestPart(value = "files", required = false) List<MultipartFile> files) { // 파일 리스트는 "files"라는 이름으로 받음
-        // 서비스에 리뷰 생성 요청. 서비스 내부에서 신뢰도 점수 계산, DB 저장까지 처리
-        ReviewResponse createReview = service.createReview(prdNo, request, files);
-
-        // HTTP 201 Created 상태코드와 함께 생성된 리뷰 정보를 응답 바디에 담아 반환
-        return ResponseEntity.status(HttpStatus.CREATED).body(createReview);
+    	try {
+    		// 서비스에 리뷰 생성 요청. 서비스 내부에서 신뢰도 점수 계산, DB 저장까지 처리
+    		ReviewResponse createReview = service.createReview(prdNo, request, files);
+    		return ApiResponse.success(createReview);
+        	} catch (Exception e) {
+        	return ApiResponse.fromException(e);
+        }
     }
 
     // 리뷰 수정
     @PutMapping(value = "/reviews/{revNo}", consumes = {"multipart/form-data"})
-    public ResponseEntity<ReviewResponse> updateReview(
+    public ApiResponse<ReviewResponse> updateReview(
         @PathVariable int revNo, // 어떤 리뷰를 수정할지 식별하기 위한 리뷰 번호
         @RequestPart("data") ReviewUpdateRequest request, //수정할 json data
         @RequestPart(value = "files", required = false) List<MultipartFile> files) { // 수정할 내용(별점, 내용, 이미지 등)을 담은 DTO
-        // 서비스에 수정 요청. 내부에서 DB update 후 수정된 내용을 다시 조회해 DTO로 변환
+    	try {
+    	// 서비스에 수정 요청. 내부에서 DB update 후 수정된 내용을 다시 조회해 DTO로 변환
         ReviewResponse updateReview = service.updateReview(revNo, request, files);
-
-        // HTTP 200 OK와 함께 수정된 리뷰 정보를 반환
-        return ResponseEntity.ok(updateReview);
+        return ApiResponse.success(updateReview);
+    	} catch (Exception e) {
+            return ApiResponse.fromException(e);
+        }
     }
 
     // 리뷰 삭제
     @DeleteMapping("/reviews/{revNo}")
-    public ResponseEntity<Void> deleteReview(  // 삭제는 별도의 응답 데이터가 필요 없으므로 제네릭 타입을 Void로 사용
+    public ApiResponse<Void> deleteReview(  // 삭제는 별도의 응답 데이터가 필요 없으므로 제네릭 타입을 Void로 사용
         @PathVariable int revNo // 삭제할 리뷰 번호
     ) {
+    	try {
         // 서비스에 삭제 요청. 내부에서 존재 여부 확인 후 DB에서 삭제 수행
         service.deleteReview(revNo);
-
-        // HTTP 204 No Content: 요청은 성공했지만, 돌려줄 응답 바디는 없음
-        return ResponseEntity.noContent().build();
+        return ApiResponse.success(null);
+        } catch (Exception e) {
+            return ApiResponse.fromException(e);
+        }
     }
 
     // 리뷰 좋아요(추천) 토글
@@ -120,17 +126,18 @@ public class ReviewController {
         return ResponseEntity.ok(response);
     }
 
-    // 특정 리뷰의 이미지 목록 조회 - 작성자 : 김지용
+    // 특정 리뷰의 이미지 목록 조회 - 작성자 : 김지용, 박민우
     @GetMapping("/reviews/{revNo}/images")
-    public ResponseEntity<List<String>> getReviewImages(
+    public ApiResponse<List<String>> getReviewImages(
         @PathVariable int revNo // 이미지 조회할 리뷰 번호
     ) {
+    	try {
         // 서비스 레이어에서 이미지 목록 조회
         List<String> images = service.getReviewImages(revNo);
-
-        // HTTP 200 OK와 함께 이미지 URL 리스트 반환
-        return ResponseEntity.ok(images);
+        return ApiResponse.success(images);
+        } catch (Exception e) {
+            return ApiResponse.fromException(e);
+        }
     }
-
 
 }
