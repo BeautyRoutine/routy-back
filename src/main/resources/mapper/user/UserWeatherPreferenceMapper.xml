@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.routy.routyback.mapper.user.UserWeatherPreferenceMapper">
+
+    <!-- ========================================================= -->
+    <!-- USER_WEATHER_PREFERENCE Mapper SQL -->
+    <!-- 사용자 선호 도시 조회 / 존재 여부 체크 / INSERT / UPDATE -->
+    <!-- ========================================================= -->
+
+    <!-- 선호 도시 조회 -->
+    <select id="getPreferredCity" parameterType="long" resultType="string">
+        SELECT CITY_NAME
+        FROM USER_WEATHER_PREFERENCE
+        WHERE USERNO = #{userNo}
+    </select>
+
+    <!-- 존재 여부 확인 -->
+    <select id="existsPreference" parameterType="long" resultType="int">
+        SELECT COUNT(*)
+        FROM USER_WEATHER_PREFERENCE
+        WHERE USERNO = #{userNo}
+    </select>
+
+    <!-- 신규 저장 -->
+    <insert id="insertPreference">
+        INSERT INTO USER_WEATHER_PREFERENCE (USERNO, CITY_NAME)
+        VALUES (#{userNo}, #{cityName})
+    </insert>
+
+    <!-- 기존 사용자 선호 도시 업데이트 -->
+    <update id="updatePreference">
+        UPDATE USER_WEATHER_PREFERENCE
+        SET CITY_NAME  = #{cityName},
+            UPDATED_AT = CURRENT_TIMESTAMP
+        WHERE USERNO = #{userNo}
+    </update>
+
+</mapper>

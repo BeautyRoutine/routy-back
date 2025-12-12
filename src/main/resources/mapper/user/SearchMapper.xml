@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.routy.routyback.mapper.user.SearchMapper">
+
+    <!-- 최근 검색어 조회 -->
+    <select id="selectRecentKeywords" resultType="String">
+        SELECT KEYWORD
+        FROM RECENT_SEARCH
+        WHERE USER_NO = #{userNo}
+        ORDER BY REGDATE DESC
+            FETCH FIRST 10 ROWS ONLY
+    </select>
+
+    <!-- 유저 피부타입 조회 -->
+    <select id="selectUserSkinType" resultType="int">
+        SELECT USERSKIN
+        FROM USERS
+        WHERE USERNO = #{userNo}
+    </select>
+
+    <!-- 최근 검색어 저장 -->
+    <insert id="insertSearchKeyword">
+        INSERT INTO RECENT_SEARCH (USER_NO,
+                                   KEYWORD,
+                                   REGDATE)
+        VALUES (#{userNo},
+                #{keyword},
+                SYSDATE)
+    </insert>
+
+    <!-- 키워드 기반 상품 검색 -->
+    <select id="searchProductsByKeyword" resultType="com.routy.routyback.dto.user.RankingProductResponse">
+        SELECT P.PRDNO    AS prdNo,
+               P.PRDNAME  AS prdName,
+               P.PRDPRICE AS prdPrice,
+               P.PRDIMG   AS prdImg
+        FROM PRODUCT P
+        WHERE LOWER(P.PRDNAME) LIKE LOWER('%' || #{keyword} || '%')
+           OR LOWER(P.PRDDESC) LIKE LOWER('%' || #{keyword} || '%')
+        ORDER BY P.PRDNO
+    </select>
+
+</mapper>

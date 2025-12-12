@@ -5,10 +5,20 @@
 
 <configuration>
 
+  <!-- Oracle 데이터베이스 방언 설정 -->
+  <settings>
+    <setting name="databaseId" value="oracle"/>
+  </settings>
+
   <!-- 도메인 패키지 자동 별칭 -->
   <typeAliases>
     <package name="com.routy.routyback.domain"/>
   </typeAliases>
+
+  <!-- 데이터베이스 벤더 자동 감지 -->
+  <databaseIdProvider type="DB_VENDOR">
+    <property name="Oracle" value="oracle"/>
+  </databaseIdProvider>
 
   <!-- 매퍼 패키지 등록 -->
   <mappers>

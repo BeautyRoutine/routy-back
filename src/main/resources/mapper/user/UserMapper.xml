@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.routy.routyback.mapper.user.UserMapper">
+
+    <!-- User resultMap -->
+    <resultMap id="UserResultMap" type="com.routy.routyback.domain.user.User">
+        <id property="userNo" column="USERNO"/>
+        <result property="userId" column="USERID"/>
+        <result property="userPw" column="USERPW"/>
+        <result property="userName" column="USERNAME"/>
+        <result property="userNick" column="USERNICK"/>
+        <result property="userHp" column="USERHP"/>
+        <result property="userEmail" column="USEREMAIL"/>
+        <result property="userZip" column="USERZIP"/>
+        <result property="userJibunAddr" column="USERJIBUNADDR"/>
+        <result property="userRoadAddr" column="USERROADADDR"/>
+        <result property="userDetailAddr" column="USERDETAILADDR"/>
+        <result property="userBirth" column="USERBIRTH"/>
+        <result property="userLevel" column="USERLEVEL"/>
+        <result property="userRegdate" column="USERREGDATE"/>
+        <result property="userStatus" column="USERSTATUS"/>
+        <result property="userSkin" column="USERSKIN"/>
+        <result property="phoneVerified" column="PHONE_VERIFIED"/>
+        <result property="phoneVerifiedAt" column="PHONE_VERIFIED_AT"/>
+    </resultMap>
+
+    <!-- 회원가입 -->
+    <insert id="insertUser" parameterType="com.routy.routyback.domain.user.User">
+        INSERT INTO USERS (USERNO,
+                           USERID,
+                           USERPW,
+                           USERNAME,
+                           USERNICK,
+                           USERHP,
+                           USEREMAIL,
+                           USERZIP,
+                           USERJIBUNADDR,
+                           USERROADADDR,
+                           USERDETAILADDR,
+                           USERBIRTH,
+                           USERLEVEL,
+                           USERREGDATE,
+                           USERSTATUS,
+                           USERSKIN,
+                           PHONE_VERIFIED,
+                           PHONE_VERIFIED_AT)
+        VALUES (ISEQ$$_119796.NEXTVAL,
+                #{userId, jdbcType=VARCHAR},
+                #{userPw, jdbcType=VARCHAR},
+                #{userName, jdbcType=VARCHAR},
+                #{userNick, jdbcType=VARCHAR},
+                #{userHp, jdbcType=VARCHAR},
+                #{userEmail, jdbcType=VARCHAR},
+                #{userZip, jdbcType=NUMERIC},
+                #{userJibunAddr, jdbcType=VARCHAR},
+                #{userRoadAddr, jdbcType=VARCHAR},
+                #{userDetailAddr, jdbcType=VARCHAR},
+                #{userBirth, jdbcType=DATE},
+                1,
+                SYSDATE,
+                1,
+                0,
+                #{phoneVerified, jdbcType=CHAR},
+                #{phoneVerifiedAt, jdbcType=TIMESTAMP})
+    </insert>
+
+    <!-- 이메일로 사용자 조회 -->
+    <select id="findByEmail" parameterType="string" resultMap="UserResultMap">
+        SELECT USERNO,
+               USERID,
+               USERPW,
+               USERNAME,
+               USERNICK,
+               USERHP,
+               USEREMAIL,
+               USERZIP,
+               USERJIBUNADDR,
+               USERROADADDR,
+               USERDETAILADDR,
+               USERBIRTH,
+               USERLEVEL,
+               USERREGDATE,
+               USERSTATUS,
+               USERSKIN,
+               PHONE_VERIFIED,
+               PHONE_VERIFIED_AT
+        FROM USERS
+        WHERE USEREMAIL = #{email, jdbcType=VARCHAR}
+          AND (USERSTATUS IS NULL OR USERSTATUS != 0)
+    </select>
+
+    <!-- 이메일 중복 체크 -->
+    <select id="existsByEmail" parameterType="string" resultType="boolean">
+        SELECT CASE WHEN COUNT(*) > 0 THEN 1 ELSE 0 END
+        FROM USERS
+        WHERE USEREMAIL = #{email, jdbcType=VARCHAR}
+          AND (USERSTATUS IS NULL OR USERSTATUS != 0)
+    </select>
+
+    <!-- userId로 사용자 조회 (USERSTATUS 조건 완화) -->
+    <select id="findByUserId" parameterType="string" resultMap="UserResultMap">
+        SELECT USERNO,
+               USERID,
+               USERPW,
+               USERNAME,
+               USERNICK,
+               USERHP,
+               USEREMAIL,
+               USERZIP,
+               USERJIBUNADDR,
+               USERROADADDR,
+               USERDETAILADDR,
+               USERBIRTH,
+               USERLEVEL,
+               USERREGDATE,
+               USERSTATUS,
+               USERSKIN,
+               PHONE_VERIFIED,
+               PHONE_VERIFIED_AT
+        FROM USERS
+        WHERE TRIM(LOWER(USERID)) = TRIM(LOWER(#{userId, jdbcType=VARCHAR}))
+          AND (USERSTATUS IS NULL OR USERSTATUS != 0)
+    </select>
+
+    <!-- userId로 userNo 조회 -->
+    <select id="findUserNoByUserId" parameterType="string" resultType="long">
+        SELECT USERNO
+        FROM USERS
+        WHERE TRIM(LOWER(USERID)) = TRIM(LOWER(#{userId, jdbcType=VARCHAR}))
+          AND (USERSTATUS IS NULL OR USERSTATUS != 0)
+    </select>
+
+    <!-- 회원 번호로 조회 -->
+    <select id="findByUserNo" parameterType="long" resultMap="UserResultMap">
+        SELECT USERNO,
+               USERID,
+               USERPW,
+               USERNAME,
+               USERNICK,
+               USERHP,
+               USEREMAIL,
+               USERZIP,
+               USERJIBUNADDR,
+               USERROADADDR,
+               USERDETAILADDR,
+               USERBIRTH,
+               USERLEVEL,
+               USERREGDATE,
+               USERSTATUS,
+               USERSKIN,
+               PHONE_VERIFIED,
+               PHONE_VERIFIED_AT
+        FROM USERS
+        WHERE USERNO = #{userNo, jdbcType=NUMERIC}
+          AND (USERSTATUS IS NULL OR USERSTATUS != 0)
+    </select>
+
+    <!-- 피부 타입 저장 -->
+    <update id="updateSkinType">
+        UPDATE USERS
+        SET USERSKIN = #{skinType, jdbcType=NUMERIC}
+        WHERE USERNO = #{userNo, jdbcType=NUMERIC}
+    </update>
+
+    <!-- 피부 타입 조회 -->
+    <select id="selectSkinType" parameterType="long" resultType="java.lang.Integer">
+        SELECT USERSKIN
+        FROM USERS
+        WHERE USERNO = #{userNo, jdbcType=NUMERIC}
+    </select>
+
+</mapper>

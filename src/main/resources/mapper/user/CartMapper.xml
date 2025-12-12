@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.routy.routyback.mapper.user.CartMapper">
+
+    <resultMap id="CartItemDTOMap" type="com.routy.routyback.dto.CartResponseDTO$CartItemDTO"
+        autoMapping="true">
+        <id property="cartItemId" column="CARTNO"/>
+        <result property="productId" column="PRDNO"/>
+        <result property="name" column="PRDNAME"/>
+        <result property="brand" column="PRDCOMPANY"/>
+        <result property="price" column="PRDPRICE"/>
+        <result property="quantity" column="CARTSTOCK"/>
+        <result property="imageUrl" column="PRDIMG"/>
+        <result property="allergenList" column="ALLERGEN_LIST"/>
+        <result property="dangerList" column="DANGER_LIST"/>
+    </resultMap>
+
+    <select id="findItemsByUserNo" parameterType="long" resultMap="CartItemDTOMap">
+        SELECT c.cartNo,
+               c.prdNo,
+               p.prdName,
+               p.prdCompany,
+               p.prdPrice,
+               c.cartStock,
+               p.prdImg,
+               (SELECT LISTAGG(i.INGNAME, ', ') WITHIN
+                   GROUP (ORDER BY i.INGNAME)
+                FROM PRD_ING_MAPPING pim
+                         JOIN INGREDIENTS i
+                              ON pim.INGNO = i.INGNO
+                WHERE pim.PRDNO = c.PRDNO
+                  AND i.INGALLERGEN = 1) AS ALLERGEN_LIST
+            ,
+               (SELECT LISTAGG(i.INGNAME, ', ') WITHIN
+                   GROUP (ORDER BY i.INGNAME)
+                FROM PRD_ING_MAPPING pim
+                         JOIN INGREDIENTS i
+                              ON pim.INGNO = i.INGNO
+                WHERE pim.PRDNO = c.PRDNO
+                  AND i.INGDANGER = 1)   AS DANGER_LIST
+
+        FROM CART c
+                 JOIN
+             PRODUCT p
+             ON c.prdNo = p.prdNo
+        WHERE c.userNo = #{userNo}
+        ORDER BY c.cartDate DESC
+
+    </select>
+
+    <!-- 새 항목 추가 또는 수량 증가 (MERGE) -->
+    <insert id="insertNewItem">
+        MERGE INTO CART c
+        USING (SELECT #{userNo}    AS USERNO,
+                      #{productId} AS PRDNO,
+                      #{quantity}  AS CARTSTOCK
+               FROM DUAL) src
+        ON (c.USERNO = src.USERNO AND c.PRDNO = src.PRDNO)
+        WHEN MATCHED THEN
+            UPDATE
+            SET c.CARTSTOCK = c.CARTSTOCK + src.CARTSTOCK
+        WHEN NOT MATCHED THEN
+            INSERT (CARTNO, USERNO, PRDNO, CARTSTOCK, CARTDATE)
+            VALUES (CART_SEQ.NEXTVAL, src.USERNO, src.PRDNO, src.CARTSTOCK, SYSDATE)
+    </insert>
+
+    <update id="updateQuantity">
+        UPDATE CART
+        SET CARTSTOCK = #{quantity}
+        WHERE USERNO = #{userNo}
+          AND CARTNO = #{cartItemId}
+    </update>
+
+    <delete id="deleteItems">
+        DELETE FROM CART
+        WHERE USERNO = #{userNo}
+        AND CARTNO IN
+        <foreach collection="cartItemIds" item="cartItemId" open="(" separator="," close=")">
+            #{cartItemId}
+        </foreach>
+    </delete>
+
+    <select id="countCartItems" resultType="int">
+        SELECT COUNT(*)
+        FROM CART
+        WHERE USERNO = #{userId}
+    </select>
+
+</mapper>

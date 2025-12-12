@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+    UserIngredientMapper.xml
+    사용자 선호/기피 성분 조회 · 추가 · 삭제 Mapper XML
+    매핑 대상: USR_ING_MAPPING, INGREDIENTS
+-->
+
+<mapper namespace="com.routy.routyback.mapper.user.mypage.UserIngredientMapper">
+
+    <!-- ========================================================= -->
+    <!-- 1) 사용자 선호 성분 조회 (UIMAPTYPE = 1)                  -->
+    <!-- ========================================================= -->
+    <select id="selectFocusIngredients"
+        resultType="com.routy.routyback.dto.user.mypage.IngredientPreferenceResponse">
+
+        SELECT
+        I.INGNO AS ingredientId,     <!-- 성분 번호 -->
+        I.INGNAME AS name,             <!-- 성분명(국문) -->
+        I.INGENNAME AS engName,          <!-- 성분명(영문) -->
+        I.INGDESC AS description,      <!-- 성분 설명 -->
+        I.INGFUNCTIONAL AS functional,       <!-- 기능 정보 -->
+        I.INGALLERGEN AS allergen,         <!-- 알러지 여부(0/1) -->
+        I.INGDANGER AS danger,           <!-- 위험도(0/1) -->
+        TO_CHAR(U.UIMAPREGDATE, 'YYYY-MM-DD') AS addedDate         <!-- 등록일 -->
+        FROM USR_ING_MAPPING U
+        JOIN INGREDIENTS I ON U.INGNO = I.INGNO
+        WHERE U.USERNO = (SELECT USERNO FROM USERS WHERE USERID = #{userId})
+        AND U.UIMAPTYPE = 1                     <!-- 1 = 선호 성분 -->
+        ORDER BY U.UIMAPREGDATE DESC
+
+    </select>
+
+
+    <!-- ========================================================= -->
+    <!-- 2) 사용자 기피 성분 조회 (UIMAPTYPE = 2)                  -->
+    <!-- ========================================================= -->
+    <select id="selectAvoidIngredients"
+        resultType="com.routy.routyback.dto.user.mypage.IngredientPreferenceResponse">
+
+        SELECT
+        I.INGNO AS ingredientId,
+        I.INGNAME AS name,
+        I.INGENNAME AS engName,
+        I.INGDESC AS description,
+        I.INGFUNCTIONAL AS functional,
+        I.INGALLERGEN AS allergen,
+        I.INGDANGER AS danger,
+        TO_CHAR(U.UIMAPREGDATE, 'YYYY-MM-DD') AS addedDate
+        FROM USR_ING_MAPPING U
+        JOIN INGREDIENTS I ON U.INGNO = I.INGNO
+        WHERE U.USERNO = (SELECT USERNO FROM USERS WHERE USERID = #{userId})
+        AND U.UIMAPTYPE = 2                     <!-- 2 = 기피 성분 -->
+        ORDER BY U.UIMAPREGDATE DESC
+
+    </select>
+
+
+    <!-- ========================================================= -->
+    <!-- 3) 성분 등록 (선호/기피 공통)                              -->
+    <!-- ========================================================= -->
+    <insert id="insertIngredient">
+        INSERT INTO USR_ING_MAPPING
+            (USERNO, INGNO, UIMAPTYPE, UIMAPREGDATE)
+        VALUES ((SELECT USERNO FROM USERS WHERE USERID = #{userId}),
+                #{ingredientId},
+                #{type},
+                CURRENT_TIMESTAMP)
+    </insert>
+
+
+    <!-- ========================================================= -->
+    <!-- 4) 성분 삭제 (선호/기피 공통)                              -->
+    <!-- ========================================================= -->
+    <delete id="deleteIngredient">
+        DELETE
+        FROM USR_ING_MAPPING
+        WHERE USERNO = (SELECT USERNO FROM USERS WHERE USERID = #{userId})
+          AND INGNO = #{ingredientId}
+          AND UIMAPTYPE = #{type}
+    </delete>
+
+
+    <!-- ========================================================= -->
+    <!-- 5) 성분 중복 등록 체크                                     -->
+    <!-- ========================================================= -->
+    <select id="countIngredient" resultType="int">
+        SELECT COUNT(*)
+        FROM USR_ING_MAPPING
+        WHERE USERNO = (SELECT USERNO FROM USERS WHERE USERID = #{userId})
+          AND INGNO = #{ingredientId}
+          AND UIMAPTYPE = #{type}
+    </select>
+
+</mapper>

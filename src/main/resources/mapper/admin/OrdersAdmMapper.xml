@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.routy.routyback.mapper.admin.IOrdersAdmDAO">
+    <sql id="listAllOrdersFilter">
+        FROM ORDERS o LEFT JOIN USERS u ON u.userNo=o.userNo
+        WHERE 1=1
+        <if test="mem_name != null and mem_name != ''">
+            AND u.userName LIKE #{mem_name}
+        </if>
+        <if test="od_start_day != null and od_start_day != ''">
+            AND o.odRegdate >= #{od_start_day}
+        </if>
+        <if test="od_end_day  != null and od_end_day  != ''">
+            AND o.odRegdate &lt;= #{od_end_day }
+        </if>
+
+        <choose>
+            <otherwise>
+                ORDER BY o.odNo DESC
+            </otherwise>
+        </choose>
+    </sql>
+	<select id="listAllOrders" resultType="com.routy.routyback.dto.OrdersUsDTO">
+		SELECT o.*, u.userName, u.userNick, u.userId, u.userHp
+	    <include refid="listAllOrdersFilter"/>
+		OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
+	</select>
+    <select id="listAllOrdersCount" resultType="int">
+	    SELECT COUNT(1)
+	    <include refid="listAllOrdersFilter"/>
+    </select>
+    
+    <select id="detailOrder" parameterType="int" resultType="com.routy.routyback.dto.OrdersUsDTO">
+	    SELECT o.*, u.userName, u.userNick, u.userId, u.userHp
+	    FROM ORDERS o LEFT JOIN USERS u ON u.userNo=o.userNo
+	    WHERE odNo = #{odNo}
+    </select>
+    
+    
+    
+    <sql id="listAllOrderDeliveryFilter">
+        FROM DELIVERY d LEFT JOIN ORDERS o ON o.odNo=d.odNo LEFT JOIN USERS u ON u.userNo=o.userNo
+        WHERE 1=1
+        <if test="mem_name != null and mem_name != ''">
+            AND u.userName LIKE #{mem_name}
+        </if>
+        <if test="delv_s_start_day != null and delv_s_start_day != ''">
+            AND d.delvRegdate >= #{delv_s_start_day}
+        </if>
+        <if test="delv_s_end_day  != null and delv_s_end_day  != ''">
+            AND d.delvRegdate &lt;= #{delv_s_end_day}
+        </if>
+        <if test="delv_e_start_day != null and delv_e_start_day != ''">
+            AND d.delvEnddate >= #{delv_e_start_day}
+        </if>
+        <if test="delv_e_end_day  != null and delv_e_end_day  != ''">
+            AND d.delvEnddate &lt;= #{delv_e_end_day}
+        </if>
+
+        <choose>
+            <otherwise>
+                ORDER BY d.delvNo DESC
+            </otherwise>
+        </choose>
+    </sql>
+	<select id="listAllOrdersDelivery" resultType="com.routy.routyback.dto.DeliveryDTO">
+		SELECT d.*, u.userNo, u.userName, u.userNick, u.userId, u.userHp
+	    <include refid="listAllOrderDeliveryFilter"/>
+		OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
+	</select>
+    <select id="listAllOrdersDeliveryCount" resultType="int">
+	    SELECT COUNT(1)
+	    <include refid="listAllOrderDeliveryFilter"/>
+    </select>
+    
+    <select id="detailOrderDelivery" parameterType="int" resultType="com.routy.routyback.dto.DeliveryDTO">
+	    SELECT d.*, u.userNo, u.userName, u.userNick, u.userId, u.userHp
+	    FROM DELIVERY d LEFT JOIN ORDERS o ON o.odNo=d.odNo LEFT JOIN USERS u ON u.userNo=o.userNo
+	    WHERE d.delvNo = #{delvNo}
+    </select>
+    
+    <insert id="insertOrderDelivery" parameterType="com.routy.routyback.dto.DeliveryDTO">
+    	<selectKey keyProperty="delvNo" resultType="int" order="BEFORE">
+	        SELECT ISEQ$$_119801.NEXTVAL FROM dual
+	    </selectKey>
+	    INSERT INTO DELIVERY (
+            delvNo, odNo, delvCompany, delvComNum
+            , delvType, delvStatus
+            , delvGetName, delvGetHp
+            , delvGetZip, delvGetJibunAddr, delvGetRoadAddr, delvGetDetailAddr, delvGetBcCode
+        )
+        VALUES (
+        	#{delvNo}, #{odNo}, #{delvCompany}, #{delvComNum}
+            , #{delvType}, 1
+            , #{delvGetName}, #{delvGetHp}
+            , #{delvGetZip}, #{delvGetJibunAddr}, #{delvGetRoadAddr}, #{delvGetDetailAddr}, #{delvGetBcCode}
+		)
+    </insert>
+    
+    <update id="updateOrderDelivery" parameterType="com.routy.routyback.dto.DeliveryDTO">
+    	UPDATE DELIVERY
+    	<set>
+    		<if test="delvCompany != null"> delvCompany = #{delvCompany}, </if>
+    		<if test="delvComNum != null"> delvComNum = #{delvComNum}, </if>
+	        <if test="delvType != 0"> delvType = #{delvType}, </if>
+	        <if test="delvStatus != 0"> delvStatus = #{delvStatus}, </if>
+	        <if test="delvGetName != null"> delvGetName = #{delvGetName}, </if>
+	        <if test="delvGetHp != null"> delvGetHp = #{delvGetHp}, </if>
+	        <if test="delvGetZip != 0"> delvGetZip = #{delvGetZip}, </if>
+	        <if test="delvGetJibunAddr != null"> delvGetJibunAddr = #{delvGetJibunAddr}, </if>
+	        <if test="delvGetRoadAddr != null"> delvGetRoadAddr = #{delvGetRoadAddr}, </if>
+	        <if test="delvGetDetailAddr != null"> delvGetDetailAddr = #{delvGetDetailAddr}, </if>
+	        <if test="delvGetBcCode != 0"> delvGetBcCode = #{delvGetBcCode}, </if>
+	        <if test="delvStatus == 6"> delvEnddate = CURRENT_DATE, </if>
+    	</set>
+    	WHERE delvNo = #{delvNo}
+    </update>
+    
+    <delete id="deleteOrderDelivery" parameterType="int">
+    	DELETE FROM DELIVERY WHERE delvNo = #{delvNo}
+    </delete>
+    
+</mapper>

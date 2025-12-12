@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.routy.routyback.mapper.admin.ProductMapper">
+
+    <!-- 결과 매핑 -->
+    <resultMap id="prdResult" type="com.routy.routyback.dto.ProductDTO">
+        <result property="prdNo" column="PRDNO"/>
+        <result property="prdName" column="PRDNAME"/>
+        <result property="prdPrice" column="PRDPRICE"/>
+        <result property="prdVolume" column="PRDVOLUME"/>
+        <result property="prdCompany" column="PRDCOMPANY"/>
+        <result property="prdStock" column="PRDSTOCK"/>
+        <result property="prdMainCate" column="PRDMAINCATE"/>
+        <result property="prdSubCate" column="PRDSUBCATE"/>
+        <result property="prdImg" column="PRDIMG"/>
+        <result property="prdDesc" column="PRDDESC"/>
+        <result property="prdUpdate" column="PRDUPDATE"/>
+        <result property="prdRegDate" column="PRDREGDATE"/>
+    </resultMap>
+
+    <!-- 전체 조회 -->
+    <select id="getAll" resultMap="prdResult">
+        SELECT PRDNO,
+               PRDNAME,
+               PRDPRICE,
+               PRDVOLUME,
+               PRDCOMPANY,
+               PRDSTOCK,
+               PRDMAINCATE,
+               PRDSUBCATE,
+               PRDIMG,
+               PRDDESC,
+               PRDUPDATE,
+               PRDREGDATE
+        FROM PRODUCT
+        ORDER BY PRDNO DESC
+    </select>
+
+    <!-- 단건 조회 -->
+    <select id="selectById" parameterType="int" resultMap="prdResult">
+        SELECT PRDNO,
+               PRDNAME,
+               PRDPRICE,
+               PRDVOLUME,
+               PRDCOMPANY,
+               PRDSTOCK,
+               PRDMAINCATE,
+               PRDSUBCATE,
+               PRDIMG,
+               PRDDESC,
+               PRDUPDATE,
+               PRDREGDATE
+        FROM PRODUCT
+        WHERE PRDNO = #{prdNo}
+    </select>
+
+    <!-- 등록 -->
+    <insert id="productInsert" parameterType="com.routy.routyback.dto.ProductDTO">
+        <selectKey keyProperty="prdNo" resultType="int" order="AFTER">
+            SELECT ISEQ$$_119801.CURRVAL FROM dual
+        </selectKey>
+
+        INSERT INTO PRODUCT (
+        PRDNAME, PRDPRICE, PRDVOLUME, PRDCOMPANY, PRDSTOCK,
+        PRDMAINCATE, PRDSUBCATE, PRDIMG, PRDDESC,
+        PRDUPDATE, PRDREGDATE
+        )
+        VALUES (
+        #{prdName}, #{prdPrice}, #{prdVolume}, #{prdCompany}, #{prdStock},
+        #{prdMainCate}, #{prdSubCate}, #{prdImg}, #{prdDesc},
+        SYSDATE, SYSDATE
+        )
+    </insert>
+    <insert id="productDetailInsert" parameterType="com.routy.routyback.dto.ProductDetailDTO">
+    	INSERT INTO PRODUCT_DETAIL (
+	    	prdNo, prdVolume_text, prdSpec, prdExpire, prdUsage, prdManuf
+	    	, prdOrigin, prdFda, prdIngredients, prdCaution, prdQuality, prdCs_phone
+    	)
+    	VALUES (
+	    	#{prdNo}, #{prdVolume_text}, #{prdSpec}, #{prdExpire}, #{prdUsage}, #{prdManuf}
+	    	, #{prdOrigin}, #{prdFda}, #{prdIngredients}, #{prdCaution}, #{prdQuality}, #{prdCs_phone}
+    	)
+    </insert>
+
+    <!-- 수정 -->
+    <update id="productUpdate" parameterType="com.routy.routyback.dto.ProductDTO">
+        UPDATE PRODUCT
+        SET PRDNAME     = #{prdName},
+            PRDPRICE    = #{prdPrice},
+            PRDVOLUME   = #{prdVolume},
+            PRDCOMPANY  = #{prdCompany},
+            PRDSTOCK    = #{prdStock},
+            PRDMAINCATE = #{prdMainCate},
+            PRDSUBCATE  = #{prdSubCate},
+            PRDIMG      = #{prdImg},
+            PRDDESC     = #{prdDesc},
+            PRDUPDATE   = SYSDATE
+        WHERE PRDNO = #{prdNo}
+    </update>
+
+    <!-- 상품-성분 매핑 삭제 -->
+    <delete id="deleteProductIngredientMapping" parameterType="int">
+        DELETE
+        FROM PRD_ING_MAPPING
+        WHERE PRDNO = #{prdNo}
+    </delete>
+
+    <!-- 삭제 -->
+    <delete id="productDelete" parameterType="int">
+        DELETE
+        FROM PRODUCT
+        WHERE PRDNO = #{prdNo}
+    </delete>
+
+    <!-- 상품 상세정보 삭제 -->
+    <delete id="deleteProductDetail" parameterType="int">
+        DELETE FROM PRODUCT_DETAIL
+        WHERE PRDNO = #{prdNo}
+    </delete>
+
+    <!-- 재고 업데이트 -->
+    <update id="productUpdateStock">
+        UPDATE PRODUCT
+        SET PRDSTOCK = #{prdStock}
+        WHERE PRDNO = #{prdNo}
+    </update>
+
+    <!-- 상태 업데이트 -->
+    <update id="productUpdateStatus">
+        UPDATE PRODUCT
+        SET PRDSTATUS = #{status}
+        WHERE PRDNO = #{prdNo}
+    </update>
+
+    <!-- 검색 + 페이징 -->
+    <select id="searchProducts" parameterType="map" resultMap="prdResult">
+        SELECT *
+        FROM (SELECT ROWNUM AS RN, A.*
+              FROM (SELECT PRDNO,
+                           PRDNAME,
+                           PRDPRICE,
+                           PRDVOLUME,
+                           PRDCOMPANY,
+                           PRDSTOCK,
+                           PRDMAINCATE,
+                           PRDSUBCATE,
+                           PRDIMG,
+                           PRDDESC,
+                           PRDUPDATE,
+                           PRDREGDATE
+                    FROM PRODUCT
+                    WHERE (#{prdName, jdbcType=VARCHAR} IS NULL OR
+                           PRDNAME LIKE '%' || #{prdName, jdbcType=VARCHAR} || '%')
+                      AND (#{prdCompany, jdbcType=VARCHAR} IS NULL OR
+                           PRDCOMPANY LIKE '%' || #{prdCompany, jdbcType=VARCHAR} || '%')
+                    ORDER BY PRDNO DESC) A
+              WHERE ROWNUM &lt;= #{end})
+        WHERE RN &gt;= #{start}
+    </select>
+
+
+    <!-- 검색 총 개수 -->
+    <select id="countProducts" parameterType="map" resultType="int">
+        SELECT COUNT(*)
+        FROM PRODUCT
+        WHERE (#{prdName, jdbcType=VARCHAR} IS NULL OR PRDNAME LIKE '%' || #{prdName, jdbcType=VARCHAR} || '%')
+          AND (#{prdCompany, jdbcType=VARCHAR} IS NULL OR PRDCOMPANY LIKE '%' || #{prdCompany, jdbcType=VARCHAR} || '%')
+    </select>
+
+    <!-- 성분 이름으로 성분 번호 조회 -->
+    <select id="searchIngredients" parameterType="string" resultType="integer">
+        SELECT ingNo
+        FROM INGREDIENTS
+        WHERE DBMS_LOB.SUBSTR(ingName, 4000, 1) = #{name}
+    </select>
+
+    <!-- 성분 매핑 -->
+    <insert id="mappingIngredients">
+        INSERT INTO PRD_ING_MAPPING (PRDNO, INGNO, PIMAPREGDATE)
+        VALUES (#{prdNo}, #{ingNo}, SYSDATE)
+    </insert>
+
+    <!-- 성분 추가 -->
+    <insert id="insertIngredients" parameterType="map" useGeneratedKeys="false">
+        <selectKey keyProperty="ingNo" resultType="int" order="BEFORE">
+            SELECT NVL(MAX(INGNO), 0) + 1 AS INGNO
+            FROM INGREDIENTS
+        </selectKey>
+        INSERT INTO INGREDIENTS (
+        INGNO, INGNAME
+        )
+        VALUES (
+        #{ingNo}, #{ingName}
+        )
+    </insert>
+
+</mapper>

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.routy.routyback.mapper.user.RecentProductMapper">
+
+    <!-- 이미 본 상품인지 확인 -->
+    <select id="exists" resultType="int">
+        SELECT COUNT(*)
+        FROM VIEWED_PRODUCT
+        WHERE USERNO = #{userNo}
+        AND PRDNO = #{prdNo}
+    </select>
+
+    <!-- 최근 본 상품 등록 -->
+    <insert id="insertRecentProduct">
+        INSERT INTO VIEWED_PRODUCT (VPNO, PRDNO, USERNO, PRDSUBCATE)
+        VALUES (
+        ROUTY_TEAM.VPNO_SEQ.NEXTVAL,
+        #{prdNo, jdbcType=NUMERIC},
+        #{userNo, jdbcType=NUMERIC},
+        #{prdSubCate, jdbcType=NUMERIC}
+        )
+    </insert>
+
+    <!-- 조회 시간 업데이트 -->
+    <update id="updateViewTime">
+        UPDATE VIEWED_PRODUCT
+        SET VPREGDATE = CURRENT_TIMESTAMP
+        WHERE USERNO = #{userNo}
+        AND PRDNO = #{prdNo}
+    </update>
+
+    <!-- 최근 본 상품 조회 (최신순 10개) -->
+    <select id="getRecentViewedProducts" resultType="com.routy.routyback.dto.user.RecentProductResponse">
+        SELECT
+        p.prdno AS prdNo,
+        p.prdname AS prdName,
+        p.prdimg AS prdImg,
+        vp.prdsubcate AS prdSubCate,
+        vp.vpregdate AS viewedDate
+        FROM VIEWED_PRODUCT vp
+        JOIN PRODUCT p ON p.prdno = vp.prdno
+        WHERE vp.userno = #{userNo}
+        ORDER BY vp.vpregdate DESC
+        FETCH FIRST 10 ROWS ONLY
+    </select>
+
+    <!-- 10개 초과 시 오래된 데이터 삭제 -->
+    <delete id="trimRecentProducts">
+        DELETE FROM VIEWED_PRODUCT
+        WHERE USERNO = #{userNo}
+        AND VPNO IN (
+        SELECT VPNO
+        FROM VIEWED_PRODUCT
+        WHERE USERNO = #{userNo}
+        ORDER BY VPREGDATE DESC
+        OFFSET 10 ROWS
+        )
+    </delete>
+
+    <!-- userId(loginId)로 userNo(PK) 조회 -->
+    <select id="getUserNoByUserId" resultType="long">
+        SELECT USERNO
+        FROM USERS
+        WHERE USERID = #{userId}
+    </select>
+
+</mapper>

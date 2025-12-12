@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.routy.routyback.mapper.user.RoutineMapper">
+
+    <!-- ========================================================= -->
+    <!-- RoutineMapper XML -->
+    <!-- ROUTINE / ROUTINE_USED_PRODUCT 테이블 SQL 정의 -->
+    <!-- ========================================================= -->
+
+    <!-- 1) 월간 루틴 조회 -->
+    <select id="selectMonthlyRoutine" resultType="map">
+        SELECT ROUTINE_ID,
+               ROUTINE_DATE,
+               SUMMARY
+        FROM ROUTINE
+        WHERE USERNO = #{userNo}
+          AND EXTRACT(YEAR FROM ROUTINE_DATE) = #{year}
+          AND EXTRACT(MONTH FROM ROUTINE_DATE) = #{month}
+        ORDER BY ROUTINE_DATE
+    </select>
+
+    <!-- 2) 특정 날짜 루틴 상세 조회 -->
+    <select id="selectRoutineByDate" resultType="map">
+        SELECT R.ROUTINE_ID,
+               R.ROUTINE_DATE,
+               R.SUMMARY,
+               R.EXTRA_ACTIVITIES,
+               R.DAILY_REVIEW
+        FROM ROUTINE R
+        WHERE R.USERNO = #{userNo}
+          AND R.ROUTINE_DATE = TO_DATE(#{date}, 'YYYY-MM-DD')
+    </select>
+
+    <!-- 3) 루틴 존재 여부 확인 -->
+    <select id="existsRoutine" resultType="int">
+        SELECT COUNT(*)
+        FROM ROUTINE
+        WHERE USERNO = #{userNo}
+          AND ROUTINE_DATE = TO_DATE(#{date}, 'YYYY-MM-DD')
+    </select>
+
+    <!-- 4) 루틴 신규 등록 -->
+    <insert id="insertRoutine">
+        INSERT INTO ROUTINE (USERNO,
+                             ROUTINE_DATE,
+                             SUMMARY,
+                             EXTRA_ACTIVITIES,
+                             DAILY_REVIEW)
+        VALUES (#{userNo},
+                TO_DATE(#{date}, 'YYYY-MM-DD'),
+                #{summary},
+                #{extraActivities},
+                #{dailyReview})
+    </insert>
+
+    <!-- 5) 루틴 업데이트 -->
+    <update id="updateRoutine">
+        UPDATE ROUTINE
+        SET SUMMARY          = #{summary},
+            EXTRA_ACTIVITIES = #{extraActivities},
+            DAILY_REVIEW     = #{dailyReview}
+        WHERE USERNO = #{userNo}
+          AND ROUTINE_DATE = TO_DATE(#{date}, 'YYYY-MM-DD')
+    </update>
+
+    <!-- 6) 특정 날짜 루틴 > 사용 제품 전체 삭제 -->
+    <delete id="deleteRoutineUsedProducts">
+        DELETE
+        FROM ROUTINE_USED_PRODUCT
+        WHERE ROUTINE_ID = (SELECT ROUTINE_ID
+                            FROM ROUTINE
+                            WHERE USERNO = #{userNo}
+                              AND ROUTINE_DATE = TO_DATE(#{date}, 'YYYY-MM-DD'))
+    </delete>
+
+    <!-- 6-1) 특정 날짜 루틴 삭제 -->
+    <delete id="deleteRoutine">
+        DELETE
+        FROM ROUTINE
+        WHERE USERNO = #{userNo}
+          AND ROUTINE_DATE = TO_DATE(#{date}, 'YYYY-MM-DD')
+    </delete>
+
+    <!-- 7) 루틴 사용 제품 INSERT -->
+    <insert id="insertRoutineUsedProduct">
+        INSERT INTO ROUTINE_USED_PRODUCT (ROUTINE_ID,
+                                          PRDNO,
+                                          REACTION_TYPE,
+                                          MEMO,
+                                          REUSE_ALERT_DATE)
+        VALUES (#{routineId},
+                #{prdNo},
+                #{reaction, jdbcType=VARCHAR},
+                #{memo, jdbcType=VARCHAR},
+                #{alertDate, jdbcType=DATE})
+    </insert>
+
+    <!-- 8) ROUTINE_ID 조회 -->
+    <select id="findRoutineId" resultType="long">
+        SELECT ROUTINE_ID
+        FROM ROUTINE
+        WHERE USERNO = #{userNo}
+          AND ROUTINE_DATE = TO_DATE(#{date}, 'YYYY-MM-DD')
+    </select>
+
+    <!-- 9) ROUTINE_ID 기준 사용 제품 조회 -->
+    <select id="selectRoutineUsedProducts" resultType="map">
+        SELECT RUP.PRDNO,
+               P.PRDNAME AS PRD_NAME,
+               P.PRDIMG  AS PRD_IMG,
+               RUP.REACTION_TYPE,
+               RUP.MEMO,
+               RUP.REUSE_ALERT_DATE
+        FROM ROUTINE_USED_PRODUCT RUP
+                 JOIN PRODUCT P ON P.PRDNO = RUP.PRDNO
+        WHERE RUP.ROUTINE_ID = #{routineId}
+    </select>
+
+</mapper>

@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.routy.routyback.mapper.user.ProductUserMapper">
+
+    <!-- 기본 상품 resultMap -->
+    <resultMap id="prdResult" type="com.routy.routyback.dto.ProductUserDTO">
+        <result property="prdNo" column="prdNo"/>
+        <result property="prdName" column="prdName"/>
+        <result property="prdPrice" column="prdPrice"/>
+        <result property="prdVolume" column="prdVolume"/>
+        <result property="prdCompany" column="prdCompany"/>
+        <result property="prdMainCate" column="prdMainCate"/>
+        <result property="prdSubCate" column="prdSubCate"/>
+        <result property="prdImg" column="prdImg"/>
+        <result property="prdDesc" column="prdDesc"/>
+        <result property="avgRating" column="avgRating"/>
+        <result property="reviewCount" column="reviewCount"/>
+    </resultMap>
+
+    <!-- 단건 조회 -->
+    <select id="productDetailView" resultType="com.routy.routyback.dto.ProductUserDTO">
+	 SELECT
+            p.prdNo, 
+            p.prdName,
+            p.prdPrice,
+            p.prdVolume,
+            p.prdCompany,
+            p.prdMainCate,
+            p.prdSubCate,
+            p.prdImg,
+            p.prdDesc,
+            
+            d.prdVolume_text,
+            d.prdSpec,
+            d.prdExpire,
+            d.prdUsage,
+            d.prdManuf,
+            d.prdOrigin,
+            d.prdFda,
+            d.prdIngredients,
+            d.prdCaution,
+            d.prdQuality,
+            d.prdCs_phone
+        FROM 
+            PRODUCT p
+        LEFT JOIN 
+            PRODUCT_DETAIL d ON p.prdNo = d.prdNo 
+        WHERE 
+            p.prdNo = #{prdNo}
+    </select>
+
+    <!-- 이미지 리스트 -->
+    <select id="selectProductImageList" resultType="com.routy.routyback.domain.ProductImageVO">
+        SELECT
+        PI_NO AS piNo,
+        PRD_NO AS prdNo,
+        PI_URL AS piUrl,
+        PI_TYPE AS piType,
+        PI_SORT AS piSort
+        FROM PRODUCT_IMAGE
+        WHERE PRD_NO = #{prdNo}
+        ORDER BY PI_SORT ASC
+    </select>
+
+    <!-- 피부타입 + 카테고리 기반 추천 -->
+    <select id="productAllSkinCate" resultMap="prdResult">
+        SELECT
+        p.*,
+        (SELECT AVG(REVSTAR) FROM REVIEW r WHERE r.PRDNO = p.PRDNO) AS avgRating,
+        (SELECT COUNT(*) FROM REVIEW r WHERE r.PRDNO = p.PRDNO) AS reviewCount,
+        (
+        SELECT COUNT(*)
+        FROM REVIEW r
+        INNER JOIN USERS u ON u.userNo = r.userNo
+        INNER JOIN REVIEW_FEEDBACK rf ON rf.revNo = r.revNo
+        WHERE r.prdNo = p.prdNo
+        AND rf.rfTypeCode &lt; 500
+
+        <if test="skin != null and skin != ''">
+            AND u.userSkin = #{skin}
+        </if>
+
+        <if test="subcate != null and subcate != ''">
+            AND p.prdSubCate = #{subcate}
+        </if>
+
+        <if test="sub_cate != null and sub_cate != ''">
+            AND p.prdSubCate = #{sub_cate}
+        </if>
+        ) AS cnt
+        FROM PRODUCT p
+        WHERE 1 = 1
+
+        <if test="maincate != null and maincate != ''">
+            AND p.prdMainCate = #{maincate}
+        </if>
+
+        <if test="subcate != null and subcate != ''">
+            AND p.prdSubCate = #{subcate}
+        </if>
+
+        <if test="sub_cate != null and sub_cate != ''">
+            AND p.prdSubCate = #{sub_cate}
+        </if>
+
+        ORDER BY cnt DESC
+        FETCH FIRST #{limit} ROWS ONLY
+    </select>
+
+    <!-- 최근 본 카테고리 -->
+    <select id="productCateViewed" resultType="int">
+        SELECT prdSubCate
+        FROM VIEWED_PRODUCT
+        WHERE userNo = #{user_no}
+        GROUP BY prdSubCate
+        ORDER BY COUNT(*) DESC
+        FETCH FIRST 5 ROWS ONLY
+    </select>
+
+    <!-- fallback 추천 -->
+    <select id="selectFallbackProducts" resultMap="prdResult">
+        SELECT *
+        FROM (
+        SELECT
+        p.*,
+        r.AVG_STAR AS avgRating,
+        r.review_count AS reviewCount,
+        DBMS_RANDOM.VALUE AS randomSort
+        FROM PRODUCT p
+        JOIN (
+        SELECT
+        PRDNO,
+        AVG(REVSTAR) AS AVG_STAR,
+        COUNT(*) AS review_count
+        FROM REVIEW
+        GROUP BY PRDNO
+        ) r ON p.PRDNO = r.PRDNO
+        WHERE r.AVG_STAR >= 3.0
+        )
+        ORDER BY randomSort
+        FETCH FIRST #{limit} ROWS ONLY
+    </select>
+
+    <!-- 상품 검색 + 가격/카테고리 필터 -->
+    <select id="searchProducts" parameterType="map"
+            resultType="com.routy.routyback.dto.ProductUserDTO">
+
+        SELECT
+        p.prdNo,
+        p.prdName,
+        p.prdPrice,
+        p.prdCompany,
+        p.prdImg,
+        p.prdMainCate,
+        p.prdSubCate
+        FROM PRODUCT p
+        WHERE 1 = 1
+
+        <if test="maincate != null and maincate != ''">
+            AND p.prdMainCate = #{maincate}
+        </if>
+
+        <if test="subcate != null and subcate != ''">
+            AND p.prdSubCate = #{subcate}
+        </if>
+
+        <if test="min_price != null and min_price != ''">
+            AND p.prdPrice >= #{min_price}
+        </if>
+
+        <if test="max_price != null and max_price != ''">
+            AND p.prdPrice &lt;= #{max_price}
+        </if>
+
+        <if test="brand != null and brand != ''">
+            AND p.prdCompany IN
+            <foreach item="b" collection="brand.split(',')" open="(" separator="," close=")">
+                #{b}
+            </foreach>
+        </if>
+
+        ORDER BY p.prdNo DESC
+    </select>
+
+    <!-- 안전 버전 통합 필터 -->
+    <select id="filterProducts" parameterType="map"
+            resultType="com.routy.routyback.dto.ProductUserDTO">
+
+        SELECT
+        p.prdNo,
+        p.prdName,
+        p.prdPrice,
+        p.prdCompany,
+        p.prdImg,
+        p.prdMainCate,
+        p.prdSubCate
+        FROM PRODUCT p
+        WHERE 1=1
+
+        <if test="maincate != null and maincate != ''">
+            AND p.prdMainCate = #{maincate}
+        </if>
+
+        <if test="subcate != null and subcate != ''">
+            AND p.prdSubCate = #{subcate}
+        </if>
+
+        <if test="min_price != null">
+            AND p.prdPrice >= #{min_price}
+        </if>
+
+        <if test="max_price != null">
+            AND p.prdPrice &lt;= #{max_price}
+        </if>
+
+        <if test="brand != null and brand != ''">
+            AND p.prdCompany IN
+            <foreach collection="brand.split(',')" item="b" open="(" separator="," close=")">
+                #{b}
+            </foreach>
+        </if>
+
+        <if test="skin != null and skin != ''">
+            AND EXISTS (
+            SELECT 1
+            FROM REVIEW r
+            JOIN USERS u ON u.userNo = r.userNo
+            WHERE r.prdNo = p.prdNo
+            AND u.userSkin = #{skin}
+            )
+        </if>
+
+        ORDER BY p.prdNo DESC
+    </select>
+
+    <select id="selectBrandList" resultType="string">
+        SELECT DISTINCT prdCompany
+        FROM PRODUCT
+        WHERE prdCompany IS NOT NULL
+        ORDER BY prdCompany
+    </select>
+
+
+</mapper>
+
+

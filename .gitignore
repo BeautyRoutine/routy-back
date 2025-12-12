@@ -63,9 +63,15 @@ Wallet_*/
 *.key
 *.p12
 *.sso
+*.ppk
 
 
 # 빌드 / 의존성 캐시
 /.gradle/
 /.gradle-cache/
 /build-cache/.env
+*.code-workspace
+Wallet_ROUTYDB.zip
+secrets/
+API_SPECS.md
+/src/main/resources/static/images/
