@@ -1,5 +1,6 @@
 package com.routy.routyback.service.user;
 
+import com.routy.routyback.domain.ReviewImageVO;
 import com.routy.routyback.domain.ReviewVO;
 import com.routy.routyback.dto.review.ReviewCreateRequest;
 import com.routy.routyback.dto.review.ReviewLikeResponse;
@@ -117,6 +118,19 @@ public class ReviewService implements IReviewService {
         // 2) 리뷰 저장 → REVNO 생성됨
         reviewMapper.insertReview(reviewVO);
 
+        // 2-1)리뷰 이미지 리스트 추가
+        List<String> urls = request.getRevImages();
+        if (urls != null && !urls.isEmpty()) {
+            for (int i = 0; i < urls.size(); i++) {
+                ReviewImageVO imageVO = new ReviewImageVO();
+                imageVO.setRevNo(reviewVO.getRevNo()); // 방금 생성된 리뷰 번호
+                imageVO.setRiUrl(urls.get(i));         // 이미지 URL
+                imageVO.setRiSort(i + 1);              // 순서 (1부터 시작)
+                
+                reviewMapper.insertReviewImage(imageVO); // DB 저장
+            }
+        }
+        
         // 3) 생성된 리뷰 재조회 (odNo, userName, photoCount 포함)
         ReviewVO created = reviewMapper.findReview(reviewVO.getRevNo());
         created.setImages(reviewMapper.findReviewImages(created.getRevNo()));
@@ -148,6 +162,27 @@ public class ReviewService implements IReviewService {
         // 리뷰 수정한 값을 vo에 저장
 
         reviewMapper.updateReview(reviewVO);// vo를 통해 mapper 호출해서 update 실행
+        
+        //이미지 교체
+        List<String> newImages = request.getRevImages();
+        // 프론트에서 이미지 리스트를 보내면
+        if (newImages != null) {
+            //이미지 전부 삭제
+            reviewMapper.deleteReviewImages(revNo);
+
+            // 새 이미지 리스트가 비어있지 않다면 새로 등록
+            if (!newImages.isEmpty()) {
+                for (int i = 0; i < newImages.size(); i++) {
+                    ReviewImageVO imageVO = new ReviewImageVO();
+                    imageVO.setRevNo(revNo);
+                    imageVO.setRiUrl(newImages.get(i));
+                    imageVO.setRiSort(i + 1); // 1번부터 순서 매기기
+                    
+                    reviewMapper.insertReviewImage(imageVO);
+                }
+            }
+        }
+        
 
         ReviewVO updatedReviewVO = reviewMapper.findReview(revNo);// 방금 만든 리뷰 다시 조회
         updatedReviewVO.setImages(reviewMapper.findReviewImages(updatedReviewVO.getRevNo()));

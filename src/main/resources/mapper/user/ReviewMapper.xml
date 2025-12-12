@@ -218,7 +218,26 @@
         WHERE revNo = #{revNo}
     </update>
 
+	<!-- 리뷰 이미지 작성 -->
+	<insert id="insertReviewImage" parameterType="com.routy.routyback.domain.ReviewImageVO">
+    INSERT INTO REVIEW_IMAGE (
+        REV_NO, 
+        RI_URL, 
+        RI_SORT
+    )
+    VALUES (
+        #{revNo}, 
+        #{riUrl}, 
+        #{riSort}
+    )
+	</insert>
 
+	<!--리뷰 이미지 삭제 -->
+	<delete id="deleteReviewImages" parameterType="int">
+    	DELETE FROM REVIEW_IMAGE
+    	WHERE REV_NO = #{revNo}
+	</delete>
+	
     <!-- 리뷰 이미지 조회 -->
     <select id="findReviewImages"
         parameterType="int"

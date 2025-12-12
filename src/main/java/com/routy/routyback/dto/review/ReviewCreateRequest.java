@@ -1,5 +1,7 @@
 package com.routy.routyback.dto.review;
 
+import java.util.List;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -21,4 +23,5 @@ public class ReviewCreateRequest {
     private Integer userSkin;
     private Integer userColor;
 
+    private List<String> revImages;
 }

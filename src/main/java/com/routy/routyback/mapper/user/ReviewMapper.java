@@ -43,6 +43,12 @@ public interface ReviewMapper {
      */
     List<ReviewImageVO> findReviewImages(int revNo);
     
+    //리뷰 이미지 추가
+    void insertReviewImage(ReviewImageVO reviewImageVO);
+    
+    //리뷰 이미지 삭제
+    void deleteReviewImages(int revNo);
+    
  // 별점별 개수 조회 (Key: 별점, Value: 개수)
     List<Map<String, Object>> countRatingByStars(int prdNo);
 }
