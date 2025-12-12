@@ -71,7 +71,10 @@ public class PayService {
     @Transactional
     public void confirmPayment(PaymentConfirmRequestDTO request) {
 
-        Long odNo = Long.parseLong(request.getOrderId());
+        // orderId에서 odNo만 추출 (타임스탬프 제거)
+        String orderId = request.getOrderId();
+        String odNoStr = orderId.split("_")[0]; // "00000123_1234567890" → "00000123"
+        Long odNo = Long.parseLong(odNoStr);
 
         Integer payCount = payMapper.countPayByOdNo(odNo);
         if (payCount != null && payCount > 0) {
@@ -121,6 +124,9 @@ public class PayService {
 
             // insertPay 호출! (status는 1로 저장)
             payMapper.insertPaySuccess(payMap);
+
+            // ORDERS 테이블 결제 상태 업데이트 (1: 주문서 생성, 2: 결제 완료)
+            payMapper.updateOrderStatusToComplete(odNo);
 
             // 결제 성공 후 해당 상품 삭제
             Map<String, Object> deleteMap = new HashMap<>();
