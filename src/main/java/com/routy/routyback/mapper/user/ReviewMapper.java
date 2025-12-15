@@ -66,6 +66,7 @@ public interface ReviewMapper {
     //리뷰 피드백 저장
     void insertReviewFeedback(@Param("revNo") int revNo, @Param("rfTypeCode") int rfTypeCode);
     
-    
+    //리뷰 중복체크
+    int checkReviewExists(@Param("userNo") int userNo, @Param("prdNo") int prdNo);
     
 }

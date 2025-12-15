@@ -111,10 +111,19 @@ public class ReviewService implements IReviewService {
      */
     @Override
     public ReviewResponse createReview(int prdNo, ReviewCreateRequest request, List<MultipartFile> files) {
+    	
+    	//리뷰 중복 방지
+   	 	int count = reviewMapper.checkReviewExists(request.getUserNo(), prdNo);
+   	 		if (count > 0) {
+   	 			// IllegalArgumentException을 던지면 ApiResponse.fromException에서 400 에러로 처리됨
+   	 			throw new IllegalArgumentException("이미 이 상품에 대한 리뷰를 작성하셨습니다.");
+   	 		}
     	// odNo가 0이면 null로 변경
     	if (request.getOdNo() != null && request.getOdNo() == 0) {
             request.setOdNo(null);
         }
+    	
+    	
     	
         // 1) VO 생성 및 기본값 세팅
         ReviewVO reviewVO = new ReviewVO();

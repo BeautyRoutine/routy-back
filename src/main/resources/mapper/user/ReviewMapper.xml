@@ -289,4 +289,14 @@
         VALUES (#{revNo}, #{rfTypeCode})
     </insert>
     
+    <!-- 리뷰 중복 체크 -->
+    <select id="checkReviewExists" resultType="int">
+        SELECT COUNT(*)
+        FROM REVIEW
+        WHERE userNo = #{userNo}
+          AND prdNo = #{prdNo}
+    </select>
+    
+    
+    
 </mapper>
