@@ -42,11 +42,11 @@
                (SELECT COUNT(*)
                FROM QNA QA
                WHERE QA.ODNO=O.ODNO AND QA.USERNO=U.USERNO
-                     AND QA.QNATYPE=5 AND QA.QNASTATUS IN (1, 2))	AS returnCnt,
+                     AND QA.QNATYPE=7 AND QA.QNASTATUS IN (1, 2))	AS returnCnt,
                (SELECT COUNT(*)
                FROM QNA QA
                WHERE QA.ODNO=O.ODNO AND QA.USERNO=U.USERNO
-                     AND QA.QNATYPE=6 AND QA.QNASTATUS IN (1, 2))	AS swapCnt,
+                     AND QA.QNATYPE=8 AND QA.QNASTATUS IN (1, 2))	AS swapCnt,
                TO_CHAR(O.ODREGDATE, 'YYYY-MM-DD')					AS orderDate,
                O.ODSTATUS											AS orderStatus
                
