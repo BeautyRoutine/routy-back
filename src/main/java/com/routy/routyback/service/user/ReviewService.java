@@ -120,6 +120,7 @@ public class ReviewService implements IReviewService {
         ReviewVO reviewVO = new ReviewVO();
         reviewVO.setPrdNo(prdNo);
         reviewVO.setUserNo(request.getUserNo());
+        reviewVO.setRevRank(1); 
         reviewVO.setRevStar(request.getRevStar());
         reviewVO.setContent(request.getContent());
         reviewVO.setOdNo(request.getOdNo());
@@ -370,7 +371,7 @@ public class ReviewService implements IReviewService {
         }
 
         // DB에 저장할 '파일명' 반환
-        return "images/review/" + savedFileName;
+        return "/images/review/" + savedFileName;
     }
     
 }

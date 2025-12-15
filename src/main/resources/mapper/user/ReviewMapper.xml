@@ -128,8 +128,8 @@
                 #{revRank},
                 #{revStar},
                 #{content},
-        		#{userSkin},
-        		#{userColor})
+        		#{userSkin, jdbcType=INTEGER},
+        		#{userColor, jdbcType=INTEGER})
     </insert>
 
     <!-- 리뷰 1건 상세 조회-->

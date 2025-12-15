@@ -72,6 +72,7 @@ public class ReviewController {
     		ReviewResponse createReview = service.createReview(prdNo, request, files);
     		return ApiResponse.success(createReview);
         	} catch (Exception e) {
+        		 e.printStackTrace(); 
         	return ApiResponse.fromException(e);
         }
     }
