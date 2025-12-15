@@ -34,5 +34,11 @@ public class DeliveryDTO {
 	private String userNick;
 	private String userName;
 	private String userHp;
+	
+	private Integer qnaNo;
+	private String qnaA;
+	private Integer qnaStatus; // 1:등록/2:진행중/3:완료
+	
+	private Integer odStatus; // 주문 상태 (1:주문서/2:결제완료/3:준비중/4:배송중/5:완료/6:취소/7:환불/8:교환)
 
 }

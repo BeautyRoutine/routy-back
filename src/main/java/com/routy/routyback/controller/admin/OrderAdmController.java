@@ -77,4 +77,8 @@ public class OrderAdmController {
 	public ApiResponse listAllOrdersClaim(@RequestParam Map<String, Object> params) { // 전체 교환&환불 조회
 		return service.listAllOrdersClaim(params);
 	}
+	@GetMapping("/claim/detail/{qnaNo}")
+	public ApiResponse detailOrderClaim(@PathVariable int qnaNo) { // 요청번호 조회
+		return service.detailOrderClaim(qnaNo);
+	}
 }

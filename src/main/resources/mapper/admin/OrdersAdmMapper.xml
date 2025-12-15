@@ -5,7 +5,9 @@
 
 <mapper namespace="com.routy.routyback.mapper.admin.IOrdersAdmDAO">
     <sql id="listAllOrdersFilter">
-        FROM ORDERS o LEFT JOIN USERS u ON u.userNo=o.userNo
+        FROM ORDERS o
+        	LEFT JOIN USERS u ON u.userNo=o.userNo
+        	LEFT JOIN QNA qa ON qa.odNo=o.odNo
         WHERE ODSTATUS > 1
         <if test="mem_name != null and mem_name != ''">
             AND u.userName LIKE #{mem_name}
@@ -24,7 +26,7 @@
         </choose>
     </sql>
 	<select id="listAllOrders" resultType="com.routy.routyback.dto.OrdersUsDTO">
-		SELECT o.*, u.userName, u.userNick, u.userId, u.userHp
+		SELECT o.*, u.userName, u.userNick, u.userId, u.userHp, qa.qnaNo
 	    <include refid="listAllOrdersFilter"/>
 		OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
 	</select>
@@ -34,15 +36,20 @@
     </select>
     
     <select id="detailOrder" parameterType="int" resultType="com.routy.routyback.dto.OrdersUsDTO">
-	    SELECT o.*, u.userName, u.userNick, u.userId, u.userHp
-	    FROM ORDERS o LEFT JOIN USERS u ON u.userNo=o.userNo
-	    WHERE odNo = #{odNo}
+	    SELECT o.*, u.userName, u.userNick, u.userId, u.userHp, qa.qnaNo
+	    FROM ORDERS o
+	    	LEFT JOIN USERS u ON u.userNo=o.userNo
+	    	LEFT JOIN QNA qa ON qa.odNo=o.odNo
+	    WHERE o.odNo = #{odNo}
     </select>
     
     
     
     <sql id="listAllOrderDeliveryFilter">
-        FROM DELIVERY d LEFT JOIN ORDERS o ON o.odNo=d.odNo LEFT JOIN USERS u ON u.userNo=o.userNo
+        FROM DELIVERY d
+        	LEFT JOIN ORDERS o ON o.odNo=d.odNo
+        	LEFT JOIN USERS u ON u.userNo=o.userNo
+        	LEFT JOIN QNA qa ON qa.delvNo=d.delvNo
         WHERE 1=1
         <if test="mem_name != null and mem_name != ''">
             AND u.userName LIKE #{mem_name}
@@ -67,7 +74,7 @@
         </choose>
     </sql>
 	<select id="listAllOrdersDelivery" resultType="com.routy.routyback.dto.DeliveryDTO">
-		SELECT d.*, u.userNo, u.userName, u.userNick, u.userId, u.userHp
+		SELECT d.*, u.userNo, u.userName, u.userNick, u.userId, u.userHp, qa.qnaNo
 	    <include refid="listAllOrderDeliveryFilter"/>
 		OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
 	</select>
@@ -77,9 +84,12 @@
     </select>
     
     <select id="detailOrderDelivery" parameterType="int" resultType="com.routy.routyback.dto.DeliveryDTO">
-	    SELECT d.*, u.userNo, u.userName, u.userNick, u.userId, u.userHp
-	    FROM DELIVERY d LEFT JOIN ORDERS o ON o.odNo=d.odNo LEFT JOIN USERS u ON u.userNo=o.userNo
-	    WHERE d.delvNo = #{delvNo}
+	    SELECT d.*, u.userNo, u.userName, u.userNick, u.userId, u.userHp, qa.qnaNo
+	    FROM DELIVERY d
+	    	LEFT JOIN ORDERS o ON o.odNo=d.odNo
+	    	LEFT JOIN USERS u ON u.userNo=o.userNo
+	    	LEFT JOIN QNA qa ON qa.delvNo=d.delvNo
+    	WHERE d.delvNo = #{delvNo}
     </select>
     
     <insert id="insertOrderDelivery" parameterType="com.routy.routyback.dto.DeliveryDTO">
@@ -128,6 +138,7 @@
     <sql id="listAllOrderClaimFilter">
         FROM QNA qa 
         	INNER JOIN USERS u ON u.userNo=qa.userNo
+        	LEFT JOIN DELIVERY d ON d.delvNo=qa.delvNo
         WHERE qa.qnaType IN (7, 8)
         <if test="m_name != null and m_name != ''">
             AND u.userName LIKE #{m_name}
@@ -169,5 +180,31 @@
 	    SELECT COUNT(1)
 	    <include refid="listAllOrderClaimFilter"/>
     </select>
+    
+    <select id="detailOrderClaim" parameterType="int" resultType="com.routy.routyback.dto.OrderClaimDTO">
+	    SELECT *
+	    FROM QNA qa
+	    	INNER JOIN USERS u ON u.userNo=qa.userNo
+	    	LEFT JOIN DELIVERY d ON d.delvNo=qa.delvNo
+    	WHERE qa.qnaNo = #{qnaNo}
+    </select>
+    
+    <update id="updateOrderClaim" parameterType="com.routy.routyback.dto.DeliveryDTO">
+    	UPDATE QNA
+    	<set>
+    		<if test="delvNo != 0"> delvNo = #{delvNo}, </if>
+    		<if test="qnaA != null"> qnaA = #{qnaA}, </if>
+	        <if test="qnaStatus != 0"> qnaStatus = #{qnaStatus}, </if>
+    	</set>
+    	WHERE qnaNo = #{qnaNo}
+    </update>
+    
+    <update id="updateOrder" parameterType="com.routy.routyback.dto.DeliveryDTO">
+    	UPDATE ORDERS
+    	<set>
+    		<if test="odStatus != null"> odStatus = #{odStatus}, </if>
+    	</set>
+    	WHERE odNo = #{odNo}
+    </update>
     
 </mapper>

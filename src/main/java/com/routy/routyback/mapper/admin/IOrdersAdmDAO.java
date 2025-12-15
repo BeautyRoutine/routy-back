@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import com.routy.routyback.dto.DeliveryDTO;
+import com.routy.routyback.dto.OrderClaimDTO;
 import com.routy.routyback.dto.OrdersUsDTO;
 
 public interface IOrdersAdmDAO {
@@ -80,5 +81,8 @@ public interface IOrdersAdmDAO {
     
     
     int listAllOrdersClaimCount(Map<String, Object> params);
-    ArrayList<DeliveryDTO> listAllOrdersClaim(Map<String, Object> params);
+    ArrayList<OrderClaimDTO> listAllOrdersClaim(Map<String, Object> params);
+    OrderClaimDTO detailOrderClaim(int qnaNo);
+    void updateOrderClaim(DeliveryDTO dto);
+    void updateOrder(DeliveryDTO dto);
 }

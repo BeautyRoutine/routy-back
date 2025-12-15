@@ -22,5 +22,6 @@ public interface IOrderAdmService {
 	
 	
 	ApiResponse listAllOrdersClaim(Map<String, Object> params); // 전체 택배 조회
+	ApiResponse detailOrderClaim(int qnaNo); // 요청번호 조회
 	
 }
