@@ -36,14 +36,24 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+            // CSRF 비활성화 (JWT 사용시 필수)
             .csrf(csrf -> csrf.disable())
+
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+
+            // 폼 로그인 / 기본 인증 비활성화
             .formLogin(form -> form.disable())
             .httpBasic(basic -> basic.disable())
+
+            // 세션 사용 안함 (JWT)
             .sessionManagement(session ->
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             )
+
+            // 인가 설정
             .authorizeHttpRequests(auth -> auth
+
+                .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
                 // 인증 관련 - 모두 허용
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/auth/**").permitAll()  // ← 카카오 로그인 경로 추가!
@@ -86,7 +96,7 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList(frontendUrl));
         configuration.setAllowedMethods(
-            Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
+            Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);
         configuration.setMaxAge(3600L);
