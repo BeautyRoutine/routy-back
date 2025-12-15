@@ -68,4 +68,13 @@ public class OrderAdmController {
 	public ApiResponse deleteOrderDelivery(@PathVariable int delvNo) { // 택배 삭제
 		return service.deleteOrderDelivery(delvNo);
 	}
+	
+	
+	
+	
+	
+	@GetMapping("/claim/list")
+	public ApiResponse listAllOrdersClaim(@RequestParam Map<String, Object> params) { // 전체 교환&환불 조회
+		return service.listAllOrdersClaim(params);
+	}
 }

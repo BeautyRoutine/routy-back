@@ -123,4 +123,51 @@
     	DELETE FROM DELIVERY WHERE delvNo = #{delvNo}
     </delete>
     
+    
+    
+    <sql id="listAllOrderClaimFilter">
+        FROM QNA qa 
+        	INNER JOIN USERS u ON u.userNo=qa.userNo
+        WHERE qa.qnaType IN (7, 8)
+        <if test="m_name != null and m_name != ''">
+            AND u.userName LIKE #{m_name}
+        </if>
+        <if test="s_regdate != null and s_regdate != ''">
+            AND qa.qnaDate >= #{s_regdate}
+        </if>
+        <if test="e_regdate  != null and e_regdate  != ''">
+            AND qa.qnaDate &lt; TO_DATE(#{e_regdate}, 'YYYY-MM-DD') + 1
+        </if>
+        <if test="claim_type == '7' or claim_type == 7">
+            AND qa.qnaType = 7
+        </if>
+        <if test="claim_type == '8' or claim_type == 8">
+            AND qa.qnaType = 8
+        </if>
+        <if test="claim_status == '1' or claim_status == 1">
+            AND qa.qnaStatus = 1
+        </if>
+        <if test="claim_status == '2' or claim_status == 2">
+            AND qa.qnaStatus = 2
+        </if>
+        <if test="claim_status == '3' or claim_status == 3">
+            AND qa.qnaStatus = 3
+        </if>
+
+        <choose>
+            <otherwise>
+                ORDER BY qa.qnaNo DESC
+            </otherwise>
+        </choose>
+    </sql>
+	<select id="listAllOrdersClaim" resultType="com.routy.routyback.dto.OrderClaimDTO">
+		SELECT *
+	    <include refid="listAllOrderClaimFilter"/>
+		OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
+	</select>
+    <select id="listAllOrdersClaimCount" resultType="int">
+	    SELECT COUNT(1)
+	    <include refid="listAllOrderClaimFilter"/>
+    </select>
+    
 </mapper>

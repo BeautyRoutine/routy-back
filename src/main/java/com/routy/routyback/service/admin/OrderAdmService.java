@@ -176,4 +176,27 @@ public class OrderAdmService implements IOrderAdmService {
 		}
 	}
 
+
+
+	@Override
+	public ApiResponse listAllOrdersClaim(Map<String, Object> params) {
+		try {
+			// param 재가공
+			ParamProcessor.paging(params);
+			ParamProcessor.likeBothString(params, "m_name");
+			
+			int total = dao.listAllOrdersClaimCount(params);
+
+			ArrayList<DeliveryDTO> resultList = dao.listAllOrdersClaim(params);
+	        
+	        Map<String, Object> result = new java.util.HashMap<>();
+	        result.put("total", total);
+	        result.put("list", resultList);
+	        
+	        return ApiResponse.success(result);
+		} catch (Exception e) {
+			return ApiResponse.fromException(e);
+		}
+	}
+
 }

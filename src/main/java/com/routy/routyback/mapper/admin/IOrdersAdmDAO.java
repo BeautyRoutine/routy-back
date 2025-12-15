@@ -74,4 +74,11 @@ public interface IOrdersAdmDAO {
      * 	택배 번호 (int)
      */
     void deleteOrderDelivery(int delvNo);
+    
+    
+    
+    
+    
+    int listAllOrdersClaimCount(Map<String, Object> params);
+    ArrayList<DeliveryDTO> listAllOrdersClaim(Map<String, Object> params);
 }
