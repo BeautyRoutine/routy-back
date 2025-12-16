@@ -69,7 +69,7 @@
     <select id="productAllSkinCate" resultMap="prdResult">
         SELECT
         p.*,
-        (SELECT AVG(REVSTAR) FROM REVIEW r WHERE r.PRDNO = p.PRDNO) AS avgRating,
+        (SELECT ROUND(AVG(REVSTAR),1) FROM REVIEW r WHERE r.PRDNO = p.PRDNO) AS avgRating,
         (SELECT COUNT(*) FROM REVIEW r WHERE r.PRDNO = p.PRDNO) AS reviewCount,
         (
         SELECT COUNT(*)
@@ -133,7 +133,7 @@
         JOIN (
         SELECT
         PRDNO,
-        AVG(REVSTAR) AS AVG_STAR,
+        ROUND(AVG(REVSTAR),1) AS AVG_STAR,
         COUNT(*) AS review_count
         FROM REVIEW
         GROUP BY PRDNO

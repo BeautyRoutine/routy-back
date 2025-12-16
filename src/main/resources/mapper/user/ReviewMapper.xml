@@ -26,11 +26,7 @@
         userName,
         likeCount,
         photoCount,
-        (
-        SELECT LISTAGG(ri.RI_URL, '||') WITHIN GROUP (ORDER BY ri.RI_SORT)
-        FROM REVIEW_IMAGE ri
-        WHERE ri.REV_NO = r.REVNO
-        ) AS imageUrls
+        imageUrls
         FROM (
         SELECT
         r.revNo,
@@ -64,6 +60,7 @@
         FROM REVIEW r
         LEFT JOIN USERS u ON r.userNo = u.userNo
         WHERE r.prdNo = #{prdNo}
+        ) r
         ORDER BY
         <choose>
             <!-- 좋아요순: likeCount 높은 순 + 최신순 -->
@@ -86,7 +83,7 @@
                 r.revTrustScore DESC, r.revDate DESC
             </otherwise>
         </choose>
-        ) r
+        
         OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
     </select>
 
@@ -99,7 +96,7 @@
 
     <!--평균 별점 조회 -->
     <select id="findAverageRating" parameterType="int" resultType="double">
-        SELECT AVG(revStar)
+        SELECT ROUND(AVG(revStar),1)
         FROM REVIEW
         WHERE prdNo = #{prdNo}
     </select>
