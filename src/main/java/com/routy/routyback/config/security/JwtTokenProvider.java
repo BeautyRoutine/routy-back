@@ -40,10 +40,10 @@ public class JwtTokenProvider {
     }
 
     // JWT 토큰 생성 - userLevel 포함
-    public String createToken(String userId, Integer userLevel, Long userNo) {
+    public String createToken(String userId, Integer userLevel) {
         Claims claims = Jwts.claims().setSubject(userId);
         claims.put("userLevel", userLevel);
-        claims.put("userNo", userNo);
+        
 
         Date now = new Date();
         Date validity = new Date(now.getTime() + validityInMilliseconds);
@@ -116,8 +116,7 @@ public class JwtTokenProvider {
                 .parseClaimsJws(token);
             return true;
         } catch (Exception e) {
-        	 System.out.println("JWT 검증 실패: " + e.getMessage()); 
-             e.printStackTrace(); 
+        	 
             return false;
         }
     }

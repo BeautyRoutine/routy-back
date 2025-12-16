@@ -81,7 +81,7 @@ public class AuthService {
         }
 
         // JWT 토큰 생성
-        String token = jwtTokenProvider.createToken(savedUser.getUserId(), savedUser.getUserLevel(),savedUser.getUserNo());
+        String token = jwtTokenProvider.createToken(savedUser.getUserId(), savedUser.getUserLevel());
 
         return new AuthResponse(token, savedUser);
     }
@@ -105,7 +105,7 @@ public class AuthService {
         }
 
         // JWT 토큰 생성
-        String token = jwtTokenProvider.createToken(user.getUserId(), user.getUserLevel(), user.getUserNo());
+        String token = jwtTokenProvider.createToken(user.getUserId(), user.getUserLevel());
 
         return new AuthResponse(token, user);
     }

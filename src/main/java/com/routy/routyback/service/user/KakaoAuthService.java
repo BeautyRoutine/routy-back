@@ -63,7 +63,7 @@ public class KakaoAuthService {
             String accessToken = getAccessToken(code);
             KakaoUserInfo userInfo = getKakaoUserInfo(accessToken);
             User user = processKakaoUser(userInfo);
-            String jwtToken = jwtTokenProvider.createToken(user.getUserId(), user.getUserLevel(),user.getUserNo());
+            String jwtToken = jwtTokenProvider.createToken(user.getUserId(), user.getUserLevel());
             boolean needsSkinProfile = user.getUserSkin() == null || user.getUserSkin() == 0;
             System.out.println("===== 카카오 로그인 디버그 =====");
             System.out.println("userId: " + user.getUserId());
@@ -74,7 +74,6 @@ public class KakaoAuthService {
             String redirectUrl = UriComponentsBuilder.fromHttpUrl(frontendUrl + "/kakao/callback")
                     .queryParam("token", jwtToken)
                     .queryParam("userId", user.getUserId())
-                    .queryParam("userNo", user.getUserNo())
                     .queryParam("userName", URLEncoder.encode(user.getUserName() != null ? user.getUserName() : "", StandardCharsets.UTF_8))
                     .queryParam("userLevel", user.getUserLevel())
                     .queryParam("userSkin", user.getUserSkin() != null ? user.getUserSkin() : 0)
