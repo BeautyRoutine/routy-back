@@ -8,6 +8,7 @@
 package com.routy.routyback.controller.user;
 
 import com.routy.routyback.common.ApiResponse;
+import com.routy.routyback.dto.order.OrderClaimsDTO;
 import com.routy.routyback.service.user.IOrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -23,17 +24,19 @@ public class OrderController {
     /**
      * 주문 상태 요약 조회
      */
-    @GetMapping("/{userNo}/status-summary")
-    public ResponseEntity<ApiResponse> summary(@PathVariable Long userNo) {
-        return ResponseEntity.ok(ApiResponse.success(orderService.getSummary(userNo)));
+    @GetMapping("/{userId}/status-summary")
+    public ResponseEntity<ApiResponse> summary(@PathVariable String userId) {
+        return ResponseEntity.ok(ApiResponse.success(orderService.getSummary(userId)));
     }
 
     /**
      * 주문 목록 조회
      */
-    @GetMapping("/{userNo}")
-    public ResponseEntity<ApiResponse> list(@PathVariable Long userNo) {
-        return ResponseEntity.ok(ApiResponse.success(orderService.getList(userNo)));
+    @GetMapping("/{userId}")
+    public ResponseEntity<ApiResponse> list(@PathVariable String userId
+								    		,@RequestParam(required = false) String startDate
+											,@RequestParam(required = false) String endDate) {
+        return ResponseEntity.ok(ApiResponse.success(orderService.getList(userId, startDate, endDate)));
     }
 
     /**
@@ -43,4 +46,14 @@ public class OrderController {
     public ResponseEntity<ApiResponse> detail(@PathVariable Long odNo) {
         return ResponseEntity.ok(ApiResponse.success(orderService.getDetail(odNo)));
     }
+    
+    /**
+     * 교환 & 반품 접수
+     */
+    @PostMapping("/{odNo}/claims")
+    public ResponseEntity<ApiResponse> claims(@PathVariable int odNo, @RequestBody OrderClaimsDTO dto) {
+    	dto.setOdNo(odNo);
+    	return ResponseEntity.ok(ApiResponse.success(orderService.postClaims(dto)));
+    }
+    
 }

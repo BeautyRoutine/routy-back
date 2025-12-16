@@ -5,8 +5,10 @@
 
 <mapper namespace="com.routy.routyback.mapper.admin.IOrdersAdmDAO">
     <sql id="listAllOrdersFilter">
-        FROM ORDERS o LEFT JOIN USERS u ON u.userNo=o.userNo
-        WHERE 1=1
+        FROM ORDERS o
+        	LEFT JOIN USERS u ON u.userNo=o.userNo
+        	LEFT JOIN QNA qa ON qa.odNo=o.odNo
+        WHERE ODSTATUS > 1
         <if test="mem_name != null and mem_name != ''">
             AND u.userName LIKE #{mem_name}
         </if>
@@ -14,7 +16,7 @@
             AND o.odRegdate >= #{od_start_day}
         </if>
         <if test="od_end_day  != null and od_end_day  != ''">
-            AND o.odRegdate &lt;= #{od_end_day }
+            AND o.odRegdate &lt; TO_DATE(#{od_end_day}, 'YYYY-MM-DD') + 1
         </if>
 
         <choose>
@@ -24,7 +26,7 @@
         </choose>
     </sql>
 	<select id="listAllOrders" resultType="com.routy.routyback.dto.OrdersUsDTO">
-		SELECT o.*, u.userName, u.userNick, u.userId, u.userHp
+		SELECT o.*, u.userName, u.userNick, u.userId, u.userHp, qa.qnaNo
 	    <include refid="listAllOrdersFilter"/>
 		OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
 	</select>
@@ -34,15 +36,20 @@
     </select>
     
     <select id="detailOrder" parameterType="int" resultType="com.routy.routyback.dto.OrdersUsDTO">
-	    SELECT o.*, u.userName, u.userNick, u.userId, u.userHp
-	    FROM ORDERS o LEFT JOIN USERS u ON u.userNo=o.userNo
-	    WHERE odNo = #{odNo}
+	    SELECT o.*, u.userName, u.userNick, u.userId, u.userHp, qa.qnaNo
+	    FROM ORDERS o
+	    	LEFT JOIN USERS u ON u.userNo=o.userNo
+	    	LEFT JOIN QNA qa ON qa.odNo=o.odNo
+	    WHERE o.odNo = #{odNo}
     </select>
     
     
     
     <sql id="listAllOrderDeliveryFilter">
-        FROM DELIVERY d LEFT JOIN ORDERS o ON o.odNo=d.odNo LEFT JOIN USERS u ON u.userNo=o.userNo
+        FROM DELIVERY d
+        	LEFT JOIN ORDERS o ON o.odNo=d.odNo
+        	LEFT JOIN USERS u ON u.userNo=o.userNo
+        	LEFT JOIN QNA qa ON qa.delvNo=d.delvNo
         WHERE 1=1
         <if test="mem_name != null and mem_name != ''">
             AND u.userName LIKE #{mem_name}
@@ -51,13 +58,13 @@
             AND d.delvRegdate >= #{delv_s_start_day}
         </if>
         <if test="delv_s_end_day  != null and delv_s_end_day  != ''">
-            AND d.delvRegdate &lt;= #{delv_s_end_day}
+            AND d.delvRegdate &lt; TO_DATE(#{delv_s_end_day}, 'YYYY-MM-DD') + 1
         </if>
         <if test="delv_e_start_day != null and delv_e_start_day != ''">
             AND d.delvEnddate >= #{delv_e_start_day}
         </if>
         <if test="delv_e_end_day  != null and delv_e_end_day  != ''">
-            AND d.delvEnddate &lt;= #{delv_e_end_day}
+            AND d.delvEnddate &lt; TO_DATE(#{delv_e_end_day}, 'YYYY-MM-DD') + 1
         </if>
 
         <choose>
@@ -67,7 +74,7 @@
         </choose>
     </sql>
 	<select id="listAllOrdersDelivery" resultType="com.routy.routyback.dto.DeliveryDTO">
-		SELECT d.*, u.userNo, u.userName, u.userNick, u.userId, u.userHp
+		SELECT d.*, u.userNo, u.userName, u.userNick, u.userId, u.userHp, qa.qnaNo
 	    <include refid="listAllOrderDeliveryFilter"/>
 		OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
 	</select>
@@ -77,9 +84,12 @@
     </select>
     
     <select id="detailOrderDelivery" parameterType="int" resultType="com.routy.routyback.dto.DeliveryDTO">
-	    SELECT d.*, u.userNo, u.userName, u.userNick, u.userId, u.userHp
-	    FROM DELIVERY d LEFT JOIN ORDERS o ON o.odNo=d.odNo LEFT JOIN USERS u ON u.userNo=o.userNo
-	    WHERE d.delvNo = #{delvNo}
+	    SELECT d.*, u.userNo, u.userName, u.userNick, u.userId, u.userHp, qa.qnaNo
+	    FROM DELIVERY d
+	    	LEFT JOIN ORDERS o ON o.odNo=d.odNo
+	    	LEFT JOIN USERS u ON u.userNo=o.userNo
+	    	LEFT JOIN QNA qa ON qa.delvNo=d.delvNo
+    	WHERE d.delvNo = #{delvNo}
     </select>
     
     <insert id="insertOrderDelivery" parameterType="com.routy.routyback.dto.DeliveryDTO">
@@ -122,5 +132,79 @@
     <delete id="deleteOrderDelivery" parameterType="int">
     	DELETE FROM DELIVERY WHERE delvNo = #{delvNo}
     </delete>
+    
+    
+    
+    <sql id="listAllOrderClaimFilter">
+        FROM QNA qa 
+        	INNER JOIN USERS u ON u.userNo=qa.userNo
+        	LEFT JOIN DELIVERY d ON d.delvNo=qa.delvNo
+        WHERE qa.qnaType IN (7, 8)
+        <if test="m_name != null and m_name != ''">
+            AND u.userName LIKE #{m_name}
+        </if>
+        <if test="s_regdate != null and s_regdate != ''">
+            AND qa.qnaDate >= #{s_regdate}
+        </if>
+        <if test="e_regdate  != null and e_regdate  != ''">
+            AND qa.qnaDate &lt; TO_DATE(#{e_regdate}, 'YYYY-MM-DD') + 1
+        </if>
+        <if test="claim_type == '7' or claim_type == 7">
+            AND qa.qnaType = 7
+        </if>
+        <if test="claim_type == '8' or claim_type == 8">
+            AND qa.qnaType = 8
+        </if>
+        <if test="claim_status == '1' or claim_status == 1">
+            AND qa.qnaStatus = 1
+        </if>
+        <if test="claim_status == '2' or claim_status == 2">
+            AND qa.qnaStatus = 2
+        </if>
+        <if test="claim_status == '3' or claim_status == 3">
+            AND qa.qnaStatus = 3
+        </if>
+
+        <choose>
+            <otherwise>
+                ORDER BY qa.qnaNo DESC
+            </otherwise>
+        </choose>
+    </sql>
+	<select id="listAllOrdersClaim" resultType="com.routy.routyback.dto.OrderClaimDTO">
+		SELECT *
+	    <include refid="listAllOrderClaimFilter"/>
+		OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
+	</select>
+    <select id="listAllOrdersClaimCount" resultType="int">
+	    SELECT COUNT(1)
+	    <include refid="listAllOrderClaimFilter"/>
+    </select>
+    
+    <select id="detailOrderClaim" parameterType="int" resultType="com.routy.routyback.dto.OrderClaimDTO">
+	    SELECT *
+	    FROM QNA qa
+	    	INNER JOIN USERS u ON u.userNo=qa.userNo
+	    	LEFT JOIN DELIVERY d ON d.delvNo=qa.delvNo
+    	WHERE qa.qnaNo = #{qnaNo}
+    </select>
+    
+    <update id="updateOrderClaim" parameterType="com.routy.routyback.dto.DeliveryDTO">
+    	UPDATE QNA
+    	<set>
+    		<if test="delvNo != 0"> delvNo = #{delvNo}, </if>
+    		<if test="qnaA != null"> qnaA = #{qnaA}, </if>
+	        <if test="qnaStatus != 0"> qnaStatus = #{qnaStatus}, </if>
+    	</set>
+    	WHERE qnaNo = #{qnaNo}
+    </update>
+    
+    <update id="updateOrder" parameterType="com.routy.routyback.dto.DeliveryDTO">
+    	UPDATE ORDERS
+    	<set>
+    		<if test="odStatus != null"> odStatus = #{odStatus}, </if>
+    	</set>
+    	WHERE odNo = #{odNo}
+    </update>
     
 </mapper>

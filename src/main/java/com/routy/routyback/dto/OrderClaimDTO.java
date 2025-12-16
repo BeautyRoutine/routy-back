@@ -9,9 +9,23 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class DeliveryDTO {
-	private int delvNo;
-	private int odNo;
+public class OrderClaimDTO {
+	private Integer qnaNo;
+	private Integer userNo;
+	private Integer odNo;
+	private Integer qnaType; // 문의 유형 (1:제품 / 2:주문 / 3:리뷰신고 / 7:환불요청 /	8:교환요청)
+	private String qnaQ;
+	private String qnaA;
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
+	private Date qnaDate; // 작성일
+	private Integer qnaStatus; // 1:등록/2:진행중/3:완료
+	
+	private String userName;
+	private String userNick;
+	private String userId;
+	private String userHp;
+	
+	private Integer delvNo;
 	private String delvCompany; // 택배사(50)
 	private String delvComNum; // 운송장(20)
 	private int delvType; // 택배타입(2) - 11:배송/12:재배송/13:취소//21:교환회수/22:교환재발송//31:반품회수
@@ -27,18 +41,5 @@ public class DeliveryDTO {
 	private Date delvEnddate; // 완료일
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
 	private Date delvRegdate; // 접수일
-	
-	// OrdersAdmMapper.xml - listAllOrdersDelivery, detailOrderDelivery 사용
-	private int userNo;
-	private String userId;
-	private String userNick;
-	private String userName;
-	private String userHp;
-	
-	private Integer qnaNo;
-	private String qnaA;
-	private Integer qnaStatus; // 1:등록/2:진행중/3:완료
-	
-	private Integer odStatus; // 주문 상태 (1:주문서/2:결제완료/3:준비중/4:배송중/5:완료/6:취소/7:환불/8:교환)
 
 }

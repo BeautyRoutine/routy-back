@@ -9,21 +9,28 @@ package com.routy.routyback.service.user;
 import com.routy.routyback.dto.order.*;
 
 import java.util.List;
+import java.util.Map;
 
 public interface IOrderService {
 
     /**
      * 주문 상태 요약 조회
      */
-    OrderStatusSummaryResponse getSummary(Long userNo);
+    OrderStatusSummaryResponse getSummary(String userId);
 
     /**
      * 주문 목록 조회
      */
-    List<OrderListItemResponse> getList(Long userNo);
+    List<OrderListItemResponse> getList(String userId, String startDate, String endDate);
 
     /**
      * 주문 상세 조회
      */
     OrderDetailResponse getDetail(Long odNo);
+    
+    /**
+     * 교환 & 반품 접수
+     */
+    Map<String, Object> postClaims(OrderClaimsDTO dto);
+    
 }

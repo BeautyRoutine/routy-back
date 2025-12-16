@@ -26,7 +26,7 @@ public class OrdersUsDTO {
     private String odDelvKey;   // 출입 번호/방법
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     private Date odRegdate; // 주문 일시
-    private int odStatus;   // 주문 상태(1~7)
+    private int odStatus;   // 주문 상태 (1:주문서/2:결제완료/3:준비중/4:배송중/5:완료/6:취소/7:환불/8:교환)
 	
  // OrdersAdmMapper.xml - listAllOrders, detailOrder 사용
 	private String userId;
