@@ -1,11 +1,6 @@
 package com.routy.routyback.service.admin;
 
-import java.sql.Timestamp;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +13,7 @@ import com.routy.routyback.common.ApiResponse;
 import com.routy.routyback.common.ParamProcessor;
 import com.routy.routyback.common.category.CategoryRepository;
 import com.routy.routyback.dto.DeliveryDTO;
+import com.routy.routyback.dto.OrderClaimDTO;
 import com.routy.routyback.dto.OrderPrdDTO;
 import com.routy.routyback.dto.OrdersUsDTO;
 
@@ -139,6 +135,18 @@ public class OrderAdmService implements IOrderAdmService {
 			
 			Map<String, Object> result = new java.util.HashMap<>();
 	        result.put("delvNo", delvNo);
+	        System.out.println("qnaNO="+dto.getQnaNo());
+	        
+	        // 환불&교환인 경우 요청&주문 업데이트
+	        if(dto.getQnaNo() != null && dto.getQnaNo() > 0) {
+	        	// 요청 업데이트
+	        	dto.setQnaStatus(2);
+	        	dto.setQnaA("반품 신청 완료되었습니다.");
+	        	dao.updateOrderClaim(dto);
+	        	// 주문 업데이트
+	        	dto.setOdStatus(3);
+	        	dao.updateOrder(dto);
+	        }
 			
 			return ApiResponse.success(result);
 		} catch (Exception e) {
@@ -152,6 +160,20 @@ public class OrderAdmService implements IOrderAdmService {
 		try {
 			dao.updateOrderDelivery(dto);
 			int delvNo = dto.getDelvNo();
+			
+			if(dto.getDelvStatus() > 2) {
+	        	// 주문 업데이트
+				if(dto.getDelvStatus() == 3 || dto.getDelvStatus() == 4 || dto.getDelvStatus() == 5) dto.setOdStatus(4);
+				if(dto.getDelvStatus() == 6) dto.setOdStatus(5);
+				dao.updateOrder(dto);
+				// 요청 업데이트
+				if(dto.getDelvStatus() == 6) {
+					System.out.println("qnaNo="+dto.getQnaNo());
+					dto.setQnaStatus(3);
+					System.out.println("qnaStatus="+dto.getQnaStatus());
+					dao.updateOrderClaim(dto);
+				}
+	        }
 			
 			Map<String, Object> result = new java.util.HashMap<>();
 	        result.put("msg", "delvNo:"+delvNo+" 택배를 수정하였습니다.");
@@ -171,6 +193,40 @@ public class OrderAdmService implements IOrderAdmService {
 	        result.put("msg", "delvNo:"+delvNo+" 택배를 삭제하였습니다.");
 			
 			return ApiResponse.success(result);
+		} catch (Exception e) {
+			return ApiResponse.fromException(e);
+		}
+	}
+
+
+
+	@Override
+	public ApiResponse listAllOrdersClaim(Map<String, Object> params) {
+		try {
+			// param 재가공
+			ParamProcessor.paging(params);
+			ParamProcessor.likeBothString(params, "m_name");
+			
+			int total = dao.listAllOrdersClaimCount(params);
+
+			ArrayList<OrderClaimDTO> resultList = dao.listAllOrdersClaim(params);
+	        
+	        Map<String, Object> result = new java.util.HashMap<>();
+	        result.put("total", total);
+	        result.put("list", resultList);
+	        
+	        return ApiResponse.success(result);
+		} catch (Exception e) {
+			return ApiResponse.fromException(e);
+		}
+	}
+	
+	@Override
+	public ApiResponse detailOrderClaim(int qnaNo) {
+		try {
+			OrderClaimDTO resultRow = dao.detailOrderClaim(qnaNo);
+			
+			return ApiResponse.success(resultRow);
 		} catch (Exception e) {
 			return ApiResponse.fromException(e);
 		}

@@ -1,10 +1,13 @@
 package com.routy.routyback.service.user;
 
+import com.routy.routyback.dto.order.OrderClaimsDTO;
 import com.routy.routyback.dto.order.OrderDetailResponse;
 import com.routy.routyback.dto.order.OrderListItemResponse;
 import com.routy.routyback.dto.order.OrderStatusSummaryResponse;
 import com.routy.routyback.mapper.order.OrderMapper;
 import java.util.List;
+import java.util.Map;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -26,8 +29,8 @@ public class OrderService implements IOrderService {
      * @return 주문 상태 요약 응답 DTO
      */
     @Override
-    public OrderStatusSummaryResponse getSummary(Long userNo) {
-        return orderMapper.getOrderStatusSummary(userNo);
+    public OrderStatusSummaryResponse getSummary(String userId) {
+        return orderMapper.getOrderStatusSummary(userId);
     }
 
     /**
@@ -37,8 +40,8 @@ public class OrderService implements IOrderService {
      * @return 주문 목록 응답 DTO 리스트
      */
     @Override
-    public List<OrderListItemResponse> getList(Long userNo) {
-        return orderMapper.getOrderList(userNo);
+    public List<OrderListItemResponse> getList(String userId, String startDate, String endDate) {
+        return orderMapper.getOrderList(userId, startDate, endDate);
     }
 
     /**
@@ -53,4 +56,28 @@ public class OrderService implements IOrderService {
         detail.setItems(orderMapper.getOrderItems(odNo));
         return detail;
     }
+
+    /**
+     * 교환 & 반품 접수
+     */
+	@Override
+	public Map<String, Object> postClaims(OrderClaimsDTO dto) {
+		// qna insert
+		orderMapper.postOrderClaims(dto);
+		Integer qnaNo = dto.getQnaNo();
+		
+		// 주문 상태 변경
+		Integer qnaType = dto.getQnaType();
+		Integer odStatus = qnaType == 5 ? 7 : 8 ;
+		dto.setOdStatus(odStatus);
+		orderMapper.putOrders(dto);
+		
+		Map<String, Object> result = new java.util.HashMap<>();
+        result.put("qnaNo", qnaNo);
+		
+		return result;
+	}
+	
+	
+	
 }

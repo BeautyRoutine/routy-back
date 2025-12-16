@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import com.routy.routyback.dto.DeliveryDTO;
+import com.routy.routyback.dto.OrderClaimDTO;
 import com.routy.routyback.dto.OrdersUsDTO;
 
 public interface IOrdersAdmDAO {
@@ -74,4 +75,14 @@ public interface IOrdersAdmDAO {
      * 	택배 번호 (int)
      */
     void deleteOrderDelivery(int delvNo);
+    
+    
+    
+    
+    
+    int listAllOrdersClaimCount(Map<String, Object> params);
+    ArrayList<OrderClaimDTO> listAllOrdersClaim(Map<String, Object> params);
+    OrderClaimDTO detailOrderClaim(int qnaNo);
+    void updateOrderClaim(DeliveryDTO dto);
+    void updateOrder(DeliveryDTO dto);
 }
