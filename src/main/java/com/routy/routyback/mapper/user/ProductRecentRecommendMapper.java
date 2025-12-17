@@ -11,10 +11,20 @@ public interface ProductRecentRecommendMapper {
 
     // 가장 최근 본 소카테고리 1개
     Integer findLatestSubcate(@Param("userNo") Integer userNo);
-
+    // 가장 최근 본 본카테고리
+    Integer findLatestMaincate(@Param("userNo") Integer userNo);
     // 최근 본 카테고리 기반 추천 4개
     List<ProductRecentRecommendDTO> recommendByLatestSubcate(
             @Param("userNo") Integer userNo,
             @Param("subcate") Integer subcate
     );
+
+    // mainCate 기반 보충 추천
+    List<ProductRecentRecommendDTO> recommendByMaincateSupplement(
+            @Param("userNo") Integer userNo,
+            @Param("maincate") Integer maincate,
+            @Param("excludePrdNos") List<Integer> excludePrdNos,
+            @Param("limit") int limit
+    );
+
 }
