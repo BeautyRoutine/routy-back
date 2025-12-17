@@ -52,10 +52,10 @@ public class KakaoAuthService {
 
     public String getKakaoLoginUrl() {
         return UriComponentsBuilder.fromHttpUrl(authorizeUri)
-                .queryParam("response_type", "code")
-                .queryParam("client_id", clientId)
-                .queryParam("redirect_uri", redirectUri)
-                .toUriString();
+            .queryParam("response_type", "code")
+            .queryParam("client_id", clientId)
+            .queryParam("redirect_uri", redirectUri)
+            .toUriString();
     }
 
     public void kakaoLogin(String code, HttpServletResponse response) throws IOException {
@@ -71,15 +71,16 @@ public class KakaoAuthService {
             System.out.println("userSkin: " + user.getUserSkin());
             System.out.println("needsSkinProfile: " + needsSkinProfile);
 
-            String redirectUrl = UriComponentsBuilder.fromHttpUrl(frontendUrl + "/kakao/callback")
-                    .queryParam("token", jwtToken)
-                    .queryParam("userId", user.getUserId())
-                    .queryParam("userName", URLEncoder.encode(user.getUserName() != null ? user.getUserName() : "", StandardCharsets.UTF_8))
-                    .queryParam("userLevel", user.getUserLevel())
-                    .queryParam("userSkin", user.getUserSkin() != null ? user.getUserSkin() : 0)
-                    .queryParam("isNewUser", false)
-                    .queryParam("needsSkinProfile", needsSkinProfile)
-                    .toUriString();
+            String redirectUrl = UriComponentsBuilder.fromHttpUrl(frontendUrl + "/#/kakao/callback")
+                .queryParam("token", jwtToken)
+                .queryParam("userId", user.getUserId())
+                .queryParam("userName",
+                    URLEncoder.encode(user.getUserName() != null ? user.getUserName() : "", StandardCharsets.UTF_8))
+                .queryParam("userLevel", user.getUserLevel())
+                .queryParam("userSkin", user.getUserSkin() != null ? user.getUserSkin() : 0)
+                .queryParam("isNewUser", false)
+                .queryParam("needsSkinProfile", needsSkinProfile)
+                .toUriString();
             System.out.println("리다이렉트 URL: " + redirectUrl);
 
             response.sendRedirect(redirectUrl);
@@ -87,7 +88,7 @@ public class KakaoAuthService {
         } catch (Exception e) {
             System.err.println("카카오 로그인 실패: " + e.getMessage());
             e.printStackTrace();
-            response.sendRedirect(frontendUrl + "/login?error=" + 
+            response.sendRedirect(frontendUrl + "/login?error=" +
                 URLEncoder.encode("카카오 로그인에 실패했습니다", StandardCharsets.UTF_8));
         }
     }
@@ -123,20 +124,20 @@ public class KakaoAuthService {
 
         HttpEntity<String> request = new HttpEntity<>(headers);
         ResponseEntity<String> response = restTemplate.exchange(
-                userInfoUri,
-                HttpMethod.GET,
-                request,
-                String.class
+            userInfoUri,
+            HttpMethod.GET,
+            request,
+            String.class
         );
 
         try {
             JsonNode rootNode = objectMapper.readTree(response.getBody());
-            
+
             String kakaoId = rootNode.path("id").asText();
             String nickname = rootNode.path("properties").path("nickname").asText();
-            
+
             JsonNode emailNode = rootNode.path("kakao_account").path("email");
-            String email = emailNode.isMissingNode() || emailNode.isNull() 
+            String email = emailNode.isMissingNode() || emailNode.isNull()
                 ? "kakao_" + kakaoId + "@temp.com"
                 : emailNode.asText();
 
@@ -148,7 +149,7 @@ public class KakaoAuthService {
 
     private User processKakaoUser(KakaoUserInfo userInfo) {
         String kakaoUserId = "kakao_" + userInfo.getKakaoId();
-        
+
         User existingUser = userMapper.findByUserId(kakaoUserId);
 
         if (existingUser != null) {
@@ -162,12 +163,12 @@ public class KakaoAuthService {
         newUser.setUserNick(userInfo.getNickname());
         newUser.setUserEmail(userInfo.getEmail());
         newUser.setUserHp("01000000000");
-        
+
         newUser.setUserZip(0);
         newUser.setUserJibunAddr("미입력");
         newUser.setUserRoadAddr("미입력");
         newUser.setUserDetailAddr("미입력");
-        
+
         newUser.setUserSkin(0);
         newUser.setPhoneVerified("N");  // 카카오 로그인은 SMS 인증 불필요
 
@@ -177,6 +178,7 @@ public class KakaoAuthService {
     }
 
     private static class KakaoUserInfo {
+
         private final String kakaoId;
         private final String email;
         private final String nickname;
@@ -187,15 +189,24 @@ public class KakaoAuthService {
             this.nickname = nickname;
         }
 
-        public String getKakaoId() { return kakaoId; }
-        public String getEmail() { return email; }
-        public String getNickname() { return nickname; }
+        public String getKakaoId() {
+            return kakaoId;
+        }
+
+        public String getEmail() {
+            return email;
+        }
+
+        public String getNickname() {
+            return nickname;
+        }
     }
+
     @PostConstruct
-public void checkValues() {
-    System.out.println(">>> CLIENT_ID = " + clientId);
-    System.out.println(">>> CLIENT_SECRET = " + clientSecret);
-    System.out.println(">>> REDIRECT_URI = " + redirectUri);
-}
+    public void checkValues() {
+        System.out.println(">>> CLIENT_ID = " + clientId);
+        System.out.println(">>> CLIENT_SECRET = " + clientSecret);
+        System.out.println(">>> REDIRECT_URI = " + redirectUri);
+    }
 
 }
