@@ -62,8 +62,8 @@ public class CategoryRepository {
 
         // 61: 맨즈케어
         mainCate.put(61, new Category("맨즈케어", Map.ofEntries(
-            Map.entry(61001, "스킨케어"),
-            Map.entry(61002, "메이크업"),
+            Map.entry(61001, "맨즈 스킨케어"),
+            Map.entry(61002, "맨즈 메이크업"),
             Map.entry(61003, "헤어케어"),
             Map.entry(61004, "쉐이빙/왁싱")
         )));
