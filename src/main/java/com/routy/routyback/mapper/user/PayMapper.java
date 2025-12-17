@@ -20,5 +20,9 @@ public interface PayMapper {
 
     Integer countPayByOdNo(@Param("odNo") Long odNo);
 
+    Map<String, Object> selectPayInfo(Long odNo);
+
     void updateOrderStatusToComplete(Long odNo);
+
+    void updateOrderStatusToCancelled(Long odNo);
 }
