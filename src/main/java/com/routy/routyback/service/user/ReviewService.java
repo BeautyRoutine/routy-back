@@ -39,7 +39,7 @@ public class ReviewService implements IReviewService {
     private String uploadDir;
 
     @Override
-    public ReviewListResponse getReviewList(int prdNo, int page, int limit, String sort, int userNo) {
+    public ReviewListResponse getReviewList(int prdNo, int page, int limit, String sort, int userNo, Integer userSkin, Integer userColor) {
         // 맵 구성
         Map<String, Object> params = new HashMap<>();
         params.put("prdNo", prdNo);
@@ -48,8 +48,10 @@ public class ReviewService implements IReviewService {
         params.put("sort", sort); // 정렬 기준
 
         // mapper 가져오기
+        if(userSkin !=null && userSkin !=0) params.put("userSkin", userSkin);
+        if(userColor !=null && userColor !=0) params.put("userColor", userColor);
         List<ReviewVO> reviewVOs = reviewMapper.findReviews(params); // 실제 리뷰 목록
-        int totalCount = reviewMapper.countReviews(prdNo); // 전체 리뷰수
+        int totalCount = reviewMapper.countReviews(params); // 전체 리뷰수
         Double avgRating = reviewMapper.findAverageRating(prdNo); // 평균 별점
 
         // vo를 dto로 변환

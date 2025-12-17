@@ -13,7 +13,7 @@ public interface ReviewMapper {
     List<ReviewVO> findReviews(Map<String, Object> params); // 리뷰 목록 조회
 
     // db 결과로 만든 Review 객체를 list 자료구조로 담고, 다양한 타입이니 Object
-    int countReviews(int prdNo);  // 리뷰 개수 조회
+    int countReviews(Map<String, Object> params);  // 리뷰 개수 조회
 
     Double findAverageRating(int prdNo); // 상품 평균 별점 조회
 
