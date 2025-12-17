@@ -71,4 +71,16 @@
     WHERE odNO = #{odNo}
   </select>
 
+  <select id="selectPayInfo" parameterType="long" resultType="map">
+    SELECT PAYPRICE, PAYRESNO
+    FROM PAY
+    WHERE ODNO = #{odNo}
+  </select>
+
+  <update id="updateOrderStatusToCancelled" parameterType="long">
+    UPDATE ORDERS
+    SET ODSTATUS = 6
+    WHERE ODNO = #{odNo}
+  </update>
+
 </mapper>

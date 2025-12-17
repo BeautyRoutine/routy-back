@@ -43,6 +43,7 @@ public class JwtTokenProvider {
     public String createToken(String userId, Integer userLevel) {
         Claims claims = Jwts.claims().setSubject(userId);
         claims.put("userLevel", userLevel);
+        
 
         Date now = new Date();
         Date validity = new Date(now.getTime() + validityInMilliseconds);
@@ -115,6 +116,7 @@ public class JwtTokenProvider {
                 .parseClaimsJws(token);
             return true;
         } catch (Exception e) {
+        	 
             return false;
         }
     }

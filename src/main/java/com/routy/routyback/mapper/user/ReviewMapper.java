@@ -43,6 +43,30 @@ public interface ReviewMapper {
      */
     List<ReviewImageVO> findReviewImages(int revNo);
     
+    //리뷰 이미지 추가
+    void insertReviewImage(ReviewImageVO reviewImageVO);
+    
+    //리뷰 이미지 삭제
+    void deleteReviewImages(int revNo);
+    
  // 별점별 개수 조회 (Key: 별점, Value: 개수)
     List<Map<String, Object>> countRatingByStars(int prdNo);
+    
+    //리뷰 피드백 삭제
+    void deleteReviewFeedback(int revNo);
+    
+    //리뷰의 좋아요 싫어요 내역 전체 삭제
+    void deleteReviewUpdown(int revNo);
+    
+    
+    //리뷰 피드백 조회
+    List<String> findReviewFeedback(int revNo);
+    
+    
+    //리뷰 피드백 저장
+    void insertReviewFeedback(@Param("revNo") int revNo, @Param("rfTypeCode") int rfTypeCode);
+    
+    //리뷰 중복체크
+    int checkReviewExists(@Param("userNo") int userNo, @Param("prdNo") int prdNo);
+    
 }

@@ -26,11 +26,7 @@
         userName,
         likeCount,
         photoCount,
-        (
-        SELECT LISTAGG(ri.RI_URL, '||') WITHIN GROUP (ORDER BY ri.RI_SORT)
-        FROM REVIEW_IMAGE ri
-        WHERE ri.REV_NO = r.REVNO
-        ) AS imageUrls
+        imageUrls
         FROM (
         SELECT
         r.revNo,
@@ -64,6 +60,7 @@
         FROM REVIEW r
         LEFT JOIN USERS u ON r.userNo = u.userNo
         WHERE r.prdNo = #{prdNo}
+        ) r
         ORDER BY
         <choose>
             <!-- 좋아요순: likeCount 높은 순 + 최신순 -->
@@ -86,7 +83,7 @@
                 r.revTrustScore DESC, r.revDate DESC
             </otherwise>
         </choose>
-        ) r
+        
         OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
     </select>
 
@@ -99,7 +96,7 @@
 
     <!--평균 별점 조회 -->
     <select id="findAverageRating" parameterType="int" resultType="double">
-        SELECT AVG(revStar)
+        SELECT ROUND(AVG(revStar),1)
         FROM REVIEW
         WHERE prdNo = #{prdNo}
     </select>
@@ -128,8 +125,8 @@
                 #{revRank},
                 #{revStar},
                 #{content},
-        		#{userSkin},
-        		#{userColor})
+        		#{userSkin, jdbcType=INTEGER},
+        		#{userColor, jdbcType=INTEGER})
     </insert>
 
     <!-- 리뷰 1건 상세 조회-->
@@ -218,7 +215,26 @@
         WHERE revNo = #{revNo}
     </update>
 
+	<!-- 리뷰 이미지 작성 -->
+	<insert id="insertReviewImage" parameterType="com.routy.routyback.domain.ReviewImageVO">
+    INSERT INTO REVIEW_IMAGE (
+        REV_NO, 
+        RI_URL, 
+        RI_SORT
+    )
+    VALUES (
+        #{revNo}, 
+        #{riUrl}, 
+        #{riSort}
+    )
+	</insert>
 
+	<!--리뷰 이미지 삭제 -->
+	<delete id="deleteReviewImages" parameterType="int">
+    	DELETE FROM REVIEW_IMAGE
+    	WHERE REV_NO = #{revNo}
+	</delete>
+	
     <!-- 리뷰 이미지 조회 -->
     <select id="findReviewImages"
         parameterType="int"
@@ -243,4 +259,41 @@
     		GROUP BY revStar
 	</select>
 	
+	
+	<!-- 리뷰 피드백 삭제 -->
+	<delete id="deleteReviewFeedback" parameterType="int">
+        DELETE FROM REVIEW_FEEDBACK
+        WHERE REVNO = #{revNo}
+    </delete>
+    
+    <!-- 리뷰 좋아요 전체 삭제 -->
+    <delete id="deleteReviewUpdown" parameterType="int">
+        DELETE FROM REVIEW_UPDOWN
+        WHERE REVNO = #{revNo}
+    </delete>
+    
+    <!-- 리뷰 피드백 조회 -->
+    <select id="findReviewFeedback" parameterType="int" resultType="string">
+        SELECT rt.RFTYPENAME
+        FROM REVIEW_FEEDBACK rf
+        JOIN REACTION_TYPE rt ON rf.RFTYPECODE = rt.RFTYPECODE
+        WHERE rf.REVNO = #{revNo}
+    </select>
+
+	<!-- 리뷰 피드백 저장  -->
+    <insert id="insertReviewFeedback">
+        INSERT INTO REVIEW_FEEDBACK (REVNO, RFTYPECODE)
+        VALUES (#{revNo}, #{rfTypeCode})
+    </insert>
+    
+    <!-- 리뷰 중복 체크 -->
+    <select id="checkReviewExists" resultType="int">
+        SELECT COUNT(*)
+        FROM REVIEW
+        WHERE userNo = #{userNo}
+          AND prdNo = #{prdNo}
+    </select>
+    
+    
+    
 </mapper>

@@ -33,7 +33,7 @@
         SELECT
         PRDNO,
         COUNT(*) AS reviewCount,
-        AVG(REVSTAR) AS avgRating
+        ROUND(AVG(REVSTAR),1) AS avgRating
         FROM REVIEW
         GROUP BY PRDNO
         ) R ON R.PRDNO = P.PRDNO
