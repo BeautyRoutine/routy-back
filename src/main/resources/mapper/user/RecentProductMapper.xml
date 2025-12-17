@@ -14,12 +14,19 @@
 
     <!-- 최근 본 상품 등록 -->
     <insert id="insertRecentProduct">
-        INSERT INTO VIEWED_PRODUCT (VPNO, PRDNO, USERNO, PRDSUBCATE)
+        INSERT INTO VIEWED_PRODUCT (
+        VPNO,
+        PRDNO,
+        USERNO,
+        PRDSUBCATE,
+        VPREGDATE
+        )
         VALUES (
         ROUTY_TEAM.VPNO_SEQ.NEXTVAL,
         #{prdNo, jdbcType=NUMERIC},
         #{userNo, jdbcType=NUMERIC},
-        #{prdSubCate, jdbcType=NUMERIC}
+        #{prdSubCate, jdbcType=NUMERIC},
+        CURRENT_TIMESTAMP
         )
     </insert>
 
