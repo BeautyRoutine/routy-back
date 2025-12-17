@@ -71,16 +71,17 @@ public class KakaoAuthService {
             System.out.println("userSkin: " + user.getUserSkin());
             System.out.println("needsSkinProfile: " + needsSkinProfile);
 
-            String redirectUrl = UriComponentsBuilder.fromHttpUrl(frontendUrl + "/#/kakao/callback")
-                .queryParam("token", jwtToken)
-                .queryParam("userId", user.getUserId())
-                .queryParam("userName",
-                    URLEncoder.encode(user.getUserName() != null ? user.getUserName() : "", StandardCharsets.UTF_8))
-                .queryParam("userLevel", user.getUserLevel())
-                .queryParam("userSkin", user.getUserSkin() != null ? user.getUserSkin() : 0)
-                .queryParam("isNewUser", false)
-                .queryParam("needsSkinProfile", needsSkinProfile)
-                .toUriString();
+            String redirectUrl =
+                frontendUrl
+                    + "/#/kakao/callback"
+                    + "?token=" + URLEncoder.encode(jwtToken, StandardCharsets.UTF_8)
+                    + "&userId=" + URLEncoder.encode(user.getUserId(), StandardCharsets.UTF_8)
+                    + "&userName=" + URLEncoder.encode(user.getUserName() != null ? user.getUserName() : "",
+                    StandardCharsets.UTF_8)
+                    + "&userLevel=" + user.getUserLevel()
+                    + "&userSkin=" + (user.getUserSkin() != null ? user.getUserSkin() : 0)
+                    + "&isNewUser=false"
+                    + "&needsSkinProfile=" + needsSkinProfile;
             System.out.println("리다이렉트 URL: " + redirectUrl);
 
             response.sendRedirect(redirectUrl);
