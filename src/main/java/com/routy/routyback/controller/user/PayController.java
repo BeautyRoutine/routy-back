@@ -4,6 +4,7 @@ import com.routy.routyback.dto.OrderSaveRequestDTO;
 import com.routy.routyback.dto.PaymentConfirmRequestDTO;
 import com.routy.routyback.mapper.user.UserMapper;
 import com.routy.routyback.service.user.PayService;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -57,6 +58,26 @@ public class PayController {
             payService.confirmPayment(request);
             return ResponseEntity.ok("결제 승인 완료");
         } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    // 3. 결제 취소 API
+    @PostMapping("/cancel")
+    public ResponseEntity<String> cancelPayment(@RequestBody Map<String, Object> request) {
+        try {
+            // odNo와 cancelReason을 Map에서 추출
+            Long odNo = Long.valueOf(String.valueOf(request.get("odNo")));
+            String cancelReason = (String) request.get("cancelReason");
+
+            if (cancelReason == null || cancelReason.isEmpty()) {
+                cancelReason = "상품 단순 변심"; // 토스 취소 API의 필수 파라미터
+            }
+
+            payService.cancelPayment(odNo, cancelReason);
+            return ResponseEntity.ok("결제 취소(환불) 완료");
+        } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }

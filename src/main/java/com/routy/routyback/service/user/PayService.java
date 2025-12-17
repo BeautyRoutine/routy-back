@@ -83,14 +83,12 @@ public class PayService {
 
         // 금액 검증 (ORDERS 테이블에 적힌 금액과 비교)
         OrdersDTO orderInfo = payMapper.selectOrder(odNo);
-
         if (orderInfo == null) {
             throw new RuntimeException("주문 정보 없음");
         }
 
         // DB총액(상품+배송비) vs 결제요청금액 비교
         long dbTotalAmount = orderInfo.getOdPrdPrice() + orderInfo.getOdDelvPrice();
-
         if (dbTotalAmount != request.getAmount()) {
             throw new RuntimeException("결제 금액 불일치");
         }
@@ -138,4 +136,57 @@ public class PayService {
             throw new RuntimeException("결제 승인 실패: " + e.getMessage());
         }
     }
+
+    @Transactional
+    public void cancelPayment(Long odNo, String cancelReason) {
+
+        // 주문 정보 조회
+        OrdersDTO orderInfo = payMapper.selectOrder(odNo);
+        if (orderInfo == null) {
+            throw new RuntimeException("주문 정보를 찾을 수 없습니다.");
+        }
+
+        // 이미 취소된 주문인지 확인
+        if (orderInfo.getOdStatus() == 6) {
+            throw new RuntimeException("이미 취소된 주문입니다.");
+        }
+
+        // 결제 정보 조회
+        Map<String, Object> payInfo = payMapper.selectPayInfo(odNo);
+        if (payInfo == null || payInfo.isEmpty()) {
+            throw new RuntimeException("결제 정보를 찾을 수 없습니다.");
+        }
+
+        // 저장된 paymentKey(PAYRESNO) 추출
+        String paymentKey = (String) payInfo.get("PAYRESNO");
+        if (paymentKey == null || paymentKey.isEmpty()) {
+            throw new RuntimeException("결제 승인번호가 없습니다.");
+        }
+
+        // 토스 환불 API 호출
+        String encodedKey = Base64.getEncoder()
+            .encodeToString((secretKey + ":").getBytes(StandardCharsets.UTF_8));
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Basic " + encodedKey);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        Map<String, Object> body = new HashMap<>();
+        body.put("cancelReason", cancelReason);
+
+        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, headers);
+        RestTemplate restTemplate = new RestTemplate();
+
+        try {
+            String url = "https://api.tosspayments.com/v1/payments/" + paymentKey + "/cancel";
+            restTemplate.postForEntity(url, entity, String.class);
+
+            // 주문 상태를 취소(6)로 업데이트
+            payMapper.updateOrderStatusToCancelled(odNo);
+
+        } catch (Exception e) {
+            throw new RuntimeException("환불 처리 실패: " + e.getMessage());
+        }
+    }
+
 }
