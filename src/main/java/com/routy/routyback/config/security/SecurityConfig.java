@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -36,14 +37,14 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            // CSRF 비활성화 (JWT 사용시 필수)
-            .csrf(csrf -> csrf.disable())
 
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+            // CSRF 비활성화 (JWT 사용시 필수)
+            .csrf(AbstractHttpConfigurer::disable)
 
             // 폼 로그인 / 기본 인증 비활성화
-            .formLogin(form -> form.disable())
-            .httpBasic(basic -> basic.disable())
+            .formLogin(AbstractHttpConfigurer::disable)
+            .httpBasic(AbstractHttpConfigurer::disable)
 
             // 세션 사용 안함 (JWT)
             .sessionManagement(session ->
@@ -73,13 +74,11 @@ public class SecurityConfig {
                 .requestMatchers("/api/cart/**").authenticated()
                 .requestMatchers("/api/orders/**").authenticated()
                 .requestMatchers("/api/payments/**").authenticated()
-                .requestMatchers("/api/likes/**").authenticated()
 
                 // 특정 메서드 허용
                 .requestMatchers("/api/users/**").permitAll()
                 .requestMatchers("/api/admin/**").permitAll()
-                .requestMatchers(org.springframework.http.HttpMethod.DELETE,
-                    "/api/users/*/notifications/**")
+                .requestMatchers(org.springframework.http.HttpMethod.DELETE, "/api/users/*/notifications/**")
                 .permitAll()
 
                 // 기본 페이지
@@ -97,23 +96,13 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(
-            Arrays.asList(frontendUrl.split(","))
+            Arrays.asList("http://localhost:3000", "http://13.208.142.111")
         );
-        System.out.println(frontendUrl);
-
-        configuration.setAllowedMethods(
-            Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD"));
-
-        configuration.setAllowedHeaders(Arrays.asList("Origin", "Access-Control-Allow-Origin", "Content-Type",
-            "Accept", "Authorization", "X-Requested-With",
-            "Access-Control-Request-Method", "Access-Control-Request-Headers", "Access-Control-Allow-Headers"));
-
-        configuration.setAllowCredentials(true);
-
-        configuration.setExposedHeaders(Arrays.asList("Origin", "Content-Type", "Accept",
-            "Access-Control-Allow-Origin", "Access-Control-Allow-Headers", "Access-Control-Allow-Credentials"));
-
-        configuration.setMaxAge(3600L);
+        configuration.addAllowedMethod("*"); // 모든 HTTP 메서드 허용
+        configuration.addAllowedHeader("*"); // 모든 헤더 허용
+        configuration.addExposedHeader("Set-Cookie"); // Set-Cookie 헤더 노출
+        configuration.setAllowCredentials(true); // 쿠키 허용
+        configuration.setMaxAge(3600L); // 1시간 동안 캐시
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
