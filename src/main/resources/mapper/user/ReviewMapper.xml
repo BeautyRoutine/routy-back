@@ -60,6 +60,13 @@
         FROM REVIEW r
         LEFT JOIN USERS u ON r.userNo = u.userNo
         WHERE r.prdNo = #{prdNo}
+        <if test="userSkin != null">
+            AND r.userSkin = #{userSkin}
+        </if>
+        <if test="userColor != null">
+            AND r.userColor = #{userColor}
+        </if>
+        
         ) r
         ORDER BY
         <choose>
@@ -92,6 +99,12 @@
         SELECT COUNT(*)
         FROM REVIEW
         WHERE prdNo = #{prdNo}
+        <if test="userSkin != null">
+        AND userSkin = #{userSkin}
+    </if>
+    <if test="personalColor != null">
+        AND userColor = #{userColor}
+    </if>
     </select>
 
     <!--평균 별점 조회 -->

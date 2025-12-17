@@ -39,17 +39,24 @@ public class ReviewService implements IReviewService {
     private String uploadDir;
 
     @Override
-    public ReviewListResponse getReviewList(int prdNo, int page, int limit, String sort, int userNo) {
+    public ReviewListResponse getReviewList(int prdNo, int page, int limit, String sort, int userNo, Integer userSkin, Integer userColor) {
         // 맵 구성
         Map<String, Object> params = new HashMap<>();
         params.put("prdNo", prdNo);
         params.put("offset", (page - 1) * limit); // 1페이지면 0개, 2페이지면 10개 건너뛰기
         params.put("limit", limit);  // 1페이지 리뷰 수
         params.put("sort", sort); // 정렬 기준
-
+        if(userSkin !=null && userSkin !=0) params.put("userSkin", userSkin);
+        if(userColor !=null && userColor !=0) params.put("userColor", userColor);
+      //필터 없는 전체 리뷰
+        Map<String, Object> totalParams = new HashMap<>();
+        totalParams.put("prdNo", prdNo);
+        
         // mapper 가져오기
         List<ReviewVO> reviewVOs = reviewMapper.findReviews(params); // 실제 리뷰 목록
-        int totalCount = reviewMapper.countReviews(prdNo); // 전체 리뷰수
+        int filteredCount =reviewMapper.countReviews(params); //필터링 리뷰수
+        int totalCount = reviewMapper.countReviews(totalParams); // 전체 리뷰수
+        
         Double avgRating = reviewMapper.findAverageRating(prdNo); // 평균 별점
 
         // vo를 dto로 변환
@@ -88,8 +95,8 @@ public class ReviewService implements IReviewService {
         PaginationDto pagination = new PaginationDto(); // 객체 생성
         pagination.setPage(page); // 페이지 정보
         pagination.setLimit(limit); // 페이지당 리뷰 수 제한
-        pagination.setTotalCount(totalCount); // 전체 리뷰 수
-        pagination.setTotalPages((int) Math.ceil((double) totalCount / limit));
+        pagination.setTotalCount(filteredCount); // 필터링 리뷰 수
+        pagination.setTotalPages((int) Math.ceil((double) filteredCount / limit));
         // 전체 페이지 수 계산: (전체 개수 / 페이지당 개수)를 올림(ceil) 처리(반올림은 안됨)
 
         // 최종객체 만들기

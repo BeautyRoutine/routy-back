@@ -11,7 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 public interface IReviewService {
 
-    ReviewListResponse getReviewList(int prdNo, int page, int limit, String sort, int userNo); // 리뷰 목록 조회
+    ReviewListResponse getReviewList(int prdNo, int page, int limit, String sort, int userNo,Integer userSkin, Integer userColor); // 리뷰 목록 조회
 
     ReviewResponse createReview(int prdNo, ReviewCreateRequest request, List<MultipartFile> files); // 리뷰 저장
 

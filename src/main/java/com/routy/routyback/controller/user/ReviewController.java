@@ -46,12 +46,14 @@ public class ReviewController {
         @RequestParam(defaultValue = "1") int page, // 쿼리 파라미터 ?page=값, 기본값은 1페이지
         @RequestParam(defaultValue = "10") int limit, // 쿼리 파라미터 ?limit=값, 한 페이지에 보여줄 리뷰 개수, 기본값 10개
         @RequestParam(defaultValue = "recommended") String sort, // 정렬 기준. 기본값은 추천순(신뢰도 기반)
-        @RequestParam(required = false) Integer userNo
+        @RequestParam(required = false) Integer userNo,
+        @RequestParam(required = false) Integer userSkin,      // 피부타입 
+        @RequestParam(required = false) Integer userColor //피부 컬러
     ) {
         try {
         	  int currentUser = (userNo == null) ? 0 : userNo;
             // 서비스 레이어에 조회 요청. 정렬/페이징 옵션까지 함께 전달
-            ReviewListResponse responseData = service.getReviewList(prdNo, page, limit, sort, currentUser);
+            ReviewListResponse responseData = service.getReviewList(prdNo, page, limit, sort, currentUser, userSkin, userColor);
 
             // HTTP 200 OK 상태코드와 함께 조회된 리뷰 목록/요약/페이징 정보를 반환
             return ApiResponse.success(responseData);
