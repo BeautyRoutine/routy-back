@@ -146,7 +146,7 @@
 
     <!-- 상품 검색 + 가격/카테고리 필터 -->
     <select id="searchProducts" parameterType="map"
-            resultType="com.routy.routyback.dto.ProductUserDTO">
+            resultMap="prdResult">
 
         SELECT
         p.prdNo,
@@ -155,7 +155,13 @@
         p.prdCompany,
         p.prdImg,
         p.prdMainCate,
-        p.prdSubCate
+        p.prdSubCate,
+        NVL((SELECT AVG(r.REVSTAR)
+        FROM REVIEW r
+        WHERE r.PRDNO = p.PRDNO), 0) AS avgRating,
+        (SELECT COUNT(*)
+        FROM REVIEW r
+        WHERE r.PRDNO = p.PRDNO) AS reviewCount
         FROM PRODUCT p
         WHERE 1 = 1
 
@@ -185,9 +191,8 @@
         ORDER BY p.prdNo DESC
     </select>
 
-    <!-- 안전 버전 통합 필터 -->
     <select id="filterProducts" parameterType="map"
-            resultType="com.routy.routyback.dto.ProductUserDTO">
+            resultMap="prdResult">
 
         SELECT
         p.prdNo,
@@ -196,9 +201,15 @@
         p.prdCompany,
         p.prdImg,
         p.prdMainCate,
-        p.prdSubCate
+        p.prdSubCate,
+        NVL((SELECT AVG(r.REVSTAR)
+        FROM REVIEW r
+        WHERE r.PRDNO = p.PRDNO), 0) AS avgRating,
+        (SELECT COUNT(*)
+        FROM REVIEW r
+        WHERE r.PRDNO = p.PRDNO) AS reviewCount
         FROM PRODUCT p
-        WHERE 1=1
+        WHERE 1 = 1
 
         <if test="maincate != null and maincate != ''">
             AND p.prdMainCate = #{maincate}
@@ -235,6 +246,7 @@
 
         ORDER BY p.prdNo DESC
     </select>
+
 
     <select id="selectBrandList" resultType="string">
         SELECT DISTINCT prdCompany
