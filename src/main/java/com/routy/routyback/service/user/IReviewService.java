@@ -7,13 +7,15 @@ import com.routy.routyback.dto.review.ReviewResponse;
 import com.routy.routyback.dto.review.ReviewUpdateRequest;
 import java.util.List;
 
+import org.springframework.web.multipart.MultipartFile;
+
 public interface IReviewService {
 
     ReviewListResponse getReviewList(int prdNo, int page, int limit, String sort, int userNo); // 리뷰 목록 조회
 
-    ReviewResponse createReview(int prdNo, ReviewCreateRequest request); // 리뷰 저장
+    ReviewResponse createReview(int prdNo, ReviewCreateRequest request, List<MultipartFile> files); // 리뷰 저장
 
-    ReviewResponse updateReview(int revNo, ReviewUpdateRequest request); // 리뷰 수정
+    ReviewResponse updateReview(int revNo, ReviewUpdateRequest request, List<MultipartFile> newFiles); // 리뷰 수정
 
     void deleteReview(int revNo); // 리뷰삭제
 
