@@ -77,6 +77,7 @@ public class ProductUserService implements IProductUserService {
     public ApiResponse productAllSkinCate(Map<String, Object> params) { // 피부타입별 추천 제품목록
         try {
             params.put("limit", ParamProcessor.parseInt(params.get("limit"), 1));
+            params.put("offset", ParamProcessor.parseInt(params.get("offset"), 0));
 
             return ApiResponse.success(productUserMapper.productAllSkinCate(params));
         } catch (Exception e) {
@@ -111,16 +112,27 @@ public class ProductUserService implements IProductUserService {
                 if (selectCateList.size() == 5) cateList = selectCateList;
             }
 
+            // 각 카테고리마다 제품데이터 받아오기
             params.put("limit", ParamProcessor.parseInt(params.get("limit"), 1));
-            params.remove("skin");
             List<ProductUserDTO> resultData = new ArrayList<>();
-
             for (Integer cate : cateList) {
                 params.put("sub_cate", cate);
                 List<ProductUserDTO> tempData = productUserMapper.productAllSkinCate(params);
 
                 resultData.addAll(tempData);
             }
+
+            // 부족한 제품 데이터 보충
+            int scarcePrd = 5 - resultData.size();
+            if(scarcePrd > 0) {
+            	params.put("sub_cate", cateList.get(0));
+            	params.put("offset", 1);
+            	params.put("limit", scarcePrd); // 부족한 갯수만큼 더 가져오기
+            	List<ProductUserDTO> tempData = productUserMapper.productAllSkinCate(params);
+            	
+            	resultData.addAll(tempData);
+            }
+            
 
             return ApiResponse.success(resultData);
         } catch (Exception e) {
