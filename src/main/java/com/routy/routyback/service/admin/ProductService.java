@@ -81,7 +81,29 @@ public class ProductService implements IProductService {
 
     @Override
     public void updateProduct(ProductDTO product) {
+    	// 상품정보 업데이트
         productMapper.productUpdate(product);
+        int prdNo = product.getPrdNo();
+        
+        // 성분 자동 매핑
+        // 1. 파싱
+    	String[] ingArray = product.getPrdIngredients().split(";");
+    	// 2. 매핑 실패 시 mapper로 넘길 param
+    	Map<String, Object> param = new HashMap<>();
+    	// 3. 찾고 매핑하고 실패 시 성분 등록 후 재시도
+    	for (String ingName : ingArray) {
+    		ingName = ingName.trim(); // 공백 제거
+            Integer ingNo = productMapper.searchIngredients(ingName);
+
+            if (ingNo == null) {
+            	param.put("ingName", ingName);
+            	productMapper.insertIngredients(param);
+            	Integer tempIngNo = (Integer) param.get("ingNo");
+            	productMapper.mappingIngredients(prdNo, tempIngNo);
+            } else {
+            	productMapper.mappingIngredients(prdNo, ingNo);
+            }
+        }
     }
 
     @Override
