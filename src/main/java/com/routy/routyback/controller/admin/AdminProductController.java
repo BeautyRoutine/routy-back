@@ -52,8 +52,9 @@ public class AdminProductController {
     }
 
     // 수정
-    @PutMapping
-    public ResponseEntity<?> update(@RequestBody ProductDTO dto) {
+    @PutMapping("/{prdNo}")
+    public ResponseEntity<?> update(@PathVariable int prdNo, @RequestBody ProductDTO dto) {
+    	dto.setPrdNo(prdNo);
         productService.updateProduct(dto);
         return ResponseEntity.ok("수정 완료");
     }
