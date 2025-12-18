@@ -35,7 +35,9 @@
         SELECT P.PRDNO    AS prdNo,
                P.PRDNAME  AS prdName,
                P.PRDPRICE AS prdPrice,
-               P.PRDIMG   AS prdImg
+               P.PRDIMG   AS prdImg,
+               (SELECT ROUND(AVG(REVSTAR),1) FROM REVIEW r WHERE r.PRDNO = p.PRDNO) AS avgRating,
+               (SELECT COUNT(*) FROM REVIEW r WHERE r.PRDNO = p.PRDNO) AS reviewCount
         FROM PRODUCT P
         WHERE LOWER(P.PRDNAME) LIKE LOWER('%' || #{keyword} || '%')
            OR LOWER(P.PRDDESC) LIKE LOWER('%' || #{keyword} || '%')

@@ -33,4 +33,9 @@ public class RankingProductResponse {
     private Integer skin1_cnt;
     private Integer skin2_cnt;
     private Integer skin3_cnt;
+    
+    /** 별점 갯수 */
+    private Double avgRating;
+    /** 리뷰 갯수 */
+    private Integer reviewCount;
 }
