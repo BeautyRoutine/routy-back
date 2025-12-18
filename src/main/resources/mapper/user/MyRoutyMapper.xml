@@ -24,7 +24,7 @@
                  JOIN PRODUCT p
                       ON ppm.PRDNO = p.PRDNO
         WHERE o.USERNO = #{userNo}
-          AND o.ODSTATUS = 1
+          AND o.ODSTATUS = 5
         GROUP BY p.PRDNO
         ORDER BY MAX(o.ODREGDATE) DESC
     </select>

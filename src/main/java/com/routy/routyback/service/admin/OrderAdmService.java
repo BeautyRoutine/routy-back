@@ -1,6 +1,7 @@
 package com.routy.routyback.service.admin;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -164,7 +165,18 @@ public class OrderAdmService implements IOrderAdmService {
 			if(dto.getDelvStatus() > 2) {
 	        	// 주문 업데이트
 				if(dto.getDelvStatus() == 3 || dto.getDelvStatus() == 4 || dto.getDelvStatus() == 5) dto.setOdStatus(4);
-				if(dto.getDelvStatus() == 6) dto.setOdStatus(5);
+				if(dto.getDelvStatus() == 6) {
+					dto.setOdStatus(5);
+					// 배송완료 시 used_product에 추가
+					OrdersUsDTO orderInfo = dao.detailOrder(dto.getOdNo());
+					ArrayList<OrderPrdDTO> productList = detdao.detailPrdOrder(dto.getOdNo());
+					for (OrderPrdDTO product : productList) {
+						Map<String, Object> params = new HashMap<>();
+						params.put("user_no", orderInfo.getUserNo());
+						params.put("prd_no", product.getPrdNo());
+						dao.insertUsedProduct(params);
+					}
+				}
 				dao.updateOrder(dto);
 				// 요청 업데이트
 				if(dto.getDelvStatus() == 6) {

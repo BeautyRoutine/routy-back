@@ -85,4 +85,6 @@ public interface IOrdersAdmDAO {
     OrderClaimDTO detailOrderClaim(int qnaNo);
     void updateOrderClaim(DeliveryDTO dto);
     void updateOrder(DeliveryDTO dto);
+
+    void insertUsedProduct(Map<String, Object> params);
 }

@@ -206,5 +206,10 @@
     	</set>
     	WHERE odNo = #{odNo}
     </update>
-    
+
+    <insert id="insertUsedProduct" parameterType="java.util.Map">
+        INSERT INTO MY_USED_PRODUCT (USERNO, PRDNO)
+        VALUES (#{user_no}, #{prd_no})
+    </insert>
+
 </mapper>
