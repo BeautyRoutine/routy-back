@@ -15,4 +15,6 @@ public class UserReviewResponse {
     private int rating;         // 별점
     private String content;     // 리뷰 본문 (CONTENT)
     private String createdAt;   // 작성일 (yyyy-MM-dd)
+    
+    private String revMainImg;
 }

@@ -13,16 +13,19 @@
     <select id="selectUserReviews"
         resultType="com.routy.routyback.dto.user.mypage.UserReviewResponse">
         SELECT
-        r.REVNO AS reviewId,
-        r.PRDNO AS productId,
-        p.PRDNAME AS productName,
-        r.REVSTAR AS rating,
-        r.CONTENT AS content,
-        TO_CHAR(r.REVDATE, 'YYYY-MM-DD') AS createdAt
+	        r.REVNO AS reviewId,
+	        r.PRDNO AS productId,
+	        p.PRDNAME AS productName,
+	        r.REVSTAR AS rating,
+	        DBMS_LOB.SUBSTR(r.CONTENT, 4000) AS content,
+	        TO_CHAR(r.REVDATE, 'YYYY-MM-DD') AS createdAt,
+	        MAX(ri.RI_URL) AS revMainImg
         FROM REVIEW r
-        JOIN PRODUCT p ON r.PRDNO = p.PRDNO
+        	JOIN PRODUCT p ON r.PRDNO = p.PRDNO
+        	LEFT JOIN REVIEW_IMAGE ri ON ri.REV_NO=r.REVNO
         WHERE r.USERNO = #{userNo}
-        ORDER BY r.REVDATE DESC
+        GROUP BY r.REVNO, r.PRDNO, p.PRDNAME, r.REVSTAR, DBMS_LOB.SUBSTR(r.CONTENT, 4000), TO_CHAR(r.REVDATE, 'YYYY-MM-DD')
+        ORDER BY createdAt DESC
     </select>
 
     <!-- 나의 리뷰 상세 조회 -->
