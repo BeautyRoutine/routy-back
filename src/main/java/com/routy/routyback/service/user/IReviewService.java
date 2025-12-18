@@ -28,5 +28,12 @@ public interface IReviewService {
      * @return 해당 리뷰에 등록된 이미지 URL(또는 파일 경로) 리스트
      */
     List<String> getReviewImages(int revNo);
+    
+    
+    /**
+     * 전체 신뢰도 재 계산
+     * @return
+     */
+    ReviewResponse totalRecalculation();
 
 }

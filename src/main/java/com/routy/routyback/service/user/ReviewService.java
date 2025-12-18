@@ -382,5 +382,118 @@ public class ReviewService implements IReviewService {
         // DB에 저장할 '파일명' 반환
         return "/images/review/" + savedFileName;
     }
+
     
+    
+    /**
+     * 전체 리뷰 신뢰도 재계산
+     * 리뷰 1000개 넘어서 100개씩 나눠서 업데이트
+     */
+	@Override
+	public ReviewResponse totalRecalculation() {
+		long startTime = System.currentTimeMillis();
+        
+        try {
+            // 1️. 전체 리뷰 개수 조회
+            int totalCount = reviewMapper.countAllReviews();
+            if (totalCount == 0) {
+                System.out.println("⚠️ 재계산할 리뷰가 없습니다.");
+                ReviewResponse response = new ReviewResponse();
+                response.setRevNo(0);
+                response.setContent("재계산할 리뷰가 없습니다.");
+                return response;
+            }
+            
+            System.out.println("========================================");
+            System.out.println("🔄 신뢰도 전체 재계산 시작");
+            System.out.println("📊 총 리뷰 수: " + totalCount);
+            System.out.println("========================================");
+            
+            // 2️. 리뷰 분할
+            int batchSize = 100; // 한 번에 100개씩 처리
+            int successCount = 0;
+            int processedCount = 0;
+            
+            // 3️⃣ 배치 단위로 처리
+            for (int offset = 0; offset < totalCount; offset += batchSize) {
+                Map<String, Object> params = new HashMap<>();
+                params.put("prdNo", 0);     // 0 = 전체 상품
+                params.put("offset", offset);
+                params.put("limit", batchSize);
+                
+                List<ReviewVO> batch = reviewMapper.findReviews(params);
+                
+                // 배치 내 각 리뷰 처리
+                for (ReviewVO vo : batch) {
+                    processedCount++;
+                    
+                    try {
+                        // 리뷰 이미지 목록 로드 (신뢰도 계산에 필요)
+                        vo.setImages(reviewMapper.findReviewImages(vo.getRevNo()));
+                        
+                        // 신뢰도 점수 계산
+                        double score = reviewTrustCalculator.calculateTrustScore(vo);
+                        
+                        // 신뢰도 등급 계산 (구매 인증 여부 확인)
+                        boolean isVerified = vo.getOdNo() != null;
+                        String rank = reviewTrustCalculator.calculateTrustRank(score, isVerified);
+                        
+                        // VO에 계산된 값 적용
+                        vo.setRevTrustScore(score);
+                        vo.setRevTrustRank(rank);
+                        
+                        // DB 업데이트
+                        reviewMapper.updateReviewTrustScore(vo);
+                        
+                        successCount++;
+                        
+                    } catch (Exception e) {
+                        // ❌ 실패한 리뷰 ID 즉시 출력
+                        System.out.println("❌ 리뷰 재계산 실패 - revNo: " + vo.getRevNo() 
+                            + " | 오류: " + e.getMessage());
+                    }
+                }
+                
+                // 진행 상황 출력 (100개마다)
+                int percentage = (int) ((processedCount / (double) totalCount) * 100);
+                System.out.println("⏳ 진행 중... " + processedCount + "/" + totalCount 
+                    + " (" + percentage + "%)");
+            }
+            
+            // 4️⃣ 처리 시간 계산
+            long endTime = System.currentTimeMillis();
+            long duration = (endTime - startTime) / 1000; // 초 단위
+            
+            // 5️⃣ 최종 결과 출력
+            int failCount = totalCount - successCount;
+            
+            System.out.println("========================================");
+            System.out.println("✅ 신뢰도 전체 재계산 완료");
+            System.out.println("========================================");
+            System.out.println("📊 총 리뷰 수: " + totalCount);
+            System.out.println("✅ 성공: " + successCount);
+            System.out.println("❌ 실패: " + failCount);
+            System.out.println("⏱️ 소요 시간: " + duration + "초");
+            System.out.println("========================================");
+            
+            // 6️⃣ 결과 반환
+            ReviewResponse response = new ReviewResponse();
+            response.setRevNo(0);
+            response.setContent(String.format(
+                "전체 재계산 완료 - 총: %d, 성공: %d, 실패: %d, 소요시간: %d초",
+                totalCount, successCount, failCount, duration
+            ));
+            
+            return response;
+            
+        } catch (Exception e) {
+            System.err.println("========================================");
+            System.err.println("🚨 전체 재계산 중 치명적 오류 발생");
+            System.err.println("========================================");
+            System.err.println("오류 메시지: " + e.getMessage());
+            System.err.println("========================================");
+            e.printStackTrace();
+            throw new RuntimeException("신뢰도 전체 재계산에 실패했습니다.", e);
+        }
+	}
 }

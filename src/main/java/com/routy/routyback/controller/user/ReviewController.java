@@ -140,5 +140,22 @@ public class ReviewController {
             return ApiResponse.fromException(e);
         }
     }
+    
+    
+    
+    
+
+    /**
+     * 전체 리뷰 신뢰도 재계산(관리자)
+     */
+    @PostMapping("/admin/reviews/recalculate")
+    public ApiResponse<ReviewResponse> recalculateTrustScores() {
+        try {
+            ReviewResponse result = service.totalRecalculation();
+            return ApiResponse.success(result);
+        } catch (Exception e) {
+            return ApiResponse.fromException(e);
+        }
+    }
 
 }

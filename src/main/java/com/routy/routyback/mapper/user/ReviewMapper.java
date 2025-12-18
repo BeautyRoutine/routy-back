@@ -69,4 +69,9 @@ public interface ReviewMapper {
     //리뷰 중복체크
     int checkReviewExists(@Param("userNo") int userNo, @Param("prdNo") int prdNo);
     
+    
+    
+    
+    // 전체 리뷰 갯수 체크
+    int countAllReviews();
 }
