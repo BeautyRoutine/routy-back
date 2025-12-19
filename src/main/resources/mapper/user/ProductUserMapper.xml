@@ -67,63 +67,19 @@
 
     <!-- 피부타입 + 카테고리 기반 추천 -->
     <select id="productAllSkinCate" resultMap="prdResult">
-        SELECT *
-        FROM (
         SELECT
-        p.*,
-
-        /* 평균 별점 */
-        (SELECT ROUND(AVG(r.REVSTAR), 1)
-        FROM REVIEW r
-        WHERE r.PRDNO = p.PRDNO) AS avgRating,
-
-        /* 전체 리뷰 수 */
-        (SELECT COUNT(*)
-        FROM REVIEW r
-        WHERE r.PRDNO = p.PRDNO) AS reviewCount,
-
-        /* 추천 점수 (피부타입 있으면 피부타입 기준, 없으면 전체 리뷰 기준) */
-        (
-        SELECT COUNT(*)
-        FROM REVIEW r
-        INNER JOIN REVIEW_FEEDBACK rf
-        ON rf.revNo = r.revNo
-        WHERE r.prdNo = p.prdNo
-        AND rf.rfTypeCode &lt; 500
-        <if test="skin != null and skin != ''">
-            AND r.userSkin = #{skin}
-        </if>
-        ) AS cnt,
-
-        /* subcate별 1개 추출 */
-        ROW_NUMBER() OVER (
-        PARTITION BY p.prdSubCate
-        ORDER BY
-        /* skin 있으면 cnt 기준, 없으면 전체 리뷰 수 기준 */
-        <choose>
-            <when test="skin != null and skin != ''">
-                (
-                SELECT COUNT(*)
-                FROM REVIEW r
-                INNER JOIN REVIEW_FEEDBACK rf
-                ON rf.revNo = r.revNo
-                WHERE r.prdNo = p.prdNo
-                AND rf.rfTypeCode &lt; 500
-                AND r.userSkin = #{skin}
-                )
-            </when>
-            <otherwise>
-                (
-                SELECT COUNT(*)
-                FROM REVIEW r
-                WHERE r.PRDNO = p.PRDNO
-                )
-            </otherwise>
-        </choose>
-        DESC,
-        p.prdNo DESC   <!-- tie-break: 최신 상품 -->
-        ) AS rn
-
+	        p.*,
+	        (SELECT ROUND(AVG(REVSTAR),1) FROM REVIEW r WHERE r.PRDNO = p.PRDNO) AS avgRating,
+	        (SELECT COUNT(*) FROM REVIEW r WHERE r.PRDNO = p.PRDNO) AS reviewCount,
+	        (
+		        SELECT COUNT(*)
+		        FROM REVIEW r
+		        	INNER JOIN REVIEW_FEEDBACK rf ON rf.revNo = r.revNo
+		        WHERE r.prdNo = p.prdNo AND rf.rfTypeCode &lt; 500
+			        <if test="skin != null and skin != ''">
+			            AND r.userSkin = #{skin}
+			        </if>
+	        ) AS cnt
         FROM PRODUCT p
         WHERE 1 = 1
 
@@ -138,15 +94,14 @@
         <if test="sub_cate != null and sub_cate != ''">
             AND p.prdSubCate = #{sub_cate}
         </if>
-        )
-        WHERE rn = 1
-        ORDER BY
-        prdSubCate ASC,
-        cnt DESC
+
+        ORDER BY cnt DESC
+        
+        <if test="offset != null and offset != 0">
+        	OFFSET #{offset} ROWS
+        </if>
         FETCH NEXT #{limit} ROWS ONLY
     </select>
-
-
 
     <!-- 최근 본 카테고리 -->
     <select id="productCateViewed" resultType="int">
